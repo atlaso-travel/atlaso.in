@@ -251,19 +251,17 @@ function Step({
 }) {
   const Icon = step.icon;
   const isReversed = index % 2 === 1;
-
   const textDelay = index === 0 ? "delay-0" : index === 1 ? "delay-150" : "delay-300";
   const visualDelay = index === 0 ? "delay-200" : index === 1 ? "delay-[350ms]" : "delay-500";
   const pill1Delay = index === 0 ? "delay-[400ms]" : index === 1 ? "delay-[500ms]" : "delay-[600ms]";
   const pill2Delay = index === 0 ? "delay-500" : index === 1 ? "delay-[600ms]" : "delay-700";
-
   const textInitial = isReversed ? "opacity-0 translate-x-8" : "opacity-0 -translate-x-8";
   const visualInitial = isReversed ? "opacity-0 -translate-x-8" : "opacity-0 translate-x-8";
 
   return (
     <div
       className={cn(
-        "grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-12 items-center min-h-[280px] mb-4 md:mb-0"
+        "grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-12 items-center min-h-[280px] max-w-5xl mx-auto mb-4 md:mb-0"
       )}
     >
       {/* Text side */}
@@ -405,7 +403,7 @@ export default function HowItWorks() {
       className="bg-compass-light py-20 relative overflow-hidden"
     >
       {/* Background decorations */}
-      <GlobeDecor />
+      {/* <GlobeDecor /> */}
       <div className="absolute inset-0 bg-dots pointer-events-none" aria-hidden="true" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 relative">
