@@ -11,7 +11,8 @@ export const destinations = [
     bestTime: "Jun – Sep",
     avgDuration: "7 Days",
     operatorCount: 14,
-    category: "Mountains",
+    category: "Mountains" as const,
+    accentColor: "#2A6DD9",
     highlights: ["Key Monastery", "Chandratal Lake", "Kaza", "Kibber"],
     description:
       "A cold desert mountain valley nestled high in the Himalayas of Himachal Pradesh. Known for its raw, unspoiled beauty, ancient monasteries, and adventure opportunities.",
@@ -28,7 +29,8 @@ export const destinations = [
     bestTime: "Jun – Sep",
     avgDuration: "8 Days",
     operatorCount: 22,
-    category: "Mountains",
+    category: "Mountains" as const,
+    accentColor: "#7C3AED",
     highlights: ["Pangong Lake", "Nubra Valley", "Khardung La", "Magnetic Hill"],
     description:
       "The jewel of the Indian Himalayas. Dramatic landscapes, high altitude passes, crystal clear lakes and Buddhist monasteries perched on cliffsides.",
@@ -45,7 +47,8 @@ export const destinations = [
     bestTime: "Oct – May",
     avgDuration: "5 Days",
     operatorCount: 9,
-    category: "Forests",
+    category: "Forests" as const,
+    accentColor: "#16A34A",
     highlights: ["Living Root Bridges", "Dawki River", "Cherrapunji", "Mawlynnong"],
     description:
       "India's greenest state. Famous for living root bridges, the cleanest village in Asia, crystal clear rivers, and some of the highest rainfall on earth.",
@@ -62,7 +65,8 @@ export const destinations = [
     bestTime: "Oct – Mar",
     avgDuration: "4 Days",
     operatorCount: 11,
-    category: "Forests",
+    category: "Forests" as const,
+    accentColor: "#F97316",
     highlights: ["Coffee Plantations", "Abbey Falls", "Raja's Seat", "Namdroling Monastery"],
     description:
       "Rolling hills covered in coffee and spice plantations, misty forests, and cascading waterfalls. The perfect escape from city life.",
@@ -79,7 +83,8 @@ export const destinations = [
     bestTime: "Sep – Jun",
     avgDuration: "3 Days",
     operatorCount: 18,
-    category: "Adventure",
+    category: "Adventure" as const,
+    accentColor: "#0891B2",
     highlights: ["River Rafting", "Bungee Jumping", "Laxman Jhula", "Beatles Ashram"],
     description:
       "Where the Ganges meets adventure. World-class white water rafting, bungee jumping, yoga retreats and spiritual experiences all in one place.",

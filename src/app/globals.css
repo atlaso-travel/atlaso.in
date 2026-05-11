@@ -71,14 +71,14 @@
 .marquee-track {
   display: flex;
   width: max-content;
-  animation: marquee 35s linear infinite;
+  animation: marquee 75s linear infinite;
 }
 .marquee-track:hover { animation-play-state: paused; }
 
 .marquee-track-reverse {
   display: flex;
   width: max-content;
-  animation: marquee 28s linear infinite reverse;
+  animation: marquee 55s linear infinite reverse;
 }
 .marquee-track-reverse:hover { animation-play-state: paused; }
 
