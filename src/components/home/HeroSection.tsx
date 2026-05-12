@@ -67,15 +67,24 @@ export default function HeroSection() {
           </span>
         </div>
 
-        {/* Main heading */}
+        {/* Main heading — semantic H1 for SEO; brand tagline rendered as visible subtitle below */}
         <h1
+          className="animate-fade-up text-5xl md:text-6xl lg:text-7xl font-extrabold text-center leading-[1.05] mb-2 font-display tracking-[-1.5px] sr-only"
+          style={{ animationDelay: "150ms", opacity: 0 }}
+        >
+          Compare Travel Operators in India
+        </h1>
+
+        {/* Brand tagline — visually prominent, semantically a subtitle */}
+        <p
+          aria-hidden="true"
           className="animate-fade-up text-5xl md:text-6xl lg:text-7xl font-extrabold text-center leading-[1.05] mb-4 font-display tracking-[-1.5px]"
           style={{ animationDelay: "150ms", opacity: 0 }}
         >
           <span className="text-white">Your map to</span>
           <br />
           <span className="text-blue-400">the right operator.</span>
-        </h1>
+        </p>
 
         {/* Subtext */}
         <p

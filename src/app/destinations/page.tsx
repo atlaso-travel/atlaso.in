@@ -59,7 +59,7 @@ export default function DestinationsPage() {
             {filtered.map((dest) => (
               <Link
                 key={dest.id}
-                href={`/search?destination=${encodeURIComponent(dest.name)}`}
+                href={`/destinations/${dest.id}`}
                 className="group rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 bg-white"
               >
                 {/* Image */}
@@ -112,7 +112,7 @@ export default function DestinationsPage() {
                       From {formatPrice(dest.avgPrice)}
                     </span>
                     <span className="text-sm font-medium text-trail-orange group-hover:translate-x-1 transition-transform">
-                      Explore →
+                      Explore {dest.name} Packages →
                     </span>
                   </div>
                 </div>
