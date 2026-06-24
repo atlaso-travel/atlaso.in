@@ -4,11 +4,14 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   ShieldCheck,
-  CheckCircle2,
-  XCircle,
   Plus,
   Check,
   ArrowRight,
+  Heart,
+  CheckCircle2,
+  XCircle,
+  Clock,
+  Users,
 } from "lucide-react";
 import { formatPrice, cn } from "@/lib/utils";
 import type { Package } from "@/data/packages";
@@ -18,6 +21,8 @@ interface OperatorCardProps {
   isInCompare: boolean;
   onToggleCompare: (id: string) => void;
   isCompact?: boolean;
+  isSaved?: boolean;
+  onToggleSave?: (id: string) => void;
 }
 
 function formatDurationShort(duration: string): string {
@@ -26,10 +31,32 @@ function formatDurationShort(duration: string): string {
     .replace(/(\d+)\s*Nights?/i, "$1N");
 }
 
-function getBadge(pkg: Package): string | null {
-  if (pkg.operatorRating >= 4.9) return "Top Rated";
-  if (pkg.price <= 12000) return "Best Value";
+function getBadge(pkg: Package): { label: string; cls: string } | null {
+  if (pkg.operatorRating >= 4.9)
+    return { label: "Top Rated", cls: "bg-summit-light text-summit-green" };
+  if (pkg.price <= 12000)
+    return { label: "Best Value", cls: "bg-trail-light text-trail-orange" };
   return null;
+}
+
+function InclusionPill({ included, label }: { included: boolean; label: string }) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1 rounded-full font-body whitespace-nowrap",
+        included
+          ? "bg-[#EDFAF3] text-[#16A34A]"
+          : "bg-[#FFF1F2] text-[#F43F5E]"
+      )}
+    >
+      {included ? (
+        <CheckCircle2 size={13} strokeWidth={2} />
+      ) : (
+        <XCircle size={13} strokeWidth={2} />
+      )}
+      {label}
+    </span>
+  );
 }
 
 export default function OperatorCard({
@@ -37,244 +64,269 @@ export default function OperatorCard({
   isInCompare,
   onToggleCompare,
   isCompact = true,
+  isSaved = false,
+  onToggleSave,
 }: OperatorCardProps) {
   const badge = getBadge(pkg);
 
-  /* ── COMPACT LIST ROW (default) ── */
+  /* ── LIST ROW ── */
   if (isCompact) {
     return (
       <div
         className={cn(
-          "bg-white rounded-[14px] px-4 py-3 flex flex-col sm:flex-row sm:items-center gap-3.5",
-          "border transition-all duration-200 cursor-pointer mb-2",
-          "hover:border-map-border-blue hover:shadow-blue-sm border-map-border"
+          "bg-white rounded-2xl border transition-all duration-200 overflow-hidden",
+          isInCompare
+            ? "border-compass-blue shadow-[0_0_0_2px_rgba(255,90,95,0.1)]"
+            : "border-[#E8ECF0] hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:border-[#D0D5DD]"
         )}
       >
-        {/* Image */}
-        <div className="w-full h-32 sm:w-16 sm:h-16 flex-shrink-0 rounded-[10px] overflow-hidden">
-          <Image
-            src={pkg.images[0]}
-            alt={pkg.title}
-            width={320}
-            height={180}
-            className="object-cover w-full h-full rounded-[10px]"
-          />
-        </div>
+        {/* Top section: image + content */}
+        <div className="flex gap-4 p-4">
+          {/* Image */}
+          <div className="w-[100px] h-[100px] flex-shrink-0 rounded-xl overflow-hidden">
+            <Image
+              src={pkg.images[0]}
+              alt={pkg.title}
+              width={200}
+              height={200}
+              className="object-cover w-full h-full"
+            />
+          </div>
 
-        {/* Main Info */}
-        <div className="flex-1 flex flex-col gap-0.5 min-w-0">
-          {/* Row 1 */}
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="font-bold text-[15px] text-map-text font-display whitespace-nowrap">
-              {pkg.operatorName}
-            </span>
-            {pkg.operatorVerified && (
-              <ShieldCheck size={14} className="text-summit-green flex-shrink-0" />
-            )}
-            {badge && (
-              <span className="bg-trail-light text-trail-orange rounded-full text-[10px] px-2 py-0.5 font-semibold font-body">
-                {badge}
+          {/* Content */}
+          <div className="flex-1 min-w-0 flex flex-col gap-1.5">
+            {/* Row 1: title + rating + heart */}
+            <div className="flex items-start gap-2">
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5 mb-0.5 flex-wrap">
+                  {badge && (
+                    <span className={cn("text-[10px] px-2 py-0.5 rounded-full font-bold font-body", badge.cls)}>
+                      {badge.label}
+                    </span>
+                  )}
+                  {pkg.operatorVerified && (
+                    <ShieldCheck size={12} className="text-summit-green" />
+                  )}
+                </div>
+                <h3 className="font-bold text-[16px] text-[#0F172A] font-display leading-snug">
+                  {pkg.title}
+                </h3>
+              </div>
+              <div className="flex items-center gap-2.5 flex-shrink-0 mt-0.5">
+                <div className="flex items-center gap-0.5">
+                  <span className="text-yellow-400 text-[14px]">★</span>
+                  <span className="text-[13px] font-bold text-[#0F172A]">{pkg.operatorRating}</span>
+                  <span className="text-[12px] text-[#94A3B8] font-body ml-0.5">({pkg.operatorReviews})</span>
+                </div>
+                {onToggleSave && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); onToggleSave(pkg.id); }}
+                    className="p-0.5 transition-transform active:scale-90"
+                    aria-label={isSaved ? "Remove from saved" : "Save trip"}
+                  >
+                    <Heart
+                      size={18}
+                      className={cn(
+                        "transition-all duration-200",
+                        isSaved ? "fill-[#F43F5E] text-[#F43F5E]" : "text-[#CBD5E1] hover:text-[#F43F5E]"
+                      )}
+                    />
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Row 2: description */}
+            <p className="text-[12px] text-[#64748B] font-body leading-snug line-clamp-1">
+              {pkg.hotelType || pkg.operatorName}
+            </p>
+
+            {/* Row 3: stats */}
+            <div className="flex items-center gap-2 text-[12px] text-[#94A3B8] font-body flex-wrap">
+              <span className="flex items-center gap-1">
+                <Clock size={11} />
+                {formatDurationShort(pkg.duration)}
               </span>
-            )}
-            <span className="flex items-center gap-0.5">
-              <span className="text-xs text-trail-orange">★</span>
-              <span className="text-xs font-semibold text-map-text">
-                {pkg.operatorRating}
+              <span className="text-[#CBD5E1]">|</span>
+              <span className="flex items-center gap-1">
+                <Users size={11} />
+                {pkg.groupSize}
               </span>
-              <span className="text-[11px] text-map-muted">({pkg.operatorReviews})</span>
-            </span>
-          </div>
+              <span className="text-[#CBD5E1]">|</span>
+              <span>{pkg.difficulty}</span>
+            </div>
 
-          {/* Row 2 */}
-          <div className="flex items-center gap-1.5 flex-wrap">
-            <span className="text-xs text-map-muted">
-              {formatDurationShort(pkg.duration)}
-            </span>
-            <span className="text-[#D1D5DB]">•</span>
-            <span className="text-xs text-map-muted">{pkg.groupSize}</span>
-            <span className="text-[#D1D5DB]">•</span>
-            <span className="text-[11px] px-2 py-0.5 rounded-full border border-map-border text-map-muted">
-              {pkg.difficulty}
-            </span>
-          </div>
-
-          {/* Row 3 */}
-          <div className="flex items-center gap-1.5 flex-wrap mt-0.5">
-            <InclusionMini included={pkg.mealsIncluded} label="Meals" />
-            <InclusionMini included={pkg.guideIncluded} label="Guide" />
-            <InclusionMini included={pkg.transportIncluded} label="Transport" />
-            <span className="bg-compass-light text-compass-blue rounded-full text-[10px] px-2 py-0.5 font-medium ml-auto whitespace-nowrap font-body">
-              {pkg.destinationId.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}
-            </span>
+            {/* Row 4: inclusion pills */}
+            <div className="flex flex-wrap gap-1.5 mt-0.5">
+              <InclusionPill included={pkg.transportIncluded} label="Transport" />
+              <InclusionPill included={!!pkg.hotelType} label="Stay" />
+              <InclusionPill included={pkg.mealsIncluded} label="Meals" />
+              <InclusionPill included={pkg.guideIncluded} label="Guide" />
+            </div>
           </div>
         </div>
 
-        {/* Price */}
-        <div className="w-full sm:w-24 sm:text-right flex-shrink-0 flex items-center justify-between sm:block">
-          <span className="text-[10px] text-map-muted block">from</span>
-          <span className="text-xl font-black text-compass-blue font-display block">
-            {formatPrice(pkg.price)}
-          </span>
-          <span className="text-[10px] text-map-muted block">/person</span>
-        </div>
+        {/* Bottom bar */}
+        <div className="flex items-center justify-between px-4 py-3 border-t border-[#F1F5F9]">
+          <div>
+            <p className="text-[11px] text-[#94A3B8] font-body leading-none mb-0.5">From</p>
+            <p className="font-body text-[#0F172A]">
+              <span className="text-[20px] font-black font-display">{formatPrice(pkg.price)}</span>
+              <span className="text-[12px] text-[#94A3B8] ml-1">/ Person</span>
+            </p>
+          </div>
 
-        {/* Buttons */}
-        <div className="flex flex-row sm:flex-col gap-2 sm:gap-1.5 flex-shrink-0 w-full sm:w-auto">
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleCompare(pkg.id);
-            }}
-            className={cn(
-              "border rounded-lg px-2.5 py-1.5 text-[11px] font-semibold cursor-pointer whitespace-nowrap flex items-center justify-center gap-1 transition-all duration-150 flex-1 sm:flex-none",
-              isInCompare
-                ? "border-compass-blue text-compass-blue bg-compass-light"
-                : "border-map-border text-map-muted bg-white"
-            )}
-          >
-            {isInCompare ? <Check size={12} /> : <Plus size={12} />}
-            {isInCompare ? "Added" : "Compare"}
-          </button>
-
-          <Link
-            href={`/packages/${pkg.id}`}
-            onClick={(e) => e.stopPropagation()}
-            className="bg-compass-blue hover:bg-compass-hover text-white rounded-lg px-2.5 py-1.5 text-[11px] font-bold border-none cursor-pointer whitespace-nowrap flex items-center justify-center gap-1 transition-colors duration-150 no-underline flex-1 sm:flex-none"
-          >
-            View →
-          </Link>
+          <div className="flex items-center gap-2.5">
+            <Link
+              href={`/packages/${pkg.id}`}
+              onClick={(e) => e.stopPropagation()}
+              className="text-compass-blue text-[13px] font-bold hover:underline transition-all no-underline font-body"
+            >
+              View Details
+            </Link>
+            <button
+              onClick={(e) => { e.stopPropagation(); onToggleCompare(pkg.id); }}
+              className={cn(
+                "flex items-center gap-1.5 border rounded-xl px-4 py-2 text-[13px] font-semibold cursor-pointer whitespace-nowrap transition-all duration-150 font-body",
+                isInCompare
+                  ? "bg-[#0A1628] text-white border-[#0A1628]"
+                  : "bg-white text-[#374151] border-[#D1D5DB] hover:border-[#374151]"
+              )}
+            >
+              {isInCompare ? (
+                <>
+                  <CheckCircle2 size={14} />
+                  Compare
+                </>
+              ) : (
+                <>
+                  <Plus size={14} />
+                  Compare
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
     );
   }
 
-  /* ── CARD GRID VIEW (when grid icon is active) ── */
+  /* ── GRID CARD ── */
   return (
     <div
       className={cn(
-        "bg-white rounded-2xl overflow-hidden transition-all duration-200 flex flex-col border",
+        "bg-white rounded-2xl overflow-hidden flex flex-col border transition-all duration-200 group",
         isInCompare
-          ? "border-compass-blue shadow-[0_0_0_2px_rgba(42,109,217,0.15)]"
-          : "border-map-border hover:border-map-border-blue hover:shadow-card-hover"
+          ? "border-compass-blue shadow-[0_0_0_2px_rgba(255,90,95,0.1)]"
+          : "border-[#E8ECF0] hover:shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:border-[#D0D5DD]"
       )}
     >
       {/* Image */}
-      <div className="relative w-full h-40 flex-shrink-0">
+      <div className="relative w-full h-44 flex-shrink-0 overflow-hidden">
         <Image
           src={pkg.images[0]}
           alt={pkg.title}
           fill
           sizes="(max-width: 768px) 100vw, 400px"
-          className="object-cover"
+          className="object-cover group-hover:scale-105 transition-transform duration-500"
         />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
         {pkg.operatorVerified && (
           <div className="absolute top-2.5 left-2.5">
-            <span className="bg-summit-green text-white text-[11px] px-2.5 py-0.5 rounded-full font-semibold">
+            <span className="bg-white/90 text-summit-green text-[10px] px-2 py-0.5 rounded-full font-bold flex items-center gap-1">
+              <ShieldCheck size={10} />
               Verified
             </span>
           </div>
         )}
         {badge && (
           <div className="absolute top-2.5 right-2.5">
-            <span className="bg-trail-light text-trail-orange text-[11px] px-2.5 py-0.5 rounded-full font-semibold">
-              {badge}
+            <span className={cn("text-[10px] px-2 py-0.5 rounded-full font-bold", badge.cls)}>
+              {badge.label}
             </span>
           </div>
         )}
+        {onToggleSave && (
+          <button
+            onClick={() => onToggleSave(pkg.id)}
+            className="absolute top-2.5 right-2.5 w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-sm transition-transform active:scale-90"
+            style={{ top: badge ? "calc(2.5rem + 8px)" : undefined }}
+          >
+            <Heart
+              size={15}
+              className={cn(
+                "transition-all",
+                isSaved ? "fill-[#F43F5E] text-[#F43F5E]" : "text-[#64748B]"
+              )}
+            />
+          </button>
+        )}
+        <div className="absolute bottom-2.5 left-2.5">
+          <span className="bg-black/60 text-white text-[11px] px-2.5 py-0.5 rounded-full font-medium backdrop-blur-sm font-body">
+            {formatDurationShort(pkg.duration)}
+          </span>
+        </div>
       </div>
 
       {/* Content */}
       <div className="px-4 py-3.5 flex flex-col gap-2 flex-1">
-        {/* Name + verified */}
-        <div className="flex items-center gap-1.5">
-          <span className="font-bold text-[15px] text-map-text font-display">
-            {pkg.operatorName}
-          </span>
-          {pkg.operatorVerified && (
-            <ShieldCheck size={14} className="text-summit-green" />
-          )}
-        </div>
-
-        {/* Title */}
-        <p className="text-xs text-map-muted m-0 leading-[1.4] line-clamp-2">
+        <h3 className="font-bold text-[14px] text-[#0F172A] font-display leading-snug line-clamp-2">
           {pkg.title}
-        </p>
+        </h3>
 
-        {/* Rating */}
-        <div className="flex items-center gap-1">
-          <span className="text-[13px] text-trail-orange">★</span>
-          <span className="text-[13px] font-semibold text-map-text">
-            {pkg.operatorRating}
-          </span>
-          <span className="text-[11px] text-map-muted">({pkg.operatorReviews})</span>
+        <div className="flex items-center justify-between gap-2">
+          <span className="text-[12px] text-[#64748B] font-body">{pkg.operatorName}</span>
+          <div className="flex items-center gap-0.5 flex-shrink-0">
+            <span className="text-yellow-400 text-[12px]">★</span>
+            <span className="text-[12px] font-bold text-[#0F172A]">{pkg.operatorRating}</span>
+            <span className="text-[11px] text-[#94A3B8] font-body ml-0.5">({pkg.operatorReviews})</span>
+          </div>
         </div>
 
-        {/* Tags */}
-        <div className="flex flex-wrap gap-1">
-          {[formatDurationShort(pkg.duration), pkg.groupSize, pkg.difficulty].map((label) => (
-            <span
-              key={label}
-              className="border border-map-border rounded-full px-2.5 py-0.5 text-[11px] text-map-muted"
-            >
-              {label}
-            </span>
-          ))}
+        <div className="flex items-center gap-2 flex-wrap text-[11px] text-[#94A3B8] font-body">
+          <span>{pkg.groupSize}</span>
+          <span className="text-[#CBD5E1]">•</span>
+          <span className="border border-[#E2E8F0] rounded-full px-1.5 py-px">{pkg.difficulty}</span>
         </div>
 
-        {/* Inclusions */}
-        <div className="flex gap-2 flex-wrap">
-          <InclusionMini included={pkg.mealsIncluded} label="Meals" />
-          <InclusionMini included={pkg.guideIncluded} label="Guide" />
-          <InclusionMini included={pkg.transportIncluded} label="Transport" />
+        <div className="flex flex-wrap gap-1.5">
+          <InclusionPill included={pkg.transportIncluded} label="Transport" />
+          <InclusionPill included={!!pkg.hotelType} label="Stay" />
+          <InclusionPill included={pkg.mealsIncluded} label="Meals" />
+          <InclusionPill included={pkg.guideIncluded} label="Guide" />
         </div>
 
-        {/* Price + buttons */}
-        <div className="flex items-center justify-between mt-auto pt-2.5 border-t border-[#F1F5F9]">
+        <div className="flex items-center justify-between mt-auto pt-3 border-t border-[#F1F5F9]">
           <div>
-            <span className="text-[10px] text-map-muted block">from</span>
-            <span className="text-xl font-black text-compass-blue font-display">
+            <span className="text-[10px] text-[#94A3B8] block font-body">from</span>
+            <span className="text-[18px] font-black text-compass-blue font-display leading-tight">
               {formatPrice(pkg.price)}
             </span>
-            <span className="text-[10px] text-map-muted block">/person</span>
+            <span className="text-[10px] text-[#94A3B8] block font-body">/person</span>
           </div>
 
           <div className="flex flex-col gap-1.5 items-end">
             <button
               onClick={() => onToggleCompare(pkg.id)}
               className={cn(
-                "border rounded-lg px-2.5 py-1.5 text-[11px] font-semibold cursor-pointer flex items-center gap-1",
+                "border rounded-lg px-2.5 py-1.5 text-[11px] font-semibold cursor-pointer flex items-center gap-1 transition-all font-body",
                 isInCompare
-                  ? "border-compass-blue text-compass-blue bg-compass-light"
-                  : "border-map-border text-map-muted bg-white"
+                  ? "bg-[#0A1628] text-white border-[#0A1628]"
+                  : "border-[#D1D5DB] text-[#374151] bg-white hover:border-[#374151]"
               )}
             >
-              {isInCompare ? <Check size={11} /> : <Plus size={11} />}
+              {isInCompare ? <CheckCircle2 size={11} /> : <Plus size={11} />}
               {isInCompare ? "Added" : "Compare"}
             </button>
             <Link
               href={`/packages/${pkg.id}`}
-              className="bg-compass-blue text-white rounded-lg px-3 py-1.5 text-[11px] font-bold flex items-center gap-1 no-underline"
+              className="bg-[#0A1628] hover:bg-[#0F1F3D] text-white rounded-lg px-3 py-1.5 text-[11px] font-bold flex items-center gap-1 no-underline transition-colors font-body"
             >
-              View <ArrowRight size={11} />
+              View <ArrowRight size={10} />
             </Link>
           </div>
         </div>
       </div>
     </div>
-  );
-}
-
-function InclusionMini({ included, label }: { included: boolean; label: string }) {
-  return (
-    <span className="flex items-center gap-0.5">
-      {included ? (
-        <CheckCircle2 size={11} className="text-summit-green" />
-      ) : (
-        <XCircle size={11} className="text-red-400" />
-      )}
-      <span className={cn("text-[11px]", included ? "text-summit-green" : "text-red-400")}>
-        {label}
-      </span>
-    </span>
   );
 }

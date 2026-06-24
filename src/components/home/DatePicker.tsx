@@ -154,13 +154,13 @@ export default function DatePicker({ value, onChange }: DatePickerProps) {
       if (isPast) {
         cellCls += "text-white/20 cursor-not-allowed";
       } else if (isStart || showEnd) {
-        cellCls += "bg-compass-blue text-white font-bold cursor-pointer";
+        cellCls += "bg-compass-blue text-white font-bold cursor-pointer shadow-lg shadow-compass-blue/30";
       } else if (isToday) {
-        cellCls += "text-white ring-1 ring-compass-blue cursor-pointer hover:bg-white/10 transition-colors";
+        cellCls += "text-trail-orange ring-1 ring-trail-orange/50 cursor-pointer hover:bg-white/10 transition-colors font-medium";
       } else if (inRange) {
         cellCls += "text-compass-blue font-medium cursor-pointer rounded-none";
       } else {
-        cellCls += "text-white/70 cursor-pointer hover:bg-white/10 hover:text-white transition-colors";
+        cellCls += "text-white/65 cursor-pointer hover:bg-white/10 hover:text-white transition-colors";
       }
 
       cells.push(
@@ -210,39 +210,23 @@ export default function DatePicker({ value, onChange }: DatePickerProps) {
 
       {/* Popup */}
       {isOpen && (
-        <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 md:absolute md:top-[calc(100%+12px)] md:left-1/2 md:-translate-x-1/2 md:translate-y-0 z-[9999] w-[min(640px,92vw)] max-h-[90vh] md:max-h-none bg-atlas-night rounded-2xl shadow-2xl shadow-black/60 border border-white/10 overflow-hidden flex flex-col">
+        <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 md:absolute md:top-[calc(100%+12px)] md:left-1/2 md:-translate-x-1/2 md:translate-y-0 z-[9999] w-[min(580px,92vw)] max-h-[90vh] md:max-h-none bg-atlas-night rounded-2xl shadow-2xl shadow-black/70 border border-white/10 overflow-hidden flex flex-col">
 
           {/* Top bar */}
-          <div className="flex items-center justify-between p-3 border-b border-white/10">
-            <h3 className="text-white font-bold text-lg font-display">Select Travel Dates</h3>
+          <div
+            className="flex items-center justify-between px-4 py-3 border-b border-white/10"
+            style={{ background: "linear-gradient(135deg, rgba(255,90,95,0.18) 0%, rgba(249,115,22,0.06) 100%)" }}
+          >
+            <div className="flex items-center gap-2.5">
+              <span className="h-2 w-2 rounded-full bg-trail-orange shadow-sm shadow-trail-orange/50" />
+              <h3 className="text-white font-bold text-base font-display">Select Travel Dates</h3>
+            </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="w-8 h-8 rounded-full flex items-center justify-center text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+              className="w-7 h-7 rounded-full flex items-center justify-center text-white/40 hover:text-white hover:bg-white/10 transition-colors"
             >
-              <X size={16} />
+              <X size={14} />
             </button>
-          </div>
-
-          {/* Range display */}
-          <div className="flex flex-wrap gap-4 items-center p-3 bg-white/5">
-            <div className="flex-1">
-              <p className="text-white/40 text-xs tracking-widest font-body">FROM</p>
-              <p className={`font-bold text-base font-display ${range.start ? "text-white" : "text-white/30"}`}>
-                {range.start ? formatShort(range.start) : "Select date"}
-              </p>
-            </div>
-            <span className="text-white/30 text-lg">→</span>
-            <div className="flex-1">
-              <p className="text-white/40 text-xs tracking-widest font-body">TO</p>
-              <p className={`font-bold text-base font-display ${range.end ? "text-white" : "text-white/30"}`}>
-                {range.end ? formatShort(range.end) : "Select date"}
-              </p>
-            </div>
-            {nightCount > 0 && (
-              <span className="bg-compass-blue/20 text-compass-blue text-sm px-3 py-1 rounded-full flex-shrink-0 font-body">
-                {nightCount} night{nightCount !== 1 ? "s" : ""}
-              </span>
-            )}
           </div>
 
           {/* Calendar area */}
@@ -250,18 +234,18 @@ export default function DatePicker({ value, onChange }: DatePickerProps) {
             <div className="flex items-center justify-between mb-3">
               <button
                 onClick={prevMonth}
-                className="text-trail-orange hover:text-white transition-colors p-1"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-trail-orange/70 hover:text-white hover:bg-white/10 transition-colors"
               >
-                <ChevronLeft size={20} />
+                <ChevronLeft size={17} />
               </button>
-              <span className="text-white font-semibold text-sm font-display">
+              <span className="text-white/80 font-semibold text-sm font-display">
                 {MONTHS[viewMonth]} {viewYear} – {MONTHS[secondMonth]} {secondYear}
               </span>
               <button
                 onClick={nextMonth}
-                className="text-trail-orange hover:text-white transition-colors p-1"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-trail-orange/70 hover:text-white hover:bg-white/10 transition-colors"
               >
-                <ChevronRight size={20} />
+                <ChevronRight size={17} />
               </button>
             </div>
 
@@ -271,17 +255,17 @@ export default function DatePicker({ value, onChange }: DatePickerProps) {
                 { year: secondYear, month: secondMonth },
               ].map(({ year, month }) => (
                 <div key={`${year}-${month}`}>
-                  <p className="text-white font-bold text-sm sm:text-base text-center mb-3 font-display">
+                  <p className="text-white/70 font-semibold text-sm text-center mb-2 font-display">
                     {MONTHS[month]} {year}
                   </p>
-                  <div className="grid grid-cols-7 mb-2">
+                  <div className="grid grid-cols-7 mb-1">
                     {DAY_LABELS.map((d) => (
-                      <div key={d} className="text-white/30 text-xs text-center font-medium py-1 font-body">
+                      <div key={d} className="text-white/25 text-xs text-center font-medium py-1 font-body">
                         {d}
                       </div>
                     ))}
                   </div>
-                  <div className="grid grid-cols-7 gap-0.5 sm:gap-1">
+                  <div className="grid grid-cols-7 gap-0.5">
                     {renderMonthGrid(year, month)}
                   </div>
                 </div>
@@ -289,20 +273,40 @@ export default function DatePicker({ value, onChange }: DatePickerProps) {
             </div>
           </div>
 
-          {/* Bottom bar */}
-          <div className="flex items-center justify-between p-3 border-t border-white/10">
+          {/* Bottom bar — FROM/TO + actions */}
+          <div className="flex items-center gap-3 px-4 py-3 border-t border-white/10 bg-white/[0.03]">
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+              <div>
+                <p className="text-white/35 text-[10px] tracking-widest font-body leading-none mb-1">FROM</p>
+                <p className={`text-sm font-bold font-display leading-none ${range.start ? "text-white" : "text-white/20"}`}>
+                  {range.start ? formatShort(range.start) : "—"}
+                </p>
+              </div>
+              <span className="text-white/20 text-xs">→</span>
+              <div>
+                <p className="text-white/35 text-[10px] tracking-widest font-body leading-none mb-1">TO</p>
+                <p className={`text-sm font-bold font-display leading-none ${range.end ? "text-white" : "text-white/20"}`}>
+                  {range.end ? formatShort(range.end) : "—"}
+                </p>
+              </div>
+              {nightCount > 0 && (
+                <span className="bg-compass-blue/20 text-compass-blue text-xs px-2 py-0.5 rounded-full font-body flex-shrink-0">
+                  {nightCount}n
+                </span>
+              )}
+            </div>
             <button
               onClick={handleClear}
-              className="text-white/50 text-xs hover:text-white transition-colors cursor-pointer font-body"
+              className="text-white/35 text-xs hover:text-white/70 transition-colors font-body px-2 flex-shrink-0"
             >
               Clear
             </button>
             <button
               onClick={handleApply}
               disabled={!range.start || !range.end}
-              className="bg-compass-blue text-white rounded-lg px-5 py-2 text-sm font-semibold hover:bg-compass-hover transition-colors disabled:opacity-40 disabled:cursor-not-allowed font-body"
+              className="bg-compass-blue text-white rounded-lg px-4 py-2 text-sm font-semibold hover:bg-compass-hover transition-colors disabled:opacity-30 disabled:cursor-not-allowed font-body flex-shrink-0"
             >
-              Apply Dates
+              Apply
             </button>
           </div>
         </div>

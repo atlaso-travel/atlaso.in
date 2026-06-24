@@ -3,9 +3,9 @@
 @theme {
   /* ── Atlaso Brand Colors ── */
   --color-atlas-night:    #0A1628;
-  --color-compass-blue:   #2A6DD9;
-  --color-compass-hover:  #1A4FA0;
-  --color-compass-light:  #EFF4FD;
+  --color-compass-blue:   #FF5A5F;
+  --color-compass-hover:  #E0474C;
+  --color-compass-light:  #FFE8E9;
   --color-trail-orange:   #F97316;
   --color-trail-light:    #FFF4ED;
   --color-summit-green:   #16A34A;
@@ -15,7 +15,10 @@
   --color-map-text:       #0F172A;
   --color-map-muted:      #64748B;
   --color-map-border:     #E2E8F0;
-  --color-map-border-blue:#BFDBFE;
+  --color-map-border-blue:#FFBCBE;
+  --color-rose-pink:   #E91E63;
+  --color-rose-light:  #FFF0F8;
+  --color-maroon-dark: #2A1535;
 
   /* ── Typography ── */
   --font-sans:    var(--font-plus-jakarta, "Plus Jakarta Sans", sans-serif);
@@ -24,10 +27,10 @@
 
   /* ── Box Shadows ── */
   --shadow-card:       0 2px 8px rgba(0,0,0,0.06);
-  --shadow-card-hover: 0 8px 32px rgba(42,109,217,0.12);
-  --shadow-blue-sm:    0 4px 16px rgba(42,109,217,0.1);
-  --shadow-blue-md:    0 8px 24px rgba(42,109,217,0.15);
-  --shadow-blue-lg:    0 20px 40px rgba(42,109,217,0.2);
+  --shadow-card-hover: 0 8px 32px rgba(255,90,95,0.12);
+  --shadow-blue-sm:    0 4px 16px rgba(255,90,95,0.1);
+  --shadow-blue-md:    0 8px 24px rgba(255,90,95,0.15);
+  --shadow-blue-lg:    0 20px 40px rgba(255,90,95,0.2);
   --shadow-dropdown:   0 16px 48px rgba(0,0,0,0.5);
   --shadow-search:     0 8px 32px rgba(0,0,0,0.3);
 
@@ -59,8 +62,8 @@
   to   { transform: translateX(0); opacity: 1; }
 }
 @keyframes pulseBlue {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(42,109,217,0.4); }
-  50%       { box-shadow: 0 0 0 10px rgba(42,109,217,0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,90,95,0.4); }
+  50%       { box-shadow: 0 0 0 10px rgba(255,90,95,0); }
 }
 @keyframes marquee {
   from { transform: translateX(0); }
@@ -117,9 +120,36 @@ html {
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: #f1f5f9; }
-::-webkit-scrollbar-thumb { background: #2A6DD9; border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: #1A4FA0; }
-* { scrollbar-width: thin; scrollbar-color: #2A6DD9 transparent; }
+::-webkit-scrollbar-thumb { background: #FF5A5F; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #E0474C; }
+* { scrollbar-width: thin; scrollbar-color: #FF5A5F transparent; }
+
+/* ── Range input thumb ── */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #FF5A5F;
+  border: 2px solid white;
+  box-shadow: 0 1px 6px rgba(255, 90, 95, 0.45);
+  cursor: pointer;
+  margin-top: -5px;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #FF5A5F;
+  border: 2px solid white;
+  box-shadow: 0 1px 6px rgba(255, 90, 95, 0.45);
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 3px;
+}
 
 ::selection { background-color: #6f95d1; color: white; }
 
@@ -205,10 +235,10 @@ h1, h2, h3, h4, h5, h6 {
     background: linear-gradient(180deg, rgba(10,22,40,0.75) 0%, rgba(10,22,40,0.55) 40%, rgba(10,22,40,0.85) 100%);
   }
   .bg-blue-glow {
-    background: radial-gradient(ellipse 60% 50% at 50% 60%, rgba(42,109,217,0.12) 0%, transparent 70%);
+    background: radial-gradient(ellipse 60% 50% at 50% 60%, rgba(255,90,95,0.12) 0%, transparent 70%);
   }
   .bg-avatar-gradient {
-    background: linear-gradient(135deg, #2A6DD9, #F97316);
+    background: linear-gradient(135deg, #FF5A5F, #F97316);
   }
   .bg-cta-dots {
     background-image: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
@@ -225,7 +255,7 @@ h1, h2, h3, h4, h5, h6 {
     animation-play-state: paused;
   }
   .bg-dots {
-    background-image: radial-gradient(circle, rgba(42,109,217,0.07) 1px, transparent 1px);
+    background-image: radial-gradient(circle, rgba(255,90,95,0.07) 1px, transparent 1px);
     background-size: 28px 28px;
   }
 }

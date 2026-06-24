@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { MapPin } from "lucide-react";
+import { MapPin, Search } from "lucide-react";
 import Image from "next/image";
 import { destinations } from "@/data/destinations";
 
@@ -122,35 +122,44 @@ export default function DestinationInput({ value, onChange }: DestinationInputPr
 
       {/* Dropdown */}
       {showDropdown && filtered.length > 0 && (
-        <div className="absolute top-full left-0 right-0 mt-3 z-[1050] w-full sm:w-80 sm:right-auto bg-atlas-night rounded-2xl overflow-hidden shadow-2xl shadow-black/50 border border-white/10">
-          <div className="px-4 pt-4 pb-2">
-            <span className="text-white/40 text-xs font-semibold tracking-widest uppercase font-body">
-              Popular Destinations
-            </span>
+        <div className="absolute top-full left-0 right-0 mt-2 z-[1050] w-full sm:w-80 sm:right-auto bg-atlas-night rounded-2xl overflow-hidden shadow-2xl shadow-black/60 border border-white/10">
+          {/* Header */}
+          <div
+            className="px-4 pt-3 pb-2.5 border-b border-white/[0.07]"
+            style={{ background: "linear-gradient(135deg, rgba(255,90,95,0.14) 0%, rgba(249,115,22,0.05) 100%)" }}
+          >
+            <div className="flex items-center gap-2">
+              <Search size={11} className="text-trail-orange/60" />
+              <span className="text-white/45 text-xs font-semibold tracking-widest uppercase font-body">
+                Popular Destinations
+              </span>
+            </div>
           </div>
 
-          <div className="max-h-72 overflow-y-auto [scrollbar-width:thin] [scrollbar-color:#2A6DD9_transparent]">
+          <div className="max-h-64 overflow-y-auto [scrollbar-width:thin] [scrollbar-color:#FF5A5F_transparent]">
             {filtered.map((dest) => (
               <button
                 key={dest.id}
                 onMouseDown={() => handleSelect(dest.name)}
-                className="w-full px-4 py-3 flex items-center gap-4 cursor-pointer hover:bg-white/[0.08] transition-colors duration-150 border-b border-white/5 last:border-0 text-left"
+                className="w-full px-4 py-2.5 flex items-center gap-3 cursor-pointer hover:bg-white/[0.07] transition-colors duration-150 border-b border-white/[0.05] last:border-0 text-left group"
               >
-                <div className="relative w-12 h-10 rounded-md overflow-hidden flex-shrink-0">
+                <div className="relative w-10 h-9 rounded-lg overflow-hidden flex-shrink-0 ring-1 ring-white/10 group-hover:ring-compass-blue/35 transition-all duration-200">
                   <Image
                     src={dest.image}
                     alt={dest.name}
                     fill
-                    sizes="48px"
-                    className="object-cover"
+                    sizes="40px"
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-white font-semibold text-sm font-display">{dest.name}</p>
-                  <p className="text-white/50 text-xs mt-0.5 font-body">{dest.region}</p>
+                  <p className="text-white font-semibold text-sm font-display group-hover:text-compass-blue transition-colors duration-150">
+                    {dest.name}
+                  </p>
+                  <p className="text-white/40 text-xs mt-0.5 font-body">{dest.region}</p>
                 </div>
-                <span className="bg-compass-blue/20 text-compass-blue text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 font-body">
-                  {dest.operatorCount} Operators
+                <span className="bg-white/[0.07] text-white/45 group-hover:bg-compass-blue/20 group-hover:text-compass-blue text-xs px-2 py-0.5 rounded-full font-medium flex-shrink-0 font-body transition-all duration-150">
+                  {dest.operatorCount} ops
                 </span>
               </button>
             ))}

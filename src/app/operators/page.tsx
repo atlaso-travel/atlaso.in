@@ -97,7 +97,7 @@ export default function OperatorsPage() {
         <div
           className="absolute inset-0 opacity-5"
           style={{
-            backgroundImage: "radial-gradient(circle, rgba(42,109,217,0.8) 1px, transparent 1px)",
+            backgroundImage: "radial-gradient(circle, rgba(255,90,95,0.8) 1px, transparent 1px)",
             backgroundSize: "32px 32px",
           }}
         />

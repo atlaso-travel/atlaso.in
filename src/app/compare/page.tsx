@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import CompareContent from "./CompareContent";
+import CompareContent from "../../components/compare/CompareContent";
 
 export default function ComparePage() {
   return (

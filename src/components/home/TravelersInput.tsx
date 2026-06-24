@@ -105,29 +105,34 @@ export default function TravelersInput({ value, onChange }: TravelersInputProps)
 
       {/* Popup */}
       {isOpen && (
-        <div className="absolute top-[calc(100%+12px)] left-0 right-0 z-[9999] w-full md:w-[290px] md:left-auto md:right-0 bg-atlas-night/95 rounded-2xl shadow-[0_25px_80px_rgba(0,0,0,0.55)] border border-white/15 overflow-hidden backdrop-blur-md">
-          <div className="px-5 py-4 border-b border-white/10 bg-gradient-to-r from-white/[0.06] to-transparent">
+        <div className="absolute top-[calc(100%+12px)] left-0 right-0 z-[9999] w-full md:w-[272px] md:left-auto md:right-0 bg-atlas-night rounded-2xl shadow-[0_25px_80px_rgba(0,0,0,0.55)] border border-white/15 overflow-hidden">
+          {/* Header */}
+          <div
+            className="px-4 py-3 border-b border-white/10"
+            style={{ background: "linear-gradient(135deg, rgba(255,90,95,0.16) 0%, rgba(249,115,22,0.05) 100%)" }}
+          >
             <div className="flex items-center gap-2">
-              <span className="h-2 w-2 rounded-full bg-trail-orange/80" />
-              <p className="text-white font-bold text-base font-display">Travelers</p>
+              <Users size={13} className="text-trail-orange/70" />
+              <p className="text-white font-bold text-sm font-display">Travelers</p>
             </div>
           </div>
 
+          {/* Rows */}
           {ROWS.map(({ key, label, sub, min }) => (
             <div
               key={key}
-              className="flex items-center justify-between px-4 py-2 border-b border-white/5 last:border-0 hover:bg-white/[0.04] transition-colors"
+              className="flex items-center justify-between px-4 py-3 border-b border-white/[0.05] last:border-0 hover:bg-white/[0.03] transition-colors"
             >
               <div className="flex-1">
                 <p className="text-white font-semibold text-sm font-body">{label}</p>
-                <p className="text-white/40 text-xs font-body">{sub}</p>
+                <p className="text-white/35 text-xs font-body">{sub}</p>
               </div>
 
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2.5">
                 <button
                   onClick={() => update(key, -1, min)}
                   disabled={counts[key] <= min}
-                  className="w-9 h-9 rounded-full flex items-center justify-center border border-white/20 text-white/60 text-lg hover:border-compass-blue hover:text-compass-blue transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="w-8 h-8 rounded-full flex items-center justify-center border border-white/15 text-white/50 text-base hover:border-compass-blue hover:text-compass-blue hover:bg-compass-blue/10 transition-all disabled:opacity-25 disabled:cursor-not-allowed"
                 >
                   –
                 </button>
@@ -142,12 +147,12 @@ export default function TravelersInput({ value, onChange }: TravelersInputProps)
                     autoFocus
                     min={min}
                     max={20}
-                    className="w-10 bg-transparent text-white font-bold text-base text-center outline-none border-b border-compass-blue [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="w-8 bg-transparent text-white font-bold text-sm text-center outline-none border-b border-compass-blue [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
                 ) : (
                   <span
                     onClick={() => startEdit(key)}
-                    className="text-white font-bold text-base w-8 text-center cursor-pointer select-none font-display"
+                    className="text-white font-bold text-sm w-8 text-center cursor-pointer select-none font-display"
                   >
                     {counts[key]}
                   </span>
@@ -156,7 +161,7 @@ export default function TravelersInput({ value, onChange }: TravelersInputProps)
                 <button
                   onClick={() => update(key, 1, min)}
                   disabled={counts[key] >= 20}
-                  className="w-9 h-9 rounded-full flex items-center justify-center border border-white/20 text-white/60 text-lg hover:border-compass-blue hover:text-compass-blue transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="w-8 h-8 rounded-full flex items-center justify-center border border-white/15 text-white/50 text-base hover:border-compass-blue hover:text-compass-blue hover:bg-compass-blue/10 transition-all disabled:opacity-25 disabled:cursor-not-allowed"
                 >
                   +
                 </button>
@@ -164,14 +169,12 @@ export default function TravelersInput({ value, onChange }: TravelersInputProps)
             </div>
           ))}
 
-          <div className="px-5 py-3 bg-white/5">
-            <p className="text-white/70 text-sm font-body">{buildSummary(counts)}</p>
-          </div>
-
-          <div className="px-5 pb-5 pt-3">
+          {/* Footer */}
+          <div className="flex items-center justify-between gap-3 px-4 py-3 bg-white/[0.03] border-t border-white/[0.06]">
+            <p className="text-white/35 text-xs font-body truncate">{buildSummary(counts)}</p>
             <button
               onClick={handleDone}
-              className="w-full bg-compass-blue text-white rounded-xl py-2.5 font-semibold text-sm hover:bg-compass-hover transition-colors font-body"
+              className="bg-compass-blue text-white rounded-xl px-4 py-1.5 font-semibold text-xs hover:bg-compass-hover transition-colors font-body flex-shrink-0"
             >
               Done
             </button>

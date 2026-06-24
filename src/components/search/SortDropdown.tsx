@@ -41,7 +41,7 @@ export default function SortDropdown({ value, onChange }: SortDropdownProps) {
   }, []);
 
   return (
-    <div ref={ref} className="relative z-[1060]">
+    <div ref={ref} className="relative z-4">
       {/* Trigger */}
       <button
         onClick={() => setOpen((o) => !o)}
@@ -105,7 +105,7 @@ export default function SortDropdown({ value, onChange }: SortDropdownProps) {
                       <span
                         className={cn(
                           "block text-[11px] font-body mt-px",
-                          active ? "text-blue-400" : "text-slate-400"
+                          active ? "text-compass-blue" : "text-slate-400"
                         )}
                       >
                         {opt.sub}

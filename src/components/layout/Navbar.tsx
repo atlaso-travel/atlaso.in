@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Heart } from "lucide-react";
 
 function AtlasoIcon({ size = 36 }: { size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 36 36" fill="none">
-      <rect width="36" height="36" rx="9" fill="#2A6DD9" />
+      <rect width="36" height="36" rx="9" fill="#FF5A5F" />
       <circle cx="18" cy="18" r="8" stroke="white" strokeWidth="1.2" fill="none" opacity="0.7" />
       <path d="M18 10 Q22 15 18 26 Q14 15 18 10Z" fill="white" opacity="0.55" />
       <path d="M10 18 Q15 14 26 18 Q15 22 10 18Z" fill="white" opacity="0.55" />
@@ -25,7 +25,7 @@ function AtlasoWordmark({ size = 20 }: { size?: number }) {
       style={{ fontSize: size }}
     >
       <span className="text-white">Atl</span>
-      <span className="text-blue-400">a</span>
+      <span style={{ color: "#FF5A5F" }}>a</span>
       <span className="text-white">so</span>
     </span>
   );
@@ -33,7 +33,9 @@ function AtlasoWordmark({ size = 20 }: { size?: number }) {
 
 const NAV_LINKS = [
   { href: "/destinations", label: "Destinations" },
-  { href: "/#how-it-works", label: "How It Works" },
+  // { href: "/#how-it-works", label: "How It Works" },
+  { href: "/saved", label: "Saved Trips" },
+  { href: "/comparisons", label: "My Comparisons" },
   { href: "/operators", label: "For Operators" },
 ];
 
@@ -69,18 +71,28 @@ export default function Navbar() {
 
         {/* Right buttons */}
         <div className="hidden md:flex items-center gap-3">
+          {/* <Link
+            href="/saved"
+            className="relative p-2 text-white/50 hover:text-[#F43F5E] transition-colors duration-200"
+            title="Saved trips"
+          >
+            <Heart size={18} />
+          </Link> */}
           <Link
             href="/operators"
-            className="border border-white/20 text-white/70 rounded-full px-4 py-1.5 text-sm hover:border-white/40 hover:text-white transition-all duration-200"
+             className="bg-compass-blue text-white rounded-full px-5 py-1.5 text-sm font-semibold transition-all duration-200 hover:opacity-90"
+            // className="border border-white/20 text-white/70 rounded-full px-4 py-1.5 text-sm hover:border-white/40 hover:text-white transition-all duration-200"
           >
             List Your Package
           </Link>
-          <Link
+          {/* <Link
             href="/search"
+            className="border border-white/20 text-white/70 rounded-full px-4 py-1.5 text-sm hover:border-white/40 hover:text-white transition-all duration-200"
+            
             className="bg-compass-blue text-white rounded-full px-5 py-1.5 text-sm font-semibold transition-all duration-200 hover:opacity-90"
           >
             Search Trips
-          </Link>
+          </Link> */}
         </div>
 
         {/* Mobile hamburger */}
@@ -96,7 +108,7 @@ export default function Navbar() {
       {/* Mobile fullscreen overlay */}
       {menuOpen && (
         <div className="fixed inset-0 z-40 md:hidden bg-atlas-night">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,rgba(42,109,217,0.35),transparent_45%),radial-gradient(circle_at_80%_85%,rgba(249,115,22,0.18),transparent_50%)]" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,rgba(255,90,95,0.25),transparent_45%),radial-gradient(circle_at_80%_85%,rgba(249,115,22,0.18),transparent_50%)]" />
           <div className="absolute inset-0 bg-gradient-to-b from-[#0B162A]/40 via-[#0A1628] to-[#07101E]" />
 
           <button
@@ -141,13 +153,13 @@ export default function Navbar() {
                 >
                   List Your Package
                 </Link>
-                <Link
+                {/* <Link
                   href="/search"
                   className="w-full bg-compass-blue text-white text-center text-base font-bold px-6 py-3 rounded-full hover:opacity-90 transition-all"
                   onClick={() => setMenuOpen(false)}
                 >
                   Search Trips
-                </Link>
+                </Link> */}
               </div>
             </div>
           </div>

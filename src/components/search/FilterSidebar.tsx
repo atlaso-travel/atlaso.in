@@ -18,10 +18,9 @@ interface FilterSidebarProps {
   isMobile?: boolean;
 }
 
-const DURATION_OPTIONS = ["3-4 Days", "5-6 Days", "7-8 Days", "9+ Days"];
-const DIFFICULTY_OPTIONS = ["Easy", "Moderate", "Challenging"];
-const INCLUSION_OPTIONS = ["Meals", "Transport", "Guide", "Accommodation", "Insurance"];
-const GROUP_OPTIONS = ["Solo", "Small (2-6)", "Medium (7-12)", "Large (13+)"];
+const DURATION_OPTIONS = ["3-4 Days", "5-7 Days", "7-9 Days"];
+const INCLUSION_OPTIONS = ["Transportation", "Stay", "Accommodation", "Meals"];
+const GROUP_OPTIONS = ["Solo", "Small (2-4)", "Medium (7-12)", "Large (13+)"];
 
 export default function FilterSidebar({
   filters,
@@ -35,91 +34,107 @@ export default function FilterSidebar({
   const clearAll = () =>
     onChange({ budget: [0, 30000], duration: [], difficulty: [], inclusions: [], groupSize: [] });
 
+  const hasActive =
+    filters.duration.length > 0 ||
+    filters.difficulty.length > 0 ||
+    filters.inclusions.length > 0 ||
+    filters.groupSize.length > 0 ||
+    filters.budget[1] < 30000;
+
+  const budgetPct = (filters.budget[1] / 30000) * 100;
+
   return (
     <div
       className={cn(
-        "bg-white p-4",
-        isMobile ? "rounded-none" : "rounded-2xl border border-map-border"
+        "bg-white",
+        isMobile ? "rounded-none p-5" : "rounded-2xl border border-[#F0F0F5] p-5 shadow-sm"
       )}
     >
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-1.5">
-          <SlidersHorizontal size={15} className="text-map-text" />
-          <span className="font-bold text-map-text text-sm font-display">
-            Filter Results
-          </span>
+      {/* Header */}
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <SlidersHorizontal size={16} className="text-[#1E293B]" strokeWidth={2.5} />
+          <span className="font-bold text-[#1E293B] text-[15px] font-display">Filters</span>
         </div>
-        {isMobile && onClose && (
+        <div className="flex items-center gap-2">
+          {hasActive && (
+            <button
+              onClick={clearAll}
+              className="text-compass-blue text-[13px] font-semibold hover:text-compass-hover transition-colors font-body underline underline-offset-2"
+            >
+              Clear all
+            </button>
+          )}
+          {isMobile && onClose && (
+            <button
+              onClick={onClose}
+              className="text-map-muted hover:text-map-text bg-transparent border-none cursor-pointer ml-1"
+            >
+              <X size={18} />
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* Divider */}
+      <div className="h-px bg-[#F0F0F5] mb-2" />
+
+      {/* Budget Range */}
+      <div className="mb-2">
+        <div className="flex items-center justify-between mb-1">
+          <h4 className="text-[13px] font-bold text-[#1E293B] font-display">Budget Range</h4>
+        </div>
+        <div className="flex justify-between text-[12px] text-[#64748B] font-body mb-1">
+          <span>₹0</span>
+          <span>₹30,000+</span>
+        </div>
+        <div className="relative">
+          <input
+            type="range"
+            min={0}
+            max={30000}
+            step={500}
+            value={filters.budget[1]}
+            onChange={(e) =>
+              onChange({ ...filters, budget: [filters.budget[0], Number(e.target.value)] })
+            }
+            className="w-full h-1.5 rounded-full appearance-none cursor-pointer"
+            style={{
+              background: `linear-gradient(to right, #FF5A5F 0%, #FF5A5F ${budgetPct}%, #E2E8F0 ${budgetPct}%, #E2E8F0 100%)`,
+              accentColor: "#FF5A5F",
+            }}
+          />
+        </div>
+      </div>
+
+      {/* Divider */}
+      <div className="h-px bg-[#F0F0F5] mb-2" />
+
+      {/* Trip Duration */}
+      <div className="mb-2">
+        <h4 className="text-[13px] font-bold text-[#1E293B] mb-1 font-display">Trip Duration</h4>
+        <div className="flex flex-wrap gap-2">
+          {/* All pill */}
           <button
-            onClick={onClose}
-            className="text-map-muted bg-transparent border-none cursor-pointer"
+            onClick={() => onChange({ ...filters, duration: [] })}
+            className={cn(
+              "text-[9px] px-2 py-1 rounded-full border cursor-pointer font-medium transition-all duration-150 font-body",
+              filters.duration.length === 0
+                ? "bg-compass-blue text-white border-compass-blue"
+                : "bg-white text-[#64748B] border-[#FFBCBE] hover:border-compass-blue hover:text-compass-blue"
+            )}
           >
-            <X size={20} />
+            All
           </button>
-        )}
-      </div>
-
-      {/* Budget */}
-      <div className="mb-3">
-        <h4 className="text-xs font-bold text-map-text mb-2 uppercase tracking-[0.05em]">
-          Budget Range
-        </h4>
-        <div className="text-[11px] text-compass-blue font-semibold text-right mb-1">
-          ₹{filters.budget[0].toLocaleString("en-IN")} – ₹
-          {filters.budget[1].toLocaleString("en-IN")}
-        </div>
-        <input
-          type="range"
-          min={0}
-          max={30000}
-          step={500}
-          value={filters.budget[1]}
-          onChange={(e) =>
-            onChange({ ...filters, budget: [filters.budget[0], Number(e.target.value)] })
-          }
-          className="w-full accent-[#2A6DD9]"
-        />
-      </div>
-
-      {/* Duration */}
-      <div className="mb-3">
-        <h4 className="text-xs font-bold text-map-text mb-2 uppercase tracking-[0.05em]">
-          Trip Duration
-        </h4>
-        <div className="flex flex-col gap-1.5">
           {DURATION_OPTIONS.map((d) => (
-            <label key={d} className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={filters.duration.includes(d)}
-                onChange={() =>
-                  onChange({ ...filters, duration: toggle(filters.duration, d) })
-                }
-                className="accent-[#2A6DD9] w-3.5 h-3.5"
-              />
-              <span className="text-xs text-map-muted">{d}</span>
-            </label>
-          ))}
-        </div>
-      </div>
-
-      {/* Difficulty */}
-      <div className="mb-3">
-        <h4 className="text-xs font-bold text-map-text mb-2 uppercase tracking-[0.05em]">
-          Difficulty
-        </h4>
-        <div className="flex flex-wrap gap-1.5">
-          {DIFFICULTY_OPTIONS.map((d) => (
             <button
               key={d}
-              onClick={() =>
-                onChange({ ...filters, difficulty: toggle(filters.difficulty, d) })
-              }
+              onClick={() => onChange({ ...filters, duration: toggle(filters.duration, d) })}
               className={cn(
-                "text-[11px] px-2.5 py-1 rounded-full border cursor-pointer font-medium transition-all duration-150",
-                filters.difficulty.includes(d)
+                "text-[9px] px-2 py-1 rounded-full border cursor-pointer font-medium transition-all duration-150 font-body",
+                filters.duration.includes(d)
                   ? "bg-compass-blue text-white border-compass-blue"
-                  : "bg-white text-map-muted border-map-border"
+                  : "bg-white text-[#64748B] border-[#FFBCBE] hover:border-compass-blue hover:text-compass-blue"
               )}
             >
               {d}
@@ -128,48 +143,22 @@ export default function FilterSidebar({
         </div>
       </div>
 
-      {/* Inclusions */}
-      <div className="mb-3">
-        <h4 className="text-xs font-bold text-map-text mb-2 uppercase tracking-[0.05em]">
-          Inclusions
-        </h4>
-        <div className="flex flex-col gap-1.5">
-          {INCLUSION_OPTIONS.map((inc) => (
-            <label key={inc} className="flex items-center gap-2 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={filters.inclusions.includes(inc)}
-                onChange={() =>
-                  onChange({
-                    ...filters,
-                    inclusions: toggle(filters.inclusions, inc),
-                  })
-                }
-                className="accent-[#2A6DD9] w-3.5 h-3.5"
-              />
-              <span className="text-xs text-map-muted">{inc}</span>
-            </label>
-          ))}
-        </div>
-      </div>
+      {/* Divider */}
+      <div className="h-px bg-[#F0F0F5] mb-2" />
 
-      {/* Group size */}
-      <div className="mb-3">
-        <h4 className="text-xs font-bold text-map-text mb-2 uppercase tracking-[0.05em]">
-          Group Size
-        </h4>
-        <div className="flex flex-wrap gap-1.5">
+      {/* Group Size */}
+      <div className="mb-2">
+        <h4 className="text-[13px] font-bold text-[#1E293B] mb-1 font-display">Group Size</h4>
+        <div className="flex flex-wrap gap-2">
           {GROUP_OPTIONS.map((g) => (
             <button
               key={g}
-              onClick={() =>
-                onChange({ ...filters, groupSize: toggle(filters.groupSize, g) })
-              }
+              onClick={() => onChange({ ...filters, groupSize: toggle(filters.groupSize, g) })}
               className={cn(
-                "text-[11px] px-2.5 py-1 rounded-full border cursor-pointer font-medium transition-all duration-150",
+                "text-[9px] px-2 py-1 rounded-full border cursor-pointer font-medium transition-all duration-150 font-body",
                 filters.groupSize.includes(g)
                   ? "bg-compass-blue text-white border-compass-blue"
-                  : "bg-white text-map-muted border-map-border"
+                  : "bg-white text-[#64748B] border-[#FFBCBE] hover:border-compass-blue hover:text-compass-blue"
               )}
             >
               {g}
@@ -178,12 +167,50 @@ export default function FilterSidebar({
         </div>
       </div>
 
-      <button
-        onClick={clearAll}
-        className="text-trail-orange text-xs font-medium bg-transparent border-none cursor-pointer p-0"
-      >
-        Clear All Filters
-      </button>
+      {/* Divider */}
+      <div className="h-px bg-[#F0F0F5] mb-2" />
+
+      {/* Inclusions */}
+      <div>
+        <h4 className="text-[13px] font-bold text-[#1E293B] mb-1 font-display">Inclusions</h4>
+        <div className="flex flex-col gap-1.5">
+          {INCLUSION_OPTIONS.map((inc) => {
+            const checked = filters.inclusions.includes(inc);
+            return (
+              <label key={inc} className="flex items-center gap-1 cursor-pointer group">
+                <div
+                  onClick={() => onChange({ ...filters, inclusions: toggle(filters.inclusions, inc) })}
+                  className={cn(
+                    "w-5 h-5 rounded-[5px] border-[1.5px] flex items-center justify-center flex-shrink-0 transition-all",
+                    checked
+                      ? "bg-compass-blue border-compass-blue"
+                      : "border-[#FFBCBE] group-hover:border-compass-blue bg-white"
+                  )}
+                >
+                  {checked && (
+                    <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
+                      <path d="M1 4L3.8 7L9 1" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  )}
+                </div>
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={() => onChange({ ...filters, inclusions: toggle(filters.inclusions, inc) })}
+                  className="sr-only"
+                />
+                <span className={cn(
+                  "text-[10px] transition-colors font-body",
+                  checked ? "text-[#1E293B] font-medium" : "text-[#64748B] group-hover:text-[#1E293B]"
+                )}>
+                  {inc}
+                </span>
+              </label>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }
+ 

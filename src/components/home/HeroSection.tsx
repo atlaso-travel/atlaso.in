@@ -7,15 +7,9 @@ import { useState } from "react";
 import DestinationInput from "./DestinationInput";
 import DatePicker from "./DatePicker";
 import TravelersInput from "./TravelersInput";
-import AnimatedNumber from "@/components/ui/AnimatedNumber";
 
-const POPULAR_TAGS = ["Spiti Valley", "Leh Ladakh", "Meghalaya", "Rishikesh", "Coorg"];
-
-const STATS = [
-  { target: 200, suffix: "+", label: "Verified Operators" },
-  { target: 50, suffix: "+", label: "Destinations" },
-  { target: 10000, suffix: "+", label: "Happy Travelers" },
-];
+const AVATAR_COLORS = ["#E91E63", "#9C27B0", "#FF5722", "#4CAF50", "#2196F3"];
+const AVATAR_INITIALS = ["R", "M", "P", "A", "S"];
 
 export default function HeroSection() {
   const router = useRouter();
@@ -32,13 +26,9 @@ export default function HeroSection() {
     router.push(`/search?${params.toString()}`);
   };
 
-  const handleTagClick = (tag: string) => {
-    router.push(`/search?destination=${encodeURIComponent(tag)}`);
-  };
-
   return (
-    <section className="relative min-h-screen flex flex-col items-center justify-center overflow-visible">
-      {/* Background layer 1: image */}
+    <section className="relative z-10 w-full py-16 sm:py-24">
+      {/* ── Background ── */}
       <div className="absolute inset-0">
         <Image
           src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80"
@@ -48,115 +38,112 @@ export default function HeroSection() {
           className="object-cover object-[center_55%]"
           priority
         />
-        {/* dark gradient */}
-        <div className="absolute inset-0 bg-hero-gradient" />
-        {/* radial blue glow */}
-        <div className="absolute inset-0 bg-blue-glow" />
+        {/* base overlay */}
+        <div className="absolute inset-0 bg-black/45" />
+        <div className="absolute inset-0"
+          style={{ background: "linear-gradient(100deg, rgba(5,10,25,0.85) 0%, rgba(5,10,25,0.60) 45%, rgba(5,10,25,0.15) 100%)" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-transparent" />
       </div>
 
-      {/* Content */}
-      <div className="relative z-10 flex flex-col items-center text-center pt-24 pb-10 md:pb-48 px-4 w-full max-w-4xl mx-auto">
-        {/* Top badge */}
+
+      {/* ── Content ── */}
+      <div className="max-w-5xl mx-auto">
+        <h1 className="sr-only">Compare Travel Operators in India — Atlaso</h1>
+
+        {/* ── Heading ── */}
         <div
-          className="animate-fade-in mb-8 glass-light rounded-full px-5 py-2 inline-flex items-center gap-2.5"
-          style={{ animationDelay: "0ms" }}
+          className="animate-fade-up mb-6"
+          style={{ animationDelay: "100ms", opacity: 0 }}
         >
-          <span className="w-2 h-2 rounded-full animate-pulse flex-shrink-0 bg-trail-orange" />
-          <span className="text-white/80 text-sm font-medium font-body">
-            India&apos;s First Travel Operator Comparison Platform
-          </span>
+          <p className="text-[2.6rem] md:text-[3.2rem] lg:text-[3.6rem] font-bold text-white leading-[1.15] font-display mb-1">
+            Your Map to the
+          </p>
+          <p
+            className="text-[3.2rem] md:text-[4rem] lg:text-[4.8rem] font-black leading-[1.1] font-display"
+            style={{
+              background: "linear-gradient(90deg, #E040C8 0%, #E91E63 40%, #FF6B6B 100%)",
+              WebkitBackgroundClip: "text",
+              WebkitTextFillColor: "transparent",
+              backgroundClip: "text",
+            }}
+          >
+            RIGHT OPERATOR
+          </p>
         </div>
 
-        {/* Main heading — semantic H1 for SEO; brand tagline rendered as visible subtitle below */}
-        <h1
-          className="animate-fade-up text-5xl md:text-6xl lg:text-7xl font-extrabold text-center leading-[1.05] mb-2 font-display tracking-[-1.5px] sr-only"
-          style={{ animationDelay: "150ms", opacity: 0 }}
-        >
-          Compare Travel Operators in India
-        </h1>
-
-        {/* Brand tagline — visually prominent, semantically a subtitle */}
+        {/* ── Subtext ── */}
         <p
-          aria-hidden="true"
-          className="animate-fade-up text-5xl md:text-6xl lg:text-7xl font-extrabold text-center leading-[1.05] mb-4 font-display tracking-[-1.5px]"
-          style={{ animationDelay: "150ms", opacity: 0 }}
+          className="animate-fade-up text-white/70 text-[1rem] md:text-[1.0625rem] font-body leading-[1.7] mb-10"
+          style={{ animationDelay: "200ms", opacity: 0 }}
         >
-          <span className="text-white">Your map to</span>
-          <br />
-          <span className="text-blue-400">the right operator.</span>
+          Discover destinations, compare verified tour operators side-by-side,
+          and book trips transparently —{" "}
+          <span className="text-white font-semibold">all in one place!</span>
         </p>
 
-        {/* Subtext */}
-        <p
-          className="animate-fade-up text-white/65 text-lg md:text-xl max-w-xl mx-auto font-normal mb-6 font-body"
-          style={{ animationDelay: "250ms", opacity: 0 }}
-        >
-          Stop guessing. Compare real operators, real prices and real inclusions — side by side.
-        </p>
-
-        {/* Search widget */}
+        {/* ── Search widget ── */}
         <div
-          className="animate-fade-up relative z-[1050] w-full max-w-4xl"
-          style={{ animationDelay: "350ms", opacity: 0 }}
+          className="animate-fade-up mb-8 relative z-10"
+          style={{ animationDelay: "300ms", opacity: 0 }}
         >
-          <div className="glass-dark rounded-2xl p-2.5 border border-white/10">
-            <div className="flex flex-col md:flex-row md:items-stretch gap-2">
-              <div className="flex-1 md:border-r md:border-white/10 md:pr-2">
+          <div className="glass-dark rounded-2xl border border-white/10" style={{ padding: "8px" }}>
+            <div className="flex flex-col md:flex-row md:items-stretch gap-1.5">
+              <div className="flex-1 min-w-0 md:border-r md:border-white/10 md:pr-1.5">
                 <DestinationInput value={destination} onChange={setDestination} />
               </div>
-              <div className="flex-1 md:border-r md:border-white/10 md:pr-2">
+              <div className="flex-1 min-w-0 md:border-r md:border-white/10 md:pr-1.5">
                 <DatePicker value={dates} onChange={setDates} />
               </div>
-              <div className="md:w-48">
+              <div className="md:w-44 min-w-0">
                 <TravelersInput value={travelers} onChange={setTravelers} />
               </div>
-              <div className="flex-shrink-0 md:ml-2">
+              <div className="flex-shrink-0">
                 <button
                   onClick={handleSearch}
-                  className="w-full md:w-auto bg-compass-blue text-white font-bold text-base p-4 rounded-full flex items-center justify-center gap-2.5 transition-all duration-200 hover:scale-105 active:scale-95 animate-pulse-blue"
+                  className="w-full md:w-auto h-full px-4 bg-rose-pink text-white font-bold text-sm rounded-xl flex items-center justify-center gap-2 transition-all duration-200 hover:opacity-90 active:scale-95 whitespace-nowrap"
                 >
-                  <Search size={22} />
+                  <Search size={16} />
+                  Compare Operators
                 </button>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Popular tags */}
+        {/* ── Social proof ── */}
         <div
-          className="animate-fade-up mt-4 flex flex-wrap items-center gap-2 justify-center"
-          style={{ animationDelay: "450ms", opacity: 0 }}
+          className="animate-fade-up flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 "
+          style={{ animationDelay: "400ms", opacity: 0 }}
         >
-          <span className="text-white/40 text-sm mr-1 font-body">Popular:</span>
-          {POPULAR_TAGS.map((tag) => (
-            <button
-              key={tag}
-              onClick={() => handleTagClick(tag)}
-              className="bg-white/[0.08] border border-white/10 rounded-full px-4 py-1.5 text-white/75 text-sm cursor-pointer transition-all duration-200 hover:text-white hover:border-white/30"
-            >
-              {tag}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Stats bar */}
-      <div className="relative mt-6 px-4 pb-8 md:absolute md:bottom-0 md:left-0 md:right-0 md:z-0 md:mt-0 md:px-6 md:pb-7">
-        <div className="max-w-4xl mx-auto">
-          <div className="relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-r from-[#0B1427] via-[#0E1C34] to-[#0B1427] shadow-[0_20px_60px_rgba(0,0,0,0.45)]">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,rgba(42,109,217,0.18),transparent_55%)]" />
-            <div className="relative grid grid-cols-3 divide-y divide-white/10 sm:divide-y-0 sm:divide-x">
-              {STATS.map((stat) => (
-                <div key={stat.label} className="px-4 sm:px-6 py-4 text-center">
-                  <p className="font-bold  text-xl sm:text-3xl leading-none text-compass-blue font-display">
-                    <AnimatedNumber target={stat.target} suffix={stat.suffix} />
-                  </p>
-                  <p className="text-white/60 text-xs mt-1 tracking-wide font-body">
-                    {stat.label}
-                  </p>
+          <div className="flex items-center gap-3">
+            <div className="flex -space-x-2.5">
+              {AVATAR_COLORS.map((color, i) => (
+                <div
+                  key={i}
+                  className="w-9 h-9 rounded-full border-2 border-white/60 flex items-center justify-center text-white text-[11px] font-bold flex-shrink-0"
+                  style={{ background: color }}
+                >
+                  {AVATAR_INITIALS[i]}
                 </div>
               ))}
+              <div className="w-9 h-9 rounded-full border-2 border-white/60 bg-rose-pink flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
+                +
+              </div>
             </div>
+            <span className="text-white/75 text-sm font-body leading-snug">
+              Trusted by{" "}
+              <span className="text-white font-semibold">250k+</span>{" "}
+              Travellers throughout India
+            </span>
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <span className="text-yellow-400 text-lg leading-none">★</span>
+            <span className="text-white font-bold text-sm">4.2/5</span>
+            <span className="text-white/60 text-sm font-body">
+              from 14,000+ Travellers
+            </span>
           </div>
         </div>
       </div>

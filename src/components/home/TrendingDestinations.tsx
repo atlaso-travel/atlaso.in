@@ -2,277 +2,248 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { MapPin, ChevronLeft, ChevronRight, ArrowRight, Heart } from "lucide-react";
-import { useRef, useState, useEffect } from "react";
+import { MapPin, ArrowUpRight, Star } from "lucide-react";
+import { useState, useEffect } from "react";
 import { destinations } from "@/data/destinations";
 import { formatPrice } from "@/lib/utils";
 import { useInView } from "@/hooks/useIntersectionObserver";
 
-const SCROLL_AMOUNT = 300;
-
-const CATEGORY_EMOJI: Record<string, string> = {
-  Mountains: "🏔️",
-  Forests: "🌿",
-  Adventure: "⚡",
-  Beaches: "🏖️",
-};
-
-const STAGGER_DELAYS = [
-  "delay-0",
-  "delay-100",
-  "delay-200",
-  "delay-300",
-  "delay-[400ms]",
+const COMPANY_LOGOS = [
+  { name: "MakeMyTrip",      color: "#E91E63", bg: "#FFF0F5", abbr: "MMT"  },
+  { name: "Yatra.com",       color: "#00A651", bg: "#F0FFF5", abbr: "YTR"  },
+  { name: "Thrillophilia",   color: "#1565C0", bg: "#EFF4FD", abbr: "TH"   },
+  { name: "India Hikes",     color: "#2E7D32", bg: "#F0FDF4", abbr: "IH"   },
+  { name: "Cox & Kings",     color: "#B8860B", bg: "#FFFBEB", abbr: "C&K"  },
+  { name: "Thomas Cook",     color: "#1A237E", bg: "#EEF2FF", abbr: "TC"   },
+  { name: "SOTC Travel",     color: "#C62828", bg: "#FFF5F5", abbr: "SOTC" },
+  { name: "Kesari Tours",    color: "#E65100", bg: "#FFF4ED", abbr: "KT"   },
+  { name: "EaseMyTrip",      color: "#006064", bg: "#F0FDFD", abbr: "EMT"  },
+  { name: "Spiti Ecosphere", color: "#6A1B9A", bg: "#F5F0FF", abbr: "SE"   },
+  { name: "Club Mahindra",   color: "#D32F2F", bg: "#FFF5F5", abbr: "CM"   },
+  { name: "OYO Rooms",       color: "#EE2A24", bg: "#FFF0F0", abbr: "OYO"  },
 ];
 
+// Card fan geometry
+const CARD_W = 280;
+const CARD_H = 400;
+const PEEK_WIDTHS = [48, 40, 32, 26];
+
+// Precompute slot left offsets so the active card sits at x=0
+// and each subsequent card peeks by PEEK_WIDTHS[i] pixels to the right.
+const SLOT_LEFTS: number[] = (() => {
+  const lefts = [0];
+  let right = CARD_W;
+  for (const peek of PEEK_WIDTHS) {
+    right += peek;
+    lefts.push(right - CARD_W);
+  }
+  return lefts;
+})();
+
+const CONTAINER_W = CARD_W + PEEK_WIDTHS.reduce((a, b) => a + b, 0); // 426
+
 export default function TrendingDestinations() {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [canScrollRight, setCanScrollRight] = useState(true);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const { ref: sectionRef, inView } = useInView(0.1);
+  const [activeCard, setActiveCard] = useState(0);
+  const { ref: sectionRef, inView } = useInView(0.15);
+  const visibleDests = destinations.slice(0, 5);
 
-  const updateScrollState = () => {
-    const el = scrollRef.current;
-    if (!el) return;
-    setCanScrollLeft(el.scrollLeft > 4);
-    setCanScrollRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 4);
-    const cardWidth = 300; // 280px card + 20px gap
-    setActiveIndex(
-      Math.min(Math.round(el.scrollLeft / cardWidth), destinations.length - 1)
-    );
-  };
-
+  // Auto-rotate cards every 3.5 s
   useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    updateScrollState();
-    el.addEventListener("scroll", updateScrollState, { passive: true });
-    return () => el.removeEventListener("scroll", updateScrollState);
-  }, []);
-
-  const scroll = (dir: "left" | "right") => {
-    scrollRef.current?.scrollBy({
-      left: dir === "right" ? SCROLL_AMOUNT : -SCROLL_AMOUNT,
-      behavior: "smooth",
-    });
-  };
-
-  const scrollToCard = (index: number) => {
-    scrollRef.current?.scrollTo({
-      left: index * 300,
-      behavior: "smooth",
-    });
-  };
+    const timer = setInterval(
+      () => setActiveCard((prev) => (prev + 1) % visibleDests.length),
+      3500
+    );
+    return () => clearInterval(timer);
+  }, [visibleDests.length]);
 
   return (
-    <section className="py-20 bg-map-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        {/* Header — unchanged */}
-        <div className="mb-10">
-          <p className="text-xs font-semibold tracking-widest uppercase mb-3 text-trail-orange font-body">
-            DISCOVER
-          </p>
-          <h2 className="text-4xl font-bold mb-2 text-map-text tracking-[-0.5px] font-display">
-            Trending Destinations
-          </h2>
-          <p className="text-map-muted font-body">
-            Handpicked for the season. Tap to compare operators.
-          </p>
-        </div>
 
-        {/* Scroll container */}
-        <div ref={sectionRef} className="relative">
-          {/* Left nav button */}
-          <button
-            onClick={() => scroll("left")}
-            aria-label="Scroll left"
-            className={`absolute left-0 top-[45%] -translate-y-1/2 -translate-x-4 z-10 w-12 h-12 rounded-2xl bg-white shadow-card-hover border border-map-border flex items-center justify-center cursor-pointer transition-all duration-200 hover:bg-compass-blue hover:border-compass-blue hover:shadow-blue-md group/btn ${
-              canScrollLeft
-                ? "opacity-100 pointer-events-auto"
-                : "opacity-0 pointer-events-none"
-            }`}
-          >
-            <ChevronLeft
-              size={20}
-              className="text-map-muted group-hover/btn:text-white transition-colors"
-            />
-          </button>
+    <>
+    <section className="relative w-full max-w-6xl mx-auto py-6 sm:py-12">
+      <div className="flex items-center gap-6">
+        <p className="text-xs text-map-muted font-body flex-shrink-0 max-w-[190px] leading-snug hidden sm:block">
+          Partnering with trusted travel operators across India
+        </p>
 
-          {/* Scroll row */}
-          <div
-            ref={scrollRef}
-            className="flex gap-5 overflow-x-auto overflow-y-visible scrollbar-hide pb-4 px-1 snap-x snap-mandatory scroll-smooth"
-            onScroll={updateScrollState}
-          >
-            {destinations.map((dest, index) => (
+        <div className="relative flex-1 overflow-hidden">
+          <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-white to-transparent z-10 pointer-events-none" />
+          <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none" />
+          <div className="marquee-track" style={{ animationDuration: "30s" }}>
+            {[...COMPANY_LOGOS, ...COMPANY_LOGOS].map((logo, i) => (
               <div
-                key={dest.id}
-                className={`flex-shrink-0 snap-start transition-all duration-700 ease-out ${
-                  inView
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-0 translate-y-12"
-                } ${STAGGER_DELAYS[index] ?? "delay-0"}`}
+                key={i}
+                className="flex-shrink-0 mx-3 flex items-center gap-2.5 px-4 py-2 rounded-xl border border-map-border bg-white shadow-card"
               >
-                <Link
-                  href={`/search?destination=${encodeURIComponent(dest.name)}`}
-                  className="relative block w-[260px] sm:w-[280px] h-[340px] sm:h-[380px] rounded-3xl overflow-hidden cursor-pointer group shadow-card transition-all duration-500 hover:shadow-blue-lg hover:scale-[1.03] hover:-translate-y-2"
+                <div
+                  className="w-9 h-9 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0"
+                  style={{
+                    background: logo.bg,
+                    color: logo.color,
+                    border: `1.5px solid ${logo.color}30`,
+                  }}
                 >
-                  {/* Layer 1 — Full bleed image */}
-                  <Image
-                    src={dest.image}
-                    alt={dest.name}
-                    fill
-                    sizes="(max-width:768px) 100vw, 280px"
-                    className="object-cover transition-transform duration-700 group-hover:scale-110"
-                  />
-
-                  {/* Layer 2 — Gradient overlays */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-                  <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent" />
-                  <div className="absolute inset-0 bg-compass-blue/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-
-                  {/* Layer 3 — Top content: category + best time badges */}
-                  <div className="absolute top-0 left-0 right-0 p-4 flex items-start justify-between z-10">
-                    <span className="bg-white/15 backdrop-blur-md border border-white/20 rounded-full px-3 py-1 text-white text-xs font-semibold font-body">
-                      {CATEGORY_EMOJI[dest.category] ?? ""} {dest.category}
-                    </span>
-                    <span className="bg-black/40 backdrop-blur-md rounded-full px-3 py-1 text-white/90 text-xs font-body">
-                      {dest.bestTime}
-                    </span>
-                  </div>
-
-                  {/* Layer 6 — Favourite button (hover-reveal, decorative) */}
-                  <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/30 backdrop-blur-sm border border-white/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white/20 z-20">
-                    <Heart size={14} className="text-white" />
-                  </div>
-
-                  {/* Layer 4 — Bottom content */}
-                  <div className="absolute bottom-0 left-0 right-0 p-5 z-10">
-                    {/* Operator count row */}
-                    <div className="flex items-center gap-2 mb-3">
-                      <span
-                        className="text-white text-xs font-bold px-3 py-1 rounded-full border border-white/20 backdrop-blur-sm"
-                        style={{ background: dest.accentColor }}
-                      >
-                        {dest.operatorCount} Operators Available
-                      </span>
-                    </div>
-
-                    {/* Destination name */}
-                    <h3 className="font-display font-black text-white text-2xl leading-tight mb-1">
-                      {dest.name}
-                    </h3>
-
-                    {/* Region */}
-                    <div className="flex items-center gap-1.5 mb-4">
-                      <MapPin size={12} className="text-white/60" />
-                      <span className="text-white/70 text-xs font-body">
-                        {dest.region}
-                      </span>
-                    </div>
-
-                    {/* Expanding divider line */}
-                    <div
-                      className="h-0.5 mb-4 w-8 group-hover:w-16 transition-all duration-500 rounded-full"
-                      style={{ background: dest.accentColor }}
-                    />
-
-                    {/* Price + CTA */}
-                    <div className="flex items-center justify-between">
-                      <div className="flex flex-col">
-                        <span className="text-white/50 text-[10px] uppercase tracking-widest font-body">
-                          from
-                        </span>
-                        <span className="text-white font-black font-display text-xl">
-                          {formatPrice(dest.avgPrice)}
-                        </span>
-                      </div>
-                      <div className="bg-white/15 backdrop-blur-sm border border-white/30 rounded-full px-4 py-2 text-white text-xs font-semibold font-body flex items-center gap-1.5 transition-all duration-300 group-hover:bg-compass-blue group-hover:border-compass-blue">
-                        Explore <ArrowRight size={12} />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Layer 5 — Hover reveal panel (slides up) */}
-                  <div
-                    className="absolute bottom-0 left-0 right-0 p-5 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out z-20"
-                    style={{
-                      background: `linear-gradient(to top, ${dest.accentColor}, ${dest.accentColor}cc)`,
-                    }}
-                  >
-                    <p className="text-white/60 text-[10px] uppercase tracking-widest mb-3">
-                      Quick facts
-                    </p>
-                    <div className="grid grid-cols-3 gap-2">
-                      <div className="text-center">
-                        <p className="text-white font-bold font-display text-base">
-                          {dest.avgDuration}
-                        </p>
-                        <p className="text-white/60 text-[10px] font-body">
-                          Avg Duration
-                        </p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-white font-bold font-display text-base">
-                          {dest.difficulty}
-                        </p>
-                        <p className="text-white/60 text-[10px] font-body">
-                          Difficulty
-                        </p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-white font-bold font-display text-base">
-                          {dest.bestTime.split("–")[0].trim()}
-                        </p>
-                        <p className="text-white/60 text-[10px] font-body">
-                          Best Time
-                        </p>
-                      </div>
-                    </div>
-                    <div className="my-3 border-t border-white/20" />
-                    <div className="w-full bg-white text-compass-blue rounded-xl py-2.5 text-sm font-bold text-center hover:bg-compass-light transition-colors">
-                      View All Operators →
-                    </div>
-                  </div>
-                </Link>
+                  {logo.abbr}
+                </div>
+                <span className="text-sm font-semibold text-map-text font-body whitespace-nowrap">
+                  {logo.name}
+                </span>
               </div>
             ))}
           </div>
-
-          {/* Right nav button */}
-          <button
-            onClick={() => scroll("right")}
-            aria-label="Scroll right"
-            className={`absolute right-0 top-[45%] -translate-y-1/2 translate-x-4 z-10 w-12 h-12 rounded-2xl bg-white shadow-card-hover border border-map-border flex items-center justify-center cursor-pointer transition-all duration-200 hover:bg-compass-blue hover:border-compass-blue hover:shadow-blue-md group/btn ${
-              canScrollRight
-                ? "opacity-100 pointer-events-auto"
-                : "opacity-0 pointer-events-none"
-            }`}
-          >
-            <ChevronRight
-              size={20}
-              className="text-map-muted group-hover/btn:text-white transition-colors"
-            />
-          </button>
-        </div>
-
-        {/* Scroll indicator dots */}
-        <div className="flex items-center justify-center gap-2 mt-6">
-          {destinations.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => scrollToCard(i)}
-              aria-label={`Go to destination ${i + 1}`}
-              className={`rounded-full transition-all duration-300 ${
-                i === activeIndex
-                  ? "w-6 h-2 bg-compass-blue"
-                  : "w-2 h-2 bg-map-border hover:bg-map-muted"
-              }`}
-            />
-          ))}
         </div>
       </div>
     </section>
+
+
+
+
+    {/* ── Main destinations section ── */}
+
+    <section
+      className="overflow-hidden"
+      style={{ background: "linear-gradient(145deg,#ffffff 0%,#fff5f8 50%,#f3eeff 100%)" }}
+    >
+      <div ref={sectionRef} className="max-w-6xl mx-auto py-6 sm:py-12">
+        <div className="flex flex-col lg:flex-row items-center gap-16 lg:gap-20">
+
+          {/* Left: text content */}
+          <div
+            className={`flex-1 transition-all duration-700 ease-out ${
+              inView ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-12"
+            }`}
+          >
+            <p className="text-rose-pink font-semibold text-xs font-body mb-3 tracking-widest uppercase">
+              Explore
+            </p>
+            <h2 className="text-[3rem] sm:text-[3.5rem] font-black text-map-text leading-[1.05] font-display mb-5">
+              Popular
+              <br />
+              Destinations
+            </h2>
+            <p className="text-map-muted font-body leading-relaxed mb-8 max-w-sm text-[0.9375rem]">
+              Discover destinations, compare verified tour operators
+              side-by-side, and book trips transparently —{" "}
+              <strong className="text-map-text font-semibold">all in one place!</strong>
+            </p>
+            <Link
+              href="/destinations"
+              className="inline-flex items-center gap-2 bg-rose-pink text-white font-semibold text-sm px-6 py-3 rounded-full transition-all duration-200 hover:opacity-90 hover:-translate-y-0.5 shadow-md hover:shadow-lg"
+            >
+              Explore all Destinations <ArrowUpRight size={16} />
+            </Link>
+          </div>
+
+          {/* Right: stacked card fan */}
+          <div
+            className={`flex-1 flex flex-col items-center gap-5 transition-all duration-700 ease-out ${
+              inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+            }`}
+            style={{ transitionDelay: inView ? "200ms" : "0ms" }}
+          >
+            {/* Card fan */}
+            <div
+              className="relative overflow-x-auto sm:overflow-visible pb-1 w-full"
+              style={{ maxWidth: `${CONTAINER_W + 20}px` }}
+            >
+              <div
+                className="relative mx-auto"
+                style={{ width: `${CONTAINER_W}px`, height: `${CARD_H}px` }}
+              >
+                {visibleDests.map((dest, idx) => {
+                  const slot =
+                    (idx - activeCard + visibleDests.length) % visibleDests.length;
+                  if (slot >= SLOT_LEFTS.length) return null;
+
+                  const left = SLOT_LEFTS[slot];
+                  const zIndex = 10 - slot;
+                  const isActive = slot === 0;
+
+                  return (
+                    <button
+                      key={dest.id}
+                      onClick={() => setActiveCard(idx)}
+                      className="absolute top-0 rounded-3xl overflow-hidden cursor-pointer transition-all duration-500 ease-out focus:outline-none group/card"
+                      style={{ left, width: CARD_W, height: CARD_H, zIndex }}
+                    >
+                      {/* Destination image */}
+                      <Image
+                        src={dest.image}
+                        alt={dest.name}
+                        fill
+                        sizes="280px"
+                        className="object-cover transition-transform duration-700 group-hover/card:scale-105"
+                      />
+
+                      {/* Gradient overlay */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-black/15" />
+
+                      {/* Active card details */}
+                      {isActive && (
+                        <>
+                          {/* Rating badge */}
+                          <div className="absolute top-4 left-4 bg-white rounded-full px-3 py-1.5 flex items-center gap-1.5 shadow-lg">
+                            <Star size={12} className="text-yellow-400 fill-yellow-400" />
+                            <span className="text-xs font-bold text-map-text">4.2</span>
+                          </div>
+
+                          {/* Bottom content */}
+                          <div className="absolute bottom-0 left-0 right-0 p-5 text-left">
+                            <h3 className="font-display font-black text-white text-2xl leading-tight mb-0.5">
+                              {dest.name}
+                            </h3>
+                            <div className="flex items-center gap-1 mb-2">
+                              <MapPin size={11} className="text-white/60" />
+                              <span className="text-white/70 text-xs font-body">
+                                {dest.region}
+                              </span>
+                            </div>
+                            <p className="text-white/50 text-[11px] font-body mb-3 line-clamp-2 leading-relaxed">
+                              {dest.description}
+                            </p>
+                            <div className="h-px bg-white/15 mb-3" />
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="text-white/50 text-[10px] uppercase tracking-widest font-body">
+                                  From
+                                </p>
+                                <p className="text-white font-black font-display text-xl">
+                                  {formatPrice(dest.avgPrice)}
+                                </p>
+                              </div>
+                              <div className="w-10 h-10 rounded-2xl bg-white/15 border border-white/30 backdrop-blur-sm flex items-center justify-center transition-colors hover:bg-rose-pink hover:border-rose-pink">
+                                <ArrowUpRight size={18} className="text-white" />
+                              </div>
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Dot indicators */}
+            <div className="flex items-center gap-2">
+              {visibleDests.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActiveCard(i)}
+                  aria-label={`Go to destination ${i + 1}`}
+                  className={`rounded-full transition-all duration-300 ${
+                    i === activeCard
+                      ? "w-6 h-2 bg-rose-pink"
+                      : "w-2 h-2 bg-map-border hover:bg-map-muted"
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    </>
   );
 }
