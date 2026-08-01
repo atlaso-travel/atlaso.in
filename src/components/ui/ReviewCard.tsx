@@ -27,7 +27,7 @@ export default function ReviewCard({
         className
       )}
     >
-      <div className="text-6xl font-serif leading-none mb-2 text-compass-blue/20">
+      <div className="text-5xl sm:text-6xl font-serif leading-none mb-2 text-compass-blue/20">
         &ldquo;
       </div>
       <p className="italic text-sm leading-relaxed mb-4 text-map-muted font-body">

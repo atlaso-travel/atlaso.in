@@ -1,16 +1,13 @@
-import { Suspense } from "react";
+import type { Metadata } from "next";
 import SavedContent from "@/components/home/SavedContent";
+import { getAllSummaries } from "@/server/catalogue";
 
-export default function SavedPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center bg-[#F5F7FA]">
-          <div className="text-[#64748B] text-sm">Loading saved trips…</div>
-        </div>
-      }
-    >
-      <SavedContent />
-    </Suspense>
-  );
+export const metadata: Metadata = {
+  title: "Saved trips",
+  robots: { index: false, follow: true },
+};
+
+export default async function SavedPage() {
+  const allPackages = await getAllSummaries();
+  return <SavedContent allPackages={allPackages} />;
 }

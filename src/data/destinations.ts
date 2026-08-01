@@ -1,45 +1,123 @@
-export const destinations = [
+/**
+ * Placeholder destination catalogue.
+ *
+ * Shapes mirror the `Destination` model in PLAN.md. Slugs are unchanged from the
+ * original file, so every existing /destinations/[slug] URL still resolves —
+ * `jaisalmer` is the only addition.
+ *
+ * `operatorCount`, `tripCount`, `packageCount`, `avgPrice` and `priceFrom` are
+ * DERIVED from packages.ts. They were previously hand-typed and had drifted a long
+ * way from reality (Coorg claimed 11 operators against a single Coorg package).
+ * `tripCount` now counts real scheduled departures rather than being invented.
+ *
+ * Every photo below was opened and visually verified to depict the destination it
+ * is attached to. The previous set had India Gate (Delhi) on Coorg and a Kashmiri
+ * snow meadow on Meghalaya.
+ */
+
+import { packages, unsplash } from "./packages";
+
+export type MonthStatus = "closed" | "ideal" | "best";
+export type DestinationCategory = "Mountains" | "Forests" | "Adventure" | "Desert";
+
+export interface DestinationExperience {
+  title: string;
+  description: string;
+}
+
+export interface DestinationFaq {
+  question: string;
+  answer: string;
+}
+
+export interface Destination {
+  /* identity */
+  id: string;
+  slug: string;
+  isDemoData: boolean;
+
+  /* presentation */
+  name: string;
+  region: string;
+  state: string;
+  country: string;
+  tagline: string;
+  description: string;
+  image: string;
+  heroImage: string;
+  category: DestinationCategory;
+  accentColor: string;
+
+  /* practical */
+  difficulty: string;
+  bestTime: string;
+  avgDuration: string;
+  avgDurationDays: number;
+  nearestAirport: string;
+  latitude: number;
+  longitude: number;
+  monthStatuses: Record<string, MonthStatus>;
+
+  /* content */
+  highlights: string[];
+  experiences: DestinationExperience[];
+  faqs: DestinationFaq[];
+
+  /* derived from packages.ts */
+  operatorCount: number;
+  packageCount: number;
+  /** Total scheduled departures across every package here. */
+  tripCount: number;
+  /** Mean retail price — what operators charge direct. */
+  avgPrice: number;
+  /** Lowest platform price — what a customer actually pays through Atlaso. */
+  priceFrom: number;
+}
+
+type DestinationSeed = Omit<
+  Destination,
+  | "slug"
+  | "isDemoData"
+  | "operatorCount"
+  | "packageCount"
+  | "tripCount"
+  | "avgPrice"
+  | "priceFrom"
+>;
+
+const destinationSeeds: DestinationSeed[] = [
   {
     id: "spiti-valley",
     name: "Spiti Valley",
     region: "Himachal Pradesh",
+    state: "Himachal Pradesh",
+    country: "India",
     tagline: "Cold Desert Mountain Valley",
-    image: "https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?w=800&q=80",
-    heroImage: "https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?w=1600&q=80",
-    avgPrice: 12499,
+    image: unsplash("1653844573020-71f77a0ccb8c"),
+    heroImage: unsplash("1653844573020-71f77a0ccb8c", 1600),
+    category: "Mountains",
+    accentColor: "#FF5A5F",
     difficulty: "Moderate",
     bestTime: "Jun – Sep",
     avgDuration: "7 Days",
-    operatorCount: 12,
-    tripCount: 48,
-    category: "Mountains" as const,
-    accentColor: "#FF5A5F",
+    avgDurationDays: 7,
+    nearestAirport: "Bhuntar (KUU), 245 km",
+    latitude: 32.2464,
+    longitude: 78.0349,
     highlights: ["Key Monastery", "Chandratal Lake", "Kaza", "Kibber"],
     description:
       "A cold desert mountain valley nestled high in the Himalayas of Himachal Pradesh. Known for its raw, unspoiled beauty, ancient monasteries, and adventure opportunities.",
     experiences: [
-      {
-        title: "Key Monastery",
-        description: "The iconic cliff-top monastery dating back to the 11th century.",
-      },
-      {
-        title: "Chandratal Lake",
-        description: "A glacial crescent-shaped lake at 4,300m — absolutely breathtaking.",
-      },
-      {
-        title: "Snow Leopard Spotting",
-        description: "Kibber is one of the best places in the world to spot snow leopards.",
-      },
-      {
-        title: "Cycling Expeditions",
-        description: "Some of the world's highest motorable roads, perfect for cycling enthusiasts.",
-      },
+      { title: "Key Monastery", description: "The iconic cliff-top monastery dating back to the 11th century." },
+      { title: "Chandratal Lake", description: "A glacial crescent-shaped lake at 4,300m — absolutely breathtaking." },
+      { title: "Snow Leopard Spotting", description: "Kibber is one of the best places in the world to spot snow leopards." },
+      { title: "Cycling Expeditions", description: "Some of the world's highest motorable roads, perfect for cycling enthusiasts." },
     ],
     monthStatuses: {
       jan: "closed", feb: "closed", mar: "closed", apr: "closed",
       may: "closed", jun: "ideal", jul: "ideal", aug: "best",
       sep: "ideal", oct: "closed", nov: "closed", dec: "closed",
-    } as Record<string, "closed" | "ideal" | "best">,
+    },
     faqs: [
       {
         question: "When is the best time to visit Spiti Valley?",
@@ -66,44 +144,35 @@ export const destinations = [
   {
     id: "leh-ladakh",
     name: "Leh Ladakh",
-    region: "Jammu & Kashmir",
+    region: "Ladakh",
+    state: "Ladakh",
+    country: "India",
     tagline: "Land of High Passes",
-    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
-    heroImage: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&q=80",
-    avgPrice: 18999,
+    image: unsplash("1635255506105-b74adbd94026"),
+    heroImage: unsplash("1635255506105-b74adbd94026", 1600),
+    category: "Mountains",
+    accentColor: "#7C3AED",
     difficulty: "Moderate",
     bestTime: "Jun – Sep",
     avgDuration: "8 Days",
-    operatorCount: 22,
-    tripCount: 65,
-    category: "Mountains" as const,
-    accentColor: "#7C3AED",
+    avgDurationDays: 8,
+    nearestAirport: "Leh Kushok Bakula Rimpochee (IXL)",
+    latitude: 34.1526,
+    longitude: 77.5771,
     highlights: ["Pangong Lake", "Nubra Valley", "Khardung La", "Magnetic Hill"],
     description:
       "The jewel of the Indian Himalayas. Dramatic landscapes, high altitude passes, crystal clear lakes and Buddhist monasteries perched on cliffsides.",
     experiences: [
-      {
-        title: "Pangong Lake",
-        description: "The stunning blue lake stretching across India and China at 4,350m altitude.",
-      },
-      {
-        title: "Nubra Valley",
-        description: "A high-altitude desert with double-humped Bactrian camels and sand dunes.",
-      },
-      {
-        title: "Khardung La Pass",
-        description: "One of the highest motorable roads in the world at 5,359m above sea level.",
-      },
-      {
-        title: "Magnetic Hill",
-        description: "A fascinating optical illusion where vehicles appear to move uphill on their own.",
-      },
+      { title: "Pangong Lake", description: "The stunning blue lake stretching across India and China at 4,350m altitude." },
+      { title: "Nubra Valley", description: "A high-altitude desert with double-humped Bactrian camels and sand dunes." },
+      { title: "Khardung La Pass", description: "One of the highest motorable roads in the world at 5,359m above sea level." },
+      { title: "Magnetic Hill", description: "A fascinating optical illusion where vehicles appear to move uphill on their own." },
     ],
     monthStatuses: {
       jan: "closed", feb: "closed", mar: "closed", apr: "closed",
       may: "closed", jun: "ideal", jul: "best", aug: "ideal",
       sep: "ideal", oct: "closed", nov: "closed", dec: "closed",
-    } as Record<string, "closed" | "ideal" | "best">,
+    },
     faqs: [
       {
         question: "When is the best time to visit Leh Ladakh?",
@@ -131,43 +200,34 @@ export const destinations = [
     id: "meghalaya",
     name: "Meghalaya",
     region: "Northeast India",
+    state: "Meghalaya",
+    country: "India",
     tagline: "Abode of Clouds",
-    image: "https://images.unsplash.com/photo-1598091383021-15ddea10925d?w=800&q=80",
-    heroImage: "https://images.unsplash.com/photo-1598091383021-15ddea10925d?w=1600&q=80",
-    avgPrice: 9999,
+    image: unsplash("1593813738953-fb3c93e0769d"),
+    heroImage: unsplash("1593813738953-fb3c93e0769d", 1600),
+    category: "Forests",
+    accentColor: "#16A34A",
     difficulty: "Easy",
     bestTime: "Oct – May",
     avgDuration: "5 Days",
-    operatorCount: 9,
-    tripCount: 32,
-    category: "Forests" as const,
-    accentColor: "#16A34A",
+    avgDurationDays: 5,
+    nearestAirport: "Guwahati (GAU), 125 km",
+    latitude: 25.467,
+    longitude: 91.3662,
     highlights: ["Living Root Bridges", "Dawki River", "Cherrapunji", "Mawlynnong"],
     description:
       "India's greenest state. Famous for living root bridges, the cleanest village in Asia, crystal clear rivers, and some of the highest rainfall on earth.",
     experiences: [
-      {
-        title: "Living Root Bridges",
-        description: "Ancient bridges grown from rubber tree roots over centuries by the Khasi people.",
-      },
-      {
-        title: "Dawki River",
-        description: "Crystal-clear river on the India-Bangladesh border where boats appear to float on air.",
-      },
-      {
-        title: "Cherrapunji Waterfalls",
-        description: "Home to some of the world's most spectacular waterfalls including Nohkalikai.",
-      },
-      {
-        title: "Mawlynnong Village",
-        description: "Asia's cleanest village — a model of community-led eco-tourism.",
-      },
+      { title: "Living Root Bridges", description: "Ancient bridges grown from rubber tree roots over centuries by the Khasi people." },
+      { title: "Dawki River", description: "Crystal-clear river on the India-Bangladesh border where boats appear to float on air." },
+      { title: "Cherrapunji Waterfalls", description: "Home to some of the world's most spectacular waterfalls including Nohkalikai." },
+      { title: "Mawlynnong Village", description: "Asia's cleanest village — a model of community-led eco-tourism." },
     ],
     monthStatuses: {
       jan: "ideal", feb: "ideal", mar: "best", apr: "ideal",
       may: "ideal", jun: "closed", jul: "closed", aug: "closed",
       sep: "closed", oct: "ideal", nov: "ideal", dec: "ideal",
-    } as Record<string, "closed" | "ideal" | "best">,
+    },
     faqs: [
       {
         question: "When is the best time to visit Meghalaya?",
@@ -195,43 +255,34 @@ export const destinations = [
     id: "coorg",
     name: "Coorg",
     region: "Karnataka",
+    state: "Karnataka",
+    country: "India",
     tagline: "Scotland of India",
-    image: "https://images.unsplash.com/photo-1587474260584-136574528ed5?w=800&q=80",
-    heroImage: "https://images.unsplash.com/photo-1587474260584-136574528ed5?w=1600&q=80",
-    avgPrice: 7999,
+    image: unsplash("1599922760936-e840fa373d8d"),
+    heroImage: unsplash("1599922760936-e840fa373d8d", 1600),
+    category: "Forests",
+    accentColor: "#F97316",
     difficulty: "Easy",
     bestTime: "Oct – Mar",
     avgDuration: "4 Days",
-    operatorCount: 11,
-    tripCount: 28,
-    category: "Forests" as const,
-    accentColor: "#F97316",
+    avgDurationDays: 4,
+    nearestAirport: "Mangaluru (IXE), 135 km",
+    latitude: 12.3375,
+    longitude: 75.8069,
     highlights: ["Coffee Plantations", "Abbey Falls", "Raja's Seat", "Namdroling Monastery"],
     description:
       "Rolling hills covered in coffee and spice plantations, misty forests, and cascading waterfalls. The perfect escape from city life.",
     experiences: [
-      {
-        title: "Coffee Plantation Walk",
-        description: "Walk through aromatic coffee and cardamom estates and learn about the harvest process.",
-      },
-      {
-        title: "Abbey Falls",
-        description: "A stunning 70ft waterfall surrounded by lush green coffee plantations.",
-      },
-      {
-        title: "Raja's Seat",
-        description: "A scenic garden with a breathtaking sunset view, favoured by the kings of Kodagu.",
-      },
-      {
-        title: "Namdroling Monastery",
-        description: "The Golden Temple — one of the largest Nyingmapa teaching centres outside Tibet.",
-      },
+      { title: "Coffee Plantation Walk", description: "Walk through aromatic coffee and cardamom estates and learn about the harvest process." },
+      { title: "Abbey Falls", description: "A stunning 70ft waterfall surrounded by lush green coffee plantations." },
+      { title: "Raja's Seat", description: "A scenic garden with a breathtaking sunset view, favoured by the kings of Kodagu." },
+      { title: "Namdroling Monastery", description: "The Golden Temple — one of the largest Nyingmapa teaching centres outside Tibet." },
     ],
     monthStatuses: {
       jan: "ideal", feb: "ideal", mar: "ideal", apr: "closed",
       may: "closed", jun: "closed", jul: "closed", aug: "closed",
       sep: "closed", oct: "ideal", nov: "ideal", dec: "best",
-    } as Record<string, "closed" | "ideal" | "best">,
+    },
     faqs: [
       {
         question: "When is the best time to visit Coorg?",
@@ -259,43 +310,34 @@ export const destinations = [
     id: "rishikesh",
     name: "Rishikesh",
     region: "Uttarakhand",
+    state: "Uttarakhand",
+    country: "India",
     tagline: "Adventure Capital of India",
-    image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
-    heroImage: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600&q=80",
-    avgPrice: 6499,
+    image: unsplash("1720819029162-8500607ae232"),
+    heroImage: unsplash("1720819029162-8500607ae232", 1600),
+    category: "Adventure",
+    accentColor: "#0891B2",
     difficulty: "Easy",
     bestTime: "Sep – Jun",
     avgDuration: "3 Days",
-    operatorCount: 18,
-    tripCount: 75,
-    category: "Adventure" as const,
-    accentColor: "#0891B2",
+    avgDurationDays: 3,
+    nearestAirport: "Jolly Grant, Dehradun (DED), 35 km",
+    latitude: 30.0869,
+    longitude: 78.2676,
     highlights: ["River Rafting", "Bungee Jumping", "Laxman Jhula", "Beatles Ashram"],
     description:
       "Where the Ganges meets adventure. World-class white water rafting, bungee jumping, yoga retreats and spiritual experiences all in one place.",
     experiences: [
-      {
-        title: "White Water Rafting",
-        description: "Tackle Grade 3–5 rapids on the Ganges — India's most thrilling river rafting route.",
-      },
-      {
-        title: "Bungee Jumping",
-        description: "India's highest fixed bungee jump at 83 metres — not for the faint-hearted.",
-      },
-      {
-        title: "Laxman Jhula",
-        description: "The iconic suspension bridge across the Ganges with stunning Himalayan views.",
-      },
-      {
-        title: "Beatles Ashram",
-        description: "The legendary ashram where The Beatles stayed in 1968 to study Transcendental Meditation.",
-      },
+      { title: "White Water Rafting", description: "Tackle Grade 3–5 rapids on the Ganges — India's most thrilling river rafting route." },
+      { title: "Bungee Jumping", description: "India's highest fixed bungee jump at 83 metres — not for the faint-hearted." },
+      { title: "Laxman Jhula", description: "The iconic suspension bridge across the Ganges with stunning Himalayan views." },
+      { title: "Beatles Ashram", description: "The legendary ashram where The Beatles stayed in 1968 to study Transcendental Meditation." },
     ],
     monthStatuses: {
       jan: "ideal", feb: "ideal", mar: "best", apr: "ideal",
       may: "ideal", jun: "ideal", jul: "closed", aug: "closed",
       sep: "ideal", oct: "ideal", nov: "ideal", dec: "ideal",
-    } as Record<string, "closed" | "ideal" | "best">,
+    },
     faqs: [
       {
         question: "When is the best time to visit Rishikesh?",
@@ -319,6 +361,86 @@ export const destinations = [
       },
     ],
   },
+  {
+    id: "jaisalmer",
+    name: "Jaisalmer",
+    region: "Rajasthan",
+    state: "Rajasthan",
+    country: "India",
+    tagline: "The Golden City",
+    image: unsplash("1713349881676-594b95a5742b"),
+    heroImage: unsplash("1713349881676-594b95a5742b", 1600),
+    category: "Desert",
+    accentColor: "#D97706",
+    difficulty: "Easy",
+    bestTime: "Oct – Mar",
+    avgDuration: "4 Days",
+    avgDurationDays: 4,
+    nearestAirport: "Jaisalmer (JSA), 17 km",
+    latitude: 26.9157,
+    longitude: 70.9083,
+    highlights: ["Jaisalmer Fort", "Sam Sand Dunes", "Patwon Ki Haveli", "Gadisar Lake"],
+    description:
+      "A sandstone city rising straight out of the Thar Desert. One of the world's few living forts, carved havelis, camel expeditions across the dunes and some of the darkest night skies in India.",
+    experiences: [
+      { title: "Sonar Quila", description: "A 12th-century fort where roughly 3,000 people still live inside the walls — not a museum, a neighbourhood." },
+      { title: "Sam Sand Dunes", description: "Camel and jeep safaris over rolling dunes, best at golden hour when the sand turns copper." },
+      { title: "Desert Stargazing", description: "Almost no light pollution once you are an hour out of town. The Milky Way is visible to the naked eye." },
+      { title: "Kuldhara Ruins", description: "An abandoned village left overnight in 1825 and untouched since — eerie and completely quiet." },
+    ],
+    monthStatuses: {
+      jan: "best", feb: "ideal", mar: "ideal", apr: "closed",
+      may: "closed", jun: "closed", jul: "closed", aug: "closed",
+      sep: "closed", oct: "ideal", nov: "ideal", dec: "best",
+    },
+    faqs: [
+      {
+        question: "When is the best time to visit Jaisalmer?",
+        answer:
+          "October to March. December and January are the most comfortable, with daytime temperatures around 22–25°C. Avoid April to September, when the desert regularly passes 45°C.",
+      },
+      {
+        question: "How do I reach Jaisalmer?",
+        answer:
+          "Jaisalmer Airport (17km) has seasonal flights from Delhi and Mumbai between October and March. The overnight train from Delhi or Jodhpur is the more reliable option year-round.",
+      },
+      {
+        question: "Is the Sam desert camp worth it, or is it too touristy?",
+        answer:
+          "Sam is genuinely crowded in peak season. If you want quiet, choose a camp near Khuri or further out — several operators here run private camps an hour beyond the main cluster.",
+      },
+      {
+        question: "How cold does the desert get at night?",
+        answer:
+          "In December and January it can drop to 5°C after dark, occasionally lower. Camps provide blankets, but carry a jacket — the swing from afternoon to midnight is dramatic.",
+      },
+    ],
+  },
 ];
 
-export type Destination = (typeof destinations)[number];
+/* ────────────────────────────────────────────────────────────────────────────
+   Derivation
+   ──────────────────────────────────────────────────────────────────────────── */
+
+export const destinations: Destination[] = destinationSeeds.map((seed) => {
+  const here = packages.filter((p) => p.destinationId === seed.id);
+  const retailPrices = here.map((p) => p.pricing.retailPrice);
+  const platformPrices = here.map((p) => p.pricing.platformPrice);
+
+  return {
+    ...seed,
+    slug: seed.id,
+    isDemoData: true,
+    operatorCount: new Set(here.map((p) => p.operatorId)).size,
+    packageCount: here.length,
+    tripCount: here.reduce((sum, p) => sum + p.departures.length, 0),
+    avgPrice: retailPrices.length
+      ? Math.round(retailPrices.reduce((a, b) => a + b, 0) / retailPrices.length)
+      : 0,
+    priceFrom: platformPrices.length ? Math.min(...platformPrices) : 0,
+  };
+});
+
+export const destinationById: Record<string, Destination> = Object.fromEntries(
+  destinations.map((d) => [d.id, d])
+);

@@ -45,7 +45,7 @@ export default function FAQ() {
               inView ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-10"
             }`}
           >
-            <h2 className="font-display font-black text-4xl text-map-text leading-tight mb-4">
+            <h2 className="font-display font-black text-[26px] sm:text-4xl text-map-text leading-tight mb-4">
               Frequently Asked
               <br />
               Questions

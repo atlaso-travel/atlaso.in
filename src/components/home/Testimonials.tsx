@@ -249,11 +249,11 @@ export default function Testimonials() {
         <span className="text-xs font-semibold tracking-widest uppercase text-trail-orange font-body block mb-3">
           WHAT TRAVELERS SAY
         </span>
-        <h2 className="font-display font-black text-5xl text-map-text tracking-tight mb-4">
+        <h2 className="font-display font-black text-[28px] sm:text-4xl lg:text-5xl text-map-text tracking-tight mb-4">
           Loved by adventurers
         </h2>
         <div className="flex items-center justify-center gap-3 mb-4">
-          <span className="text-5xl font-black font-display text-compass-blue leading-none">
+          <span className="text-4xl sm:text-5xl font-black font-display text-compass-blue leading-none">
             4.9
           </span>
           <span className="text-2xl text-map-muted font-body">/5.0</span>

@@ -95,7 +95,8 @@ export default function ComparisonPreview() {
             }`}
           >
             {/* Comparison table card */}
-            <div className="rounded-3xl overflow-hidden bg-[#12122a] border border-white/10 flex-1">
+            <div className="rounded-3xl overflow-x-auto bg-[#12122a] border border-white/10 flex-1">
+              <div className="min-w-[440px]">
               {/* Header */}
               <div className="grid grid-cols-6 px-4 py-3 text-[10px] font-semibold text-white/40 font-body border-b border-white/10">
                 <span>Operator</span>
@@ -149,6 +150,7 @@ export default function ComparisonPreview() {
                   </span>
                 </div>
               ))}
+              </div>
             </div>
 
             {/* Destination preview card */}

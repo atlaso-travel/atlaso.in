@@ -6,7 +6,20 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: ["/"],
-        disallow: ["/api/", "/search?", "/_next/"],
+        disallow: [
+          "/api/",
+          "/_next/",
+          // Parameterised or private customer surfaces.
+          "/search?",
+          "/compare",
+          "/book/",
+          "/booking/",
+          "/saved",
+          "/comparisons",
+          // Internal — operator portal and admin panel.
+          "/operator",
+          "/admin",
+        ],
       },
     ],
     sitemap: "https://www.atlaso.in/sitemap.xml",

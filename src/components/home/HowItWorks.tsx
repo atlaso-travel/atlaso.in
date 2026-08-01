@@ -36,7 +36,8 @@ function CompareVisual() {
   ];
 
   return (
-    <div className="mt-6 rounded-2xl overflow-hidden border border-white/10">
+    <div className="mt-6 rounded-2xl overflow-x-auto border border-white/10">
+      <div className="min-w-[420px]">
       {/* Header */}
       <div className="grid grid-cols-6 bg-white/5 px-3 py-2 text-[10px] font-semibold text-white/40 font-body">
         <span>Operator</span>
@@ -62,6 +63,7 @@ function CompareVisual() {
           </span>
         </div>
       ))}
+      </div>
     </div>
   );
 }
@@ -105,7 +107,7 @@ export default function HowItWorks() {
 
           {/* Card 1 — Step 1, light pink */}
           <div className="relative rounded-3xl bg-rose-light border border-rose-pink/10 p-8 overflow-hidden">
-            <span className="absolute bottom-4 right-6 font-black font-display text-[120px] leading-none text-rose-pink/[0.08] select-none pointer-events-none">
+            <span className="absolute bottom-4 right-6 font-black font-display text-[64px] sm:text-[120px] leading-none text-rose-pink/[0.08] select-none pointer-events-none">
               Step 1
             </span>
             <p className="text-rose-pink text-sm font-semibold mb-3 font-body">Step 1</p>
@@ -120,7 +122,7 @@ export default function HowItWorks() {
 
           {/* Card 2 — Step 2, dark maroon */}
           <div className="relative rounded-3xl bg-maroon-dark border border-white/5 p-8 overflow-hidden">
-            <span className="absolute bottom-4 right-6 font-black font-display text-[120px] leading-none text-white/[0.05] select-none pointer-events-none">
+            <span className="absolute bottom-4 right-6 font-black font-display text-[64px] sm:text-[120px] leading-none text-white/[0.05] select-none pointer-events-none">
               Step 2
             </span>
             <p className="text-rose-pink text-sm font-semibold mb-3 font-body">Step 2</p>
@@ -135,7 +137,7 @@ export default function HowItWorks() {
 
           {/* Card 3 — Step 3, dark maroon */}
           <div className="relative rounded-3xl bg-maroon-dark border border-white/5 p-8 overflow-hidden">
-            <span className="absolute bottom-4 right-6 font-black font-display text-[120px] leading-none text-white/[0.05] select-none pointer-events-none">
+            <span className="absolute bottom-4 right-6 font-black font-display text-[64px] sm:text-[120px] leading-none text-white/[0.05] select-none pointer-events-none">
               Step 3
             </span>
             <p className="text-rose-pink text-sm font-semibold mb-3 font-body">Step 3</p>
@@ -150,7 +152,7 @@ export default function HowItWorks() {
 
           {/* Card 4 — Step 4, light pink */}
           <div className="relative rounded-3xl bg-rose-light border border-rose-pink/10 p-8 overflow-hidden flex flex-col justify-between">
-            <span className="absolute bottom-4 right-6 font-black font-display text-[120px] leading-none text-rose-pink/[0.08] select-none pointer-events-none">
+            <span className="absolute bottom-4 right-6 font-black font-display text-[64px] sm:text-[120px] leading-none text-rose-pink/[0.08] select-none pointer-events-none">
               Step 4
             </span>
             <div>
