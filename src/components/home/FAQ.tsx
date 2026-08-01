@@ -3,29 +3,9 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useInView } from "@/hooks/useIntersectionObserver";
+import { siteFaqs } from "@/data/faqs";
 
-const FAQS = [
-  {
-    q: "How does Atlaso verify tour operators?",
-    a: "Atlaso vets every operator through a multi-step process covering licensing, customer reviews, pricing transparency, and past traveler feedback. Only operators who meet our quality and reliability standards are listed on the platform.",
-  },
-  {
-    q: "Can I compare multiple operators at once?",
-    a: "Yes! Atlaso lets you add up to 4 operators side-by-side and compare pricing, inclusions, stay details, cancellation policies, meal plans, and ratings — all in one transparent view.",
-  },
-  {
-    q: "Is booking directly through Atlaso safe?",
-    a: "Absolutely. All bookings are processed securely and every operator listed on Atlaso is verified for credibility. You'll always know exactly what's included before you pay — no hidden charges, ever.",
-  },
-  {
-    q: "What destinations are covered on Atlaso?",
-    a: "We currently cover popular destinations across India including Spiti Valley, Leh Ladakh, Meghalaya, Coorg, Andaman, and Rajasthan. We're continuously adding new destinations based on traveler demand.",
-  },
-  {
-    q: "How is Atlaso different from other travel platforms?",
-    a: "Unlike platforms that list every operator and overwhelm you with options, Atlaso shortlists only verified operators and lets you compare them transparently. We help you make informed decisions — not just show you more choices.",
-  },
-];
+const FAQS = siteFaqs.map((f) => ({ q: f.question, a: f.answer }));
 
 export default function FAQ() {
   const [openIndex, setOpenIndex] = useState(0);

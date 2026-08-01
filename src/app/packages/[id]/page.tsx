@@ -10,10 +10,18 @@ import BookingCta from "@/components/package/BookingCta";
 import TrustRow from "@/components/ui/TrustRow";
 import VerifiedBadge from "@/components/ui/VerifiedBadge";
 import BreadcrumbSchema from "@/components/schema/BreadcrumbSchema";
-import TourSchema from "@/components/schema/TourSchema";
-import { getPackageDetail, getAllPackageSlugs } from "@/server/catalogue";
+import ProductSchema from "@/components/schema/ProductSchema";
+import FaqSchema from "@/components/schema/FaqSchema";
+import FactBlock from "@/components/seo/FactBlock";
+import RelatedPackages from "@/components/package/RelatedPackages";
+import {
+  getPackageDetail,
+  getAllPackageSlugs,
+  getComparisonCandidates,
+} from "@/server/catalogue";
+import { getPackageInsight } from "@/server/insights";
 import { isPaymentsConfigured } from "@/server/razorpay";
-import { formatPrice } from "@/lib/utils";
+import { buildMetadata, clamp, inr } from "@/lib/seo/meta";
 
 /**
  * Server component. Previously this page was "use client" with useParams, which
@@ -35,22 +43,18 @@ export async function generateMetadata({
   const pkg = await getPackageDetail(id);
   if (!pkg) return {};
 
-  const title = `${pkg.title} — ${pkg.duration} with ${pkg.operatorName}`;
-  const description =
-    pkg.price.savings > 0
-      ? `${pkg.summary} Book through Atlaso for ${formatPrice(pkg.price.platformPrice)} per person — ${formatPrice(pkg.price.savings)} below ${pkg.operatorName}'s direct price.`
-      : pkg.summary;
-
-  return {
-    title,
-    description,
-    alternates: { canonical: `/packages/${pkg.slug}` },
-    openGraph: {
-      title,
-      description,
-      images: [{ url: pkg.images[0], width: 1200, height: 630, alt: pkg.title }],
-    },
-  };
+  return buildMetadata({
+    title: clamp(`${pkg.title} — ${pkg.duration} from ${inr(pkg.price.platformPrice)}`, 70),
+    description: clamp(
+      pkg.price.savings > 0
+        ? `${pkg.summary} ${inr(pkg.price.platformPrice)} per person on Atlaso — ${inr(pkg.price.savings)} below ${pkg.operatorName}'s direct price.`
+        : pkg.summary,
+      158
+    ),
+    path: `/packages/${pkg.slug}`,
+    image: pkg.images[0],
+    imageAlt: `${pkg.title} — ${pkg.destinationName}`,
+  });
 }
 
 export default async function PackagePage({
@@ -65,6 +69,46 @@ export default async function PackagePage({
   const paymentsEnabled = isPaymentsConfigured();
   const destinationLabel = pkg.destinationName;
 
+  const [insight, siblings] = await Promise.all([
+    getPackageInsight(pkg.id),
+    getComparisonCandidates(pkg.destinationId, [pkg.id]),
+  ]);
+
+  const openDepartures = pkg.departures.filter((d) => !d.soldOut);
+  const lastDeparture = pkg.departures.at(-1)?.startDate ?? null;
+
+  const faqs = [
+    {
+      question: `How much does ${pkg.title} cost?`,
+      answer:
+        pkg.price.savings > 0
+          ? `${inr(pkg.price.platformPrice)} per person through Atlaso. ${pkg.operatorName} sells the same trip directly for ${inr(pkg.price.retailPrice)}, so you save ${inr(pkg.price.savings)} — ${pkg.price.savingsPct}%.`
+          : `${inr(pkg.price.platformPrice)} per person.`,
+    },
+    {
+      question: `What is included in ${pkg.title}?`,
+      answer: `${pkg.inclusions.slice(0, 6).join("; ")}.${
+        pkg.exclusions.length ? ` Not included: ${pkg.exclusions.slice(0, 4).join("; ")}.` : ""
+      }`,
+    },
+    {
+      question: `Can I cancel ${pkg.title}?`,
+      answer: `${pkg.cancellationPolicy}. ${pkg.cancellationDescription}`,
+    },
+    ...(openDepartures.length
+      ? [
+          {
+            question: `When does ${pkg.title} depart?`,
+            answer: `${openDepartures.length} departures currently have seats, the next on ${new Date(
+              `${openDepartures[0].startDate}T00:00:00Z`
+            ).toLocaleDateString("en-IN", {
+              day: "numeric", month: "long", year: "numeric", timeZone: "UTC",
+            })}. The trip runs ${pkg.duration} starting from ${pkg.pickupPoint}.`,
+          },
+        ]
+      : []),
+  ];
+
   return (
     <>
       <Navbar />
@@ -77,20 +121,34 @@ export default async function PackagePage({
           { label: pkg.title, href: `/packages/${pkg.slug}` },
         ]}
       />
-      <TourSchema
+      {/* Product + TouristTrip with a concrete Offer. TourSchema's AggregateOffer
+          is right for a destination listing many operators; a single bookable
+          package needs an Offer, which is what drives price display in results
+          and what AI shopping features read. */}
+      <ProductSchema
         name={pkg.title}
         description={pkg.summary}
-        destination={destinationLabel}
-        minPrice={pkg.price.platformPrice}
-        maxPrice={pkg.price.platformPrice}
-        durationDays={pkg.durationDays}
+        slug={pkg.slug}
+        images={pkg.images}
+        price={pkg.price.platformPrice}
+        retailPrice={pkg.price.retailPrice}
+        availability={openDepartures.length > 0 ? "InStock" : "SoldOut"}
         operatorName={pkg.operatorName}
-        rating={pkg.trust.rating}
-        reviewCount={pkg.trust.reviewCount}
-        image={pkg.images[0]}
-        url={`https://www.atlaso.in/packages/${pkg.slug}`}
+        operatorSlug={pkg.operatorSlug}
+        destinationName={destinationLabel}
+        durationDays={pkg.durationDays}
+        rating={pkg.packageReviewCount > 0 ? pkg.packageRating : pkg.trust.rating}
+        reviewCount={pkg.packageReviewCount > 0 ? pkg.packageReviewCount : pkg.trust.reviewCount}
         itinerary={pkg.itinerary.map((d) => d.title)}
+        validThrough={lastDeparture}
+        reviews={pkg.reviews.map((r) => ({
+          author: r.name,
+          rating: r.rating,
+          body: r.text,
+          date: r.date,
+        }))}
       />
+      <FaqSchema items={faqs} />
 
       <main className="min-h-screen bg-map-white pb-28 lg:pb-16">
         {/* Breadcrumb */}
@@ -188,9 +246,50 @@ export default async function PackagePage({
               </div>
             )}
 
+            {insight && (
+              <div className="mt-6">
+                <FactBlock
+                  heading={`${pkg.title} at a glance`}
+                  fact={insight.fact}
+                  supporting={insight.supporting}
+                />
+              </div>
+            )}
+
             <div className="mt-7">
               <PackageTabs pkg={pkg} />
             </div>
+
+            {/* Questions people ask, in the DOM rather than only in JSON-LD —
+                an answer engine should be able to read them without parsing
+                structured data. */}
+            <section className="mt-8">
+              <h2 className="font-display font-extrabold text-[20px] text-map-text mb-3">
+                Questions about this trip
+              </h2>
+              <dl className="flex flex-col gap-3">
+                {faqs.map((faq) => (
+                  <div
+                    key={faq.question}
+                    className="rounded-xl border border-map-border bg-map-card px-4 py-3.5"
+                  >
+                    <dt className="font-display font-bold text-[14px] text-map-text">
+                      {faq.question}
+                    </dt>
+                    <dd className="text-[13.5px] text-map-muted font-body leading-relaxed mt-1">
+                      {faq.answer}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+
+            <RelatedPackages
+              current={pkg}
+              siblings={siblings}
+              destinationId={pkg.destinationId}
+              destinationName={destinationLabel}
+            />
           </div>
 
           <BookingCta pkg={pkg} paymentsEnabled={paymentsEnabled} />

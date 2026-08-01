@@ -11,6 +11,9 @@ import { formatPrice } from "@/lib/utils";
 import BreadcrumbSchema from "@/components/schema/BreadcrumbSchema";
 import TourSchema from "@/components/schema/TourSchema";
 import FaqSchema from "@/components/schema/FaqSchema";
+import FactBlock from "@/components/seo/FactBlock";
+import Link from "next/link";
+import { getDestinationInsight } from "@/server/insights";
 
 export function generateStaticParams() {
   return destinations.map((d) => ({ slug: d.id }));
@@ -66,6 +69,7 @@ export default async function DestinationPage({
       ? destPackages.reduce((sum, p) => sum + p.operatorRating, 0) / destPackages.length
       : 4.8;
 
+  const insight = await getDestinationInsight(slug);
   const topPackage = destPackages[0];
   const itinerarySteps: string[] = topPackage
     ? topPackage.itinerary.map((step: { title: string }) => step.title)
@@ -131,6 +135,37 @@ export default async function DestinationPage({
             <span>{dest.operatorCount} Operators</span>
           </div>
         </div>
+      </div>
+
+      {/* Answer-shaped summary + the links into comparison and operator pages.
+          Sits above the tabbed content because the tabs are a client component
+          and only the active tab's text is in the initial HTML. */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-6 flex flex-col gap-4">
+        {insight && (
+          <FactBlock
+            heading={`${dest.name} packages and prices`}
+            fact={insight.fact}
+            supporting={insight.supporting}
+          />
+        )}
+        {insight && (
+          <p className="text-[13.5px] text-map-muted font-body">
+            <Link
+              href={`/compare/${slug}`}
+              className="text-compass-blue font-semibold hover:underline"
+            >
+              Compare all {insight.operatorCount} {dest.name} operators side by side
+            </Link>
+            {" · "}
+            <Link href="/packages" className="text-compass-blue font-semibold hover:underline">
+              Browse every package
+            </Link>
+            {" · "}
+            <Link href="/insights" className="text-compass-blue font-semibold hover:underline">
+              Pricing data by destination
+            </Link>
+          </p>
+        )}
       </div>
 
       {/* ── Tabs + Content ── */}

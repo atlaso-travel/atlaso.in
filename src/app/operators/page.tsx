@@ -1,342 +1,146 @@
-"use client";
+import type { Metadata } from "next";
+import Link from "next/link";
+import { ShieldCheck, Star } from "lucide-react";
+import OperatorPartnerPage from "@/components/operators/OperatorPartnerPage";
+import ItemListSchema from "@/components/schema/ItemListSchema";
+import BreadcrumbSchema from "@/components/schema/BreadcrumbSchema";
+import { buildMetadata, inr } from "@/lib/seo/meta";
+import { getLiveOperators, getLivePackages } from "@/server/overrides";
+import { destinationById } from "@/data/destinations";
 
-import { useState } from "react";
-import { TrendingUp, Users, Star, ShieldCheck, Check } from "lucide-react";
-import Navbar from "@/components/layout/Navbar";
-import Footer from "@/components/layout/Footer";
-import { cn } from "@/lib/utils";
+/** Shared social preview image for pages without an entity photo of their own. */
+const OG_IMAGE =
+  "https://images.unsplash.com/photo-1653844573020-71f77a0ccb8c?w=1200&q=80";
 
-const BENEFITS = [
-  {
-    Icon: TrendingUp,
-    title: "Reach 10,000+ Active Travelers",
-    desc: "Travelers on Atlaso are actively comparing operators and ready to book. Your package appears when they search your destinations.",
-  },
-  {
-    Icon: Star,
-    title: "Build Your Reputation",
-    desc: "Collect verified reviews from real customers. High ratings = more visibility in search results.",
-  },
-  {
-    Icon: Users,
-    title: "No Commission on First 10 Bookings",
-    desc: "Get started for free. We believe in proving value before charging for it.",
-  },
-  {
-    Icon: ShieldCheck,
-    title: "Verified Operator Badge",
-    desc: "After a simple verification process, earn a badge that increases traveler trust and click-through rates by 40%.",
-  },
-];
+/**
+ * This route is the operator-acquisition landing page ("list your packages"),
+ * and it keeps that URL because it may already have traction.
+ *
+ * The directory of listed operators is appended below it rather than given a new
+ * URL. The profiles at /operators/[slug] need a crawlable hub, and inventing
+ * /operators/directory to sit beside an existing /operators would split link
+ * equity between two near-identical paths for no reader benefit. The tradeoff is
+ * a page serving two intents; the heading hierarchy keeps them separate.
+ */
 
-const PLANS = [
-  {
-    name: "Starter",
-    price: "Free",
-    desc: "Perfect for getting started",
-    features: ["List up to 3 packages", "Basic profile page", "Verified badge eligible", "Email support"],
-    cta: "Get Started",
-    highlighted: false,
-  },
-  {
-    name: "Growth",
-    price: "₹2,999",
-    period: "/month",
-    desc: "For growing operators",
-    features: [
-      "Unlimited packages",
-      "Priority search ranking",
-      "Analytics dashboard",
-      "Featured in Top Operators",
-      "WhatsApp support",
-    ],
-    cta: "Start Growth Plan",
-    highlighted: true,
-  },
-  {
-    name: "Pro",
-    price: "₹7,999",
-    period: "/month",
-    desc: "For established operators",
-    features: [
-      "Everything in Growth",
-      "Homepage featured placement",
-      "Custom landing page",
-      "Dedicated account manager",
-      "API integration",
-    ],
-    cta: "Contact Sales",
-    highlighted: false,
-  },
-];
+export async function generateMetadata(): Promise<Metadata> {
+  const operators = getLiveOperators();
+  const verified = operators.filter((o) => o.verified).length;
 
-const INPUT_CLS =
-  "w-full border border-map-border rounded-xl px-4 py-2.5 text-sm outline-none transition-colors text-map-text focus:border-compass-blue";
-
-export default function OperatorsPage() {
-  const [formData, setFormData] = useState({
-    name: "",
-    company: "",
-    email: "",
-    phone: "",
-    destinations: "",
-    message: "",
+  return buildMetadata({
+    title: "Tour Operators on Atlaso — List Your Packages & Browse Verified Operators",
+    description:
+      `Atlaso lists ${operators.length} Indian tour operators, ${verified} of them verified. ` +
+      `Browse operator profiles, ratings and packages — or list your own packages and reach ` +
+      `travellers already comparing trips.`,
+    path: "/operators",
+    image: OG_IMAGE,
+    imageAlt: "Tour operators listed on Atlaso",
   });
+}
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    alert("Thanks! We'll get back to you within 24 hours.");
-  };
+export default async function OperatorsPage() {
+  const operators = getLiveOperators();
+  const packages = getLivePackages().filter((p) => p.status === "ACTIVE");
+
+  const rows = operators
+    .map((operator) => {
+      const own = packages.filter((p) => p.operatorId === operator.id);
+      return {
+        operator,
+        packageCount: own.length,
+        priceFrom: own.length ? Math.min(...own.map((p) => p.pricing.platformPrice)) : null,
+        destinations: [
+          ...new Set(own.map((p) => destinationById[p.destinationId]?.name ?? p.destinationId)),
+        ],
+      };
+    })
+    .sort(
+      (a, b) =>
+        Number(b.operator.verified) - Number(a.operator.verified) ||
+        b.operator.rating - a.operator.rating
+    );
 
   return (
     <>
-      <Navbar />
+      <BreadcrumbSchema
+        crumbs={[
+          { label: "Home", href: "/" },
+          { label: "Operators", href: "/operators" },
+        ]}
+      />
+      <ItemListSchema
+        name="Tour operators listed on Atlaso"
+        items={rows.map((r) => ({
+          name: r.operator.name,
+          path: `/operators/${r.operator.slug}`,
+          description: r.operator.description,
+          ...(r.priceFrom != null ? { price: r.priceFrom } : {}),
+        }))}
+      />
 
-      {/* Hero */}
-      <section className="py-20 text-center relative overflow-hidden bg-atlas-night">
-        <div
-          className="absolute inset-0 opacity-5"
-          style={{
-            backgroundImage: "radial-gradient(circle, rgba(255,90,95,0.8) 1px, transparent 1px)",
-            backgroundSize: "32px 32px",
-          }}
-        />
-        <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6">
-          <h1 className="text-4xl md:text-5xl font-black text-white mb-4 leading-tight font-display">
-            Grow with Atlaso
-          </h1>
-          <p className="text-white/60 text-lg mb-8 max-w-xl mx-auto font-body">
-            List your packages. Reach 10,000+ comparison-ready travelers. Get booked on merit, not ad spend.
+      <OperatorPartnerPage />
+
+      {/* ── Directory: the crawlable hub for operator profiles ── */}
+      <section className="bg-map-white border-t border-map-border">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14">
+          <h2 className="font-display font-black text-[26px] sm:text-[32px] text-map-text tracking-tight">
+            Operators listed on Atlaso
+          </h2>
+          <p className="text-[14px] text-map-muted font-body mt-2 max-w-2xl leading-relaxed">
+            {operators.length} operators, {operators.filter((o) => o.verified).length} verified.
+            Verification means we have checked the operator&apos;s registration, tourism licence
+            and insurance documents.
           </p>
-          <a
-            href="#apply"
-            className="inline-block bg-compass-blue text-white font-bold px-8 py-3.5 rounded-full transition-all hover:scale-105 hover:opacity-90 shadow-lg"
-          >
-            Apply to List Free
-          </a>
-        </div>
-      </section>
 
-      {/* Benefits */}
-      <section className="py-20 bg-map-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <h2 className="text-3xl font-bold text-center mb-12 text-map-text font-display">
-            Why list on Atlaso?
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {BENEFITS.map(({ Icon, title, desc }) => (
-              <div
-                key={title}
-                className="rounded-2xl p-6 border border-map-border bg-white hover:shadow-md hover:-translate-y-1 transition-all duration-300"
-              >
-                <div className="w-12 h-12 rounded-2xl flex items-center justify-center mb-4 bg-compass-light">
-                  <Icon size={24} className="text-compass-blue" />
-                </div>
-                <h3 className="font-bold mb-2 text-map-text font-display">
-                  {title}
-                </h3>
-                <p className="text-sm leading-relaxed text-map-muted font-body">
-                  {desc}
-                </p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing */}
-      <section className="py-20 bg-compass-light">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6">
-          <h2 className="text-3xl font-bold text-center mb-12 text-map-text font-display">
-            Simple, transparent pricing
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {PLANS.map((plan) => (
-              <div
-                key={plan.name}
-                className={cn(
-                  "rounded-2xl p-7",
-                  plan.highlighted
-                    ? "bg-compass-blue shadow-xl scale-105"
-                    : "bg-white border border-map-border"
-                )}
-              >
-                <h3
-                  className={cn(
-                    "font-bold text-lg mb-1 font-display",
-                    plan.highlighted ? "text-white" : "text-map-text"
-                  )}
+          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mt-7">
+            {rows.map(({ operator, packageCount, priceFrom, destinations }) => (
+              <li key={operator.id}>
+                <Link
+                  href={`/operators/${operator.slug}`}
+                  className="flex flex-col h-full rounded-2xl border border-map-border bg-map-card p-4 hover:border-map-border-blue hover:shadow-card-hover transition-all"
                 >
-                  {plan.name}
-                </h3>
-                <p
-                  className={cn(
-                    "text-sm mb-4 font-body",
-                    plan.highlighted ? "text-white/70" : "text-map-muted"
-                  )}
-                >
-                  {plan.desc}
-                </p>
-                <div className="mb-6">
-                  <span
-                    className={cn(
-                      "text-4xl font-black font-display",
-                      plan.highlighted ? "text-white" : "text-compass-blue"
-                    )}
-                  >
-                    {plan.price}
-                  </span>
-                  {plan.period && (
-                    <span
-                      className={cn(
-                        "text-sm font-body",
-                        plan.highlighted ? "text-white/70" : "text-map-muted"
-                      )}
-                    >
-                      {plan.period}
-                    </span>
-                  )}
-                </div>
-                <ul className="space-y-2.5 mb-7">
-                  {plan.features.map((f) => (
-                    <li key={f} className="flex items-center gap-2 text-sm">
-                      <Check
-                        size={14}
-                        className={plan.highlighted ? "text-white" : "text-compass-blue"}
+                  <div className="flex items-start justify-between gap-2">
+                    <h3 className="font-display font-bold text-[15px] text-map-text leading-snug">
+                      {operator.name}
+                    </h3>
+                    {operator.verified && (
+                      <ShieldCheck
+                        size={15}
+                        className="text-summit-green flex-shrink-0 mt-0.5"
+                        aria-label="Verified operator"
                       />
-                      <span
-                        className={plan.highlighted ? "text-white/90" : "text-map-text"}
-                      >
-                        {f}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-                <a
-                  href="#apply"
-                  className={cn(
-                    "block w-full py-3 rounded-xl text-sm font-bold text-center transition-all hover:opacity-90",
-                    plan.highlighted
-                      ? "bg-white text-compass-blue"
-                      : "bg-compass-light text-compass-blue"
-                  )}
-                >
-                  {plan.cta}
-                </a>
-              </div>
+                    )}
+                  </div>
+
+                  <p className="flex items-center gap-1 text-[12.5px] text-map-muted font-body mt-1">
+                    <Star size={12} className="fill-star text-star" />
+                    <span className="tnum font-semibold text-map-text">{operator.rating}</span>
+                    <span className="tnum">({operator.reviewCount})</span>
+                    <span className="mx-1">·</span>
+                    {operator.city}
+                  </p>
+
+                  <p className="text-[12.5px] text-map-muted font-body leading-relaxed mt-2 flex-1">
+                    {operator.description}
+                  </p>
+
+                  <p className="text-[12.5px] text-map-muted font-body mt-3 pt-3 border-t border-map-border">
+                    {packageCount} package{packageCount === 1 ? "" : "s"}
+                    {destinations.length > 0 && ` · ${destinations.join(", ")}`}
+                    {priceFrom != null && (
+                      <>
+                        {" · from "}
+                        <span className="tnum font-bold text-map-text">{inr(priceFrom)}</span>
+                      </>
+                    )}
+                  </p>
+                </Link>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
-
-      {/* Contact form */}
-      <section id="apply" className="py-20 bg-map-white">
-        <div className="max-w-2xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold mb-3 text-map-text font-display">
-              Apply to List Your Packages
-            </h2>
-            <p className="text-map-muted font-body">
-              We&apos;ll review your application and get back within 24 hours.
-            </p>
-          </div>
-
-          <form
-            onSubmit={handleSubmit}
-            className="rounded-2xl p-8 space-y-5 border border-map-border bg-white"
-          >
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div>
-                <label className="block text-sm font-semibold mb-1.5 text-map-text">
-                  Your Name *
-                </label>
-                <input
-                  required
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className={INPUT_CLS}
-                  placeholder="Rajesh Kumar"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold mb-1.5 text-map-text">
-                  Company Name *
-                </label>
-                <input
-                  required
-                  value={formData.company}
-                  onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                  className={INPUT_CLS}
-                  placeholder="Adventure Trails Co"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-              <div>
-                <label className="block text-sm font-semibold mb-1.5 text-map-text">
-                  Email *
-                </label>
-                <input
-                  required
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className={INPUT_CLS}
-                  placeholder="rajesh@adventure.com"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold mb-1.5 text-map-text">
-                  Phone
-                </label>
-                <input
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className={INPUT_CLS}
-                  placeholder="+91 98765 43210"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold mb-1.5 text-map-text">
-                Destinations you cover *
-              </label>
-              <input
-                required
-                value={formData.destinations}
-                onChange={(e) => setFormData({ ...formData, destinations: e.target.value })}
-                className={INPUT_CLS}
-                placeholder="Spiti Valley, Ladakh, Rishikesh..."
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold mb-1.5 text-map-text">
-                Tell us about your business
-              </label>
-              <textarea
-                rows={4}
-                value={formData.message}
-                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                className={`${INPUT_CLS} resize-none`}
-                placeholder="Years in operation, team size, specialties..."
-              />
-            </div>
-
-            <button
-              type="submit"
-              className="w-full bg-compass-blue text-white font-bold py-3.5 rounded-xl transition-all text-base hover:opacity-90"
-            >
-              Submit Application
-            </button>
-          </form>
-        </div>
-      </section>
-
-      <Footer />
     </>
   );
 }
