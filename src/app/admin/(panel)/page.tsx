@@ -1,5 +1,14 @@
 import Link from "next/link";
-import { AlertTriangle } from "lucide-react";
+import {
+  AlertTriangle,
+  IndianRupee,
+  MapPinned,
+  Receipt,
+  ShieldCheck,
+  SlidersHorizontal,
+  Sparkles,
+  Wallet,
+} from "lucide-react";
 import { getAdminOverview } from "@/server/portal";
 import { pausePackageAction, markPayoutPaidAction } from "@/app/admin/actions";
 import { StatTile, Panel, EmptyRow, StatusPill } from "@/components/portal/PortalChrome";
@@ -9,15 +18,24 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminOverviewPage() {
   const data = await getAdminOverview();
+  const maxListings = Math.max(1, ...data.byDestination.map((d) => d.listings));
 
   return (
     <div className="flex flex-col gap-5">
+      <div>
+        <h2 className="font-display font-extrabold text-[19px] text-map-text">Platform overview</h2>
+        <p className="text-[13px] text-map-muted font-body mt-0.5">
+          Revenue, margin and risk across the marketplace.
+        </p>
+      </div>
+
       {/* Money */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         <StatTile
           label="GMV"
           value={formatPrice(data.gmv)}
           hint={`${data.confirmedBookings} confirmed booking${data.confirmedBookings === 1 ? "" : "s"}`}
+          icon={<IndianRupee size={12} />}
         />
         <StatTile
           label="Platform margin"
@@ -30,19 +48,42 @@ export default async function AdminOverviewPage() {
           value={formatPrice(data.awaitingPayout)}
           hint={`${formatPrice(data.operatorCost)} total cost`}
           tone={data.awaitingPayout > 0 ? "warn" : "default"}
+          icon={<Wallet size={12} />}
         />
         <StatTile
           label="Customer savings"
           value={formatPrice(data.customerSavings)}
           hint="Versus operator direct prices"
+          icon={<Sparkles size={12} />}
         />
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <StatTile label="Average order" value={data.averageOrderValue ? formatPrice(data.averageOrderValue) : "—"} hint={`${data.travellers} travellers`} />
-        <StatTile label="Live listings" value={String(data.activeListings)} hint={`${data.totalListings} total`} />
-        <StatTile label="Operators verified" value={String(data.operatorsVerified)} hint={`${data.operatorsPending} awaiting review`} tone={data.operatorsPending > 0 ? "warn" : "default"} />
-        <StatTile label="Active margin rules" value={String(data.marginRuleCount)} hint="Editable from Margin rules" />
+        <StatTile
+          label="Average order"
+          value={data.averageOrderValue ? formatPrice(data.averageOrderValue) : "—"}
+          hint={`${data.travellers} travellers`}
+          icon={<Receipt size={12} />}
+        />
+        <StatTile
+          label="Live listings"
+          value={String(data.activeListings)}
+          hint={`${data.totalListings} total`}
+          icon={<MapPinned size={12} />}
+        />
+        <StatTile
+          label="Operators verified"
+          value={String(data.operatorsVerified)}
+          hint={`${data.operatorsPending} awaiting review`}
+          tone={data.operatorsPending > 0 ? "warn" : "default"}
+          icon={<ShieldCheck size={12} />}
+        />
+        <StatTile
+          label="Active margin rules"
+          value={String(data.marginRuleCount)}
+          hint="Editable from Margin rules"
+          icon={<SlidersHorizontal size={12} />}
+        />
       </div>
 
       {/* Pricing violations */}
@@ -53,11 +94,16 @@ export default async function AdminOverviewPage() {
         {data.violations.length === 0 ? (
           <EmptyRow>Every package passes its pricing rules.</EmptyRow>
         ) : (
-          <ul className="divide-y divide-map-border">
+          <div className="flex flex-col gap-3 p-4">
             {data.violations.map((v) => (
-              <li key={v.packageId} className="px-5 py-4">
+              <div
+                key={v.packageId}
+                className="rounded-xl border border-rose-200 bg-rose-50/40 hover:bg-rose-50/70 transition-colors px-4 py-3.5"
+              >
                 <div className="flex items-start gap-3 flex-wrap">
-                  <AlertTriangle size={16} className="text-rose-600 flex-shrink-0 mt-0.5" />
+                  <span className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-rose-100 text-rose-600">
+                    <AlertTriangle size={14} />
+                  </span>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="font-display font-bold text-[13.5px] text-map-text">
@@ -109,38 +155,50 @@ export default async function AdminOverviewPage() {
                     </Link>
                   </div>
                 </div>
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
         )}
       </Panel>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         <Panel title="By destination" description="Listings and realised margin.">
-          <div className="overflow-x-auto">
-            <table className="w-full min-w-[420px] text-[13px]">
-              <thead>
-                <tr className="border-b border-map-border">
-                  <th className="label-util text-left px-5 py-2.5">Destination</th>
-                  <th className="label-util text-right px-3 py-2.5">Listings</th>
-                  <th className="label-util text-right px-3 py-2.5">Bookings</th>
-                  <th className="label-util text-right px-5 py-2.5">Margin</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.byDestination.map((d) => (
-                  <tr key={d.destinationId} className="border-b border-map-border last:border-0">
-                    <td className="px-5 py-2.5 text-map-text font-body">{d.name}</td>
-                    <td className="px-3 py-2.5 text-right text-map-muted tnum">{d.listings}</td>
-                    <td className="px-3 py-2.5 text-right text-map-muted tnum">{d.bookings}</td>
-                    <td className="px-5 py-2.5 text-right text-map-text font-semibold tnum">
+          {data.byDestination.length === 0 ? (
+            <EmptyRow>No destinations with listings yet.</EmptyRow>
+          ) : (
+            <div className="flex flex-col divide-y divide-map-border">
+              {data.byDestination.map((d) => (
+                <div
+                  key={d.destinationId}
+                  className="px-5 py-3 hover:bg-[#FBF8F6] transition-colors"
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="font-body font-semibold text-[13px] text-map-text truncate">
+                      {d.name}
+                    </span>
+                    <span className="text-[13px] font-semibold text-map-text tnum whitespace-nowrap">
                       {d.margin ? formatPrice(d.margin) : "—"}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </span>
+                  </div>
+                  <div className="mt-1.5 flex items-center gap-2.5">
+                    <div className="h-1.5 flex-1 rounded-full bg-[#F1F5F9] overflow-hidden">
+                      <div
+                        className="h-full rounded-full"
+                        style={{
+                          width: `${Math.round((d.listings / maxListings) * 100)}%`,
+                          backgroundImage: "var(--gradient-signature)",
+                        }}
+                      />
+                    </div>
+                    <span className="text-[11px] text-map-muted font-body tnum whitespace-nowrap">
+                      {d.listings} listing{d.listings === 1 ? "" : "s"} · {d.bookings} booking
+                      {d.bookings === 1 ? "" : "s"}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </Panel>
 
         <Panel title="Recent bookings" description="Payouts are settled manually until RazorpayX is wired.">

@@ -52,11 +52,18 @@ export default function ContourField({
   className,
   opacity = 0.5,
   scale = 52,
+  stroke = "90,100,120",
 }: {
   seed?: number;
   className?: string;
   opacity?: number;
   scale?: number;
+  /**
+   * Line colour as a bare `R,G,B` triplet — the alpha is computed per contour
+   * level, so this can't take a full colour string. Defaults to the original
+   * cool grey; the warm-palette surfaces pass their own.
+   */
+  stroke?: string;
 }) {
   const ref = useRef<HTMLCanvasElement>(null);
 
@@ -93,7 +100,7 @@ export default function ContourField({
 
       for (let L = 0; L < levels; L++) {
         const t = 0.24 + L * (0.52 / levels);
-        ctx.strokeStyle = `rgba(90,100,120,${(opacity * (0.45 + 0.55 * (L / levels))).toFixed(3)})`;
+        ctx.strokeStyle = `rgba(${stroke},${(opacity * (0.45 + 0.55 * (L / levels))).toFixed(3)})`;
         ctx.beginPath();
 
         for (let y = 0; y < rows - 1; y++) {
@@ -146,7 +153,7 @@ export default function ContourField({
       clearTimeout(timer);
       window.removeEventListener("resize", onResize);
     };
-  }, [seed, opacity, scale]);
+  }, [seed, opacity, scale, stroke]);
 
   return <canvas ref={ref} aria-hidden="true" className={cn("block w-full", className)} />;
 }

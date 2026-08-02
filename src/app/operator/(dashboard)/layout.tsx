@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { Building2 } from "lucide-react";
 import { getSession } from "@/server/auth";
 import { operatorLogoutAction } from "@/app/operator/actions";
 import { PortalShell, StatusPill } from "@/components/portal/PortalChrome";
@@ -23,6 +24,7 @@ export default async function OperatorLayout({
     <PortalShell
       title="Operator portal"
       subtitle={operator.name}
+      icon={<Building2 size={18} />}
       badge={<StatusPill status={operator.verificationStatus} />}
       logoutAction={operatorLogoutAction}
       nav={[

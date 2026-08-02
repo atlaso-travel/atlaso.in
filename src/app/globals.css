@@ -1,35 +1,82 @@
 @import "tailwindcss";
 
 @theme {
-  /* ── Atlaso Brand Colors ── */
+  /* ══════════════════════════════════════════════════════════════
+     ATLASO PALETTE — brand coral at full strength, into sunset orange.
+
+     The brand coral is unchanged from the original (#FF5A5F). What carries
+     the premium read is not desaturating it, it is spending it sparingly:
+     the signature gradient goes on primary CTAs, the hero accent line, and
+     the route element's active state. Nowhere else. Everything else is warm
+     peach ground, dark ink, and slate body copy.
+     ══════════════════════════════════════════════════════════════ */
+
+  /* ── Core palette ── */
+  --color-brand-coral:      #FF5A5F;  /* primary accent — CTAs, key highlights */
+  --color-brand-coral-deep: #E0474C;  /* hover / pressed */
+  --color-sunset-orange:    #FFA85C;  /* second gradient stop, secondary highlights */
+  --color-light-coral-tint: #FFC9CB;  /* card borders, dividers, subtle grounds */
+  --color-warm-peach:       #FFF7F3;  /* warm tint for small surfaces — icon chips, wells */
+  --color-text-dark:        #1C1F26;  /* headings, primary text */
+  --color-coral-ink:        #CC3A40;  /* 4.9:1 on white */
+  --color-sand-ink:         #A05A16;  /* 5.3:1 on white */
+  --color-peach-wash:       #FFF8F4;  /* lightest step, card interiors */
+  --color-warm-line:        #EFE3DE;  /* hairlines — carries card edges on white */
+  --color-ink-deep:         #14161C;  /* dark cards / dark band */
+
+  /* ── Round-2 aliases ──
+     The homepage components were built against these names. They are
+     aliases onto the palette above, not a second set of values, so the
+     colour direction lives in exactly one place. */
+  --color-muted-coral:      #FF5A5F;
+  --color-muted-coral-deep: #E0474C;
+  --color-muted-coral-soft: #FFC9CB;
+  --color-warm-sand:        #FFA85C;
+  --color-warm-sand-tint:   #FFF1E6;
+  --color-warm-ivory:       #FFFFFF;
+  --color-blush-tint:       #FFC9CB;
+  --color-blush-wash:       #FFF8F4;
+  --color-espresso:         #1C1F26;
+  --color-espresso-deep:    #14161C;
+  --color-warm-taupe:       #64748B;
+
+  /* Dark ground for site chrome — navbar, footer, sticky bars. Left as the
+     established navy so chrome stays consistent across routes. */
   --color-atlas-night:    #0A1628;
+
+  /* Success / savings. Desaturated from #16A34A so "you save ₹X" reads as
+     information rather than a supermarket sticker. */
+  --color-summit-green:   #3F7D5C;
+  --color-summit-light:   #F0F5F2;
+
+  /* ── Legacy brand names ──
+     ~700 call sites across the app still reference these. They are aliases
+     onto the palette above rather than a second set of values, so every
+     route inherits the direction without a per-page migration. Prefer the
+     palette names in new code. */
   --color-compass-blue:   #FF5A5F;
   --color-compass-hover:  #E0474C;
   --color-compass-light:  #FFE8E9;
-  --color-trail-orange:   #F97316;
-  --color-trail-light:    #FFF4ED;
-  --color-summit-green:   #16A34A;
-  --color-summit-light:   #F0FDF4;
-  --color-map-white:      #F5F7FA;
+  --color-trail-orange:   #FFA85C;
+  --color-trail-light:    #FFF1E6;
+  --color-map-white:      #FFFFFF;
   --color-map-card:       #FFFFFF;
-  --color-map-text:       #0F172A;
+  --color-map-text:       #1C1F26;
   --color-map-muted:      #64748B;
-  --color-map-border:     #E2E8F0;
-  --color-map-border-blue:#FFBCBE;
-  --color-rose-pink:   #E91E63;
-  --color-rose-light:  #FFF0F8;
-  --color-maroon-dark: #2A1535;
+  --color-map-border:     #EFE3DE;
+  --color-map-border-blue:#FFC9CB;
+  --color-rose-pink:      #FF5A5F;
+  --color-rose-light:     #FFF3F3;
+  --color-maroon-dark:    #14161C;
 
   /* ── Semantic aliases ──
-     Names used by the newer components (PriceBlock, VerifiedBadge, TrustRow,
-     CompareView, PackageCard). These are aliases onto the brand colours above,
-     not a second palette — change a brand colour and these follow. They exist so
-     new code can say what a colour means rather than what it looks like. */
+     Names used by the price/trust components. Aliases onto the brand
+     colours above, not a second palette. */
 
   /* Savings. Only the price components use this. */
-  --color-fern:           #16A34A;
-  --color-fern-tint:      #F0FDF4;
-  --color-fern-quiet:     #16A34A;
+  --color-fern:           #3F7D5C;
+  --color-fern-tint:      #F0F5F2;
+  --color-fern-quiet:     #3F7D5C;
 
   /* Dark ground — headers, footers, sticky bars */
   --color-indigo:         #0A1628;
@@ -40,16 +87,16 @@
   --color-marigold:       #FF5A5F;
   --color-marigold-hover: #E0474C;
   --color-marigold-tint:  #FFE8E9;
-  --color-marigold-bright:#F97316;
+  --color-marigold-bright:#FFA85C;
 
   /* Warnings — pricing-rule violations, destructive actions */
-  --color-rust:           #F43F5E;
+  --color-rust:           #E0474C;
   --color-rust-tint:      #FFF1F2;
 
   /* Neutrals */
-  --color-mist:           #F5F7FA;
+  --color-mist:           #FFFFFF;
   --color-slate:          #64748B;
-  --color-line:           #E2E8F0;
+  --color-line:           #EFE3DE;
   --color-strike:         #94A3B8;
 
   /* Star ratings */
@@ -60,23 +107,42 @@
   --font-display: var(--font-plus-jakarta, "Plus Jakarta Sans", sans-serif);
   --font-body:    var(--font-inter, "Inter", sans-serif);
 
-  /* ── Box Shadows ── */
-  --shadow-card:       0 2px 8px rgba(0,0,0,0.06);
+  /* ── Box Shadows ──
+     Neutral ink for ambient depth, brand coral for hover/glow states. Low
+     opacity throughout — a premium surface lifts, it doesn't glow. */
+  --shadow-card:       0 1px 2px rgba(28,31,38,0.04), 0 4px 16px rgba(28,31,38,0.05);
   --shadow-card-hover: 0 8px 32px rgba(255,90,95,0.12);
-  --shadow-blue-sm:    0 4px 16px rgba(255,90,95,0.1);
+  --shadow-lift:       0 12px 40px rgba(28,31,38,0.08), 0 2px 8px rgba(28,31,38,0.04);
+  --shadow-blue-sm:    0 4px 16px rgba(255,90,95,0.10);
   --shadow-blue-md:    0 8px 24px rgba(255,90,95,0.15);
-  --shadow-blue-lg:    0 20px 40px rgba(255,90,95,0.2);
-  --shadow-dropdown:   0 16px 48px rgba(0,0,0,0.5);
-  --shadow-search:     0 8px 32px rgba(0,0,0,0.3);
+  --shadow-blue-lg:    0 20px 40px rgba(255,90,95,0.20);
+  --shadow-dropdown:   0 16px 48px rgba(20,22,28,0.28);
+  --shadow-search:     0 8px 32px rgba(20,12,10,0.28);
 
-  /* ── Animations ── */
-  --animate-fade-up:     fadeUp 0.6s ease forwards;
+  /* ── Animations ──
+     Scroll-reveal and stagger live in framer-motion (see
+     src/components/motion/Reveal.tsx). What remains here is ambient,
+     always-running motion that has no viewport trigger. */
+  --animate-fade-up:     fadeUp 0.6s var(--ease-settle) forwards;
   --animate-fade-in:     fadeIn 0.5s ease forwards;
   --animate-float:       float 4s ease-in-out infinite;
-  --animate-slide-in:    slideIn 0.4s ease forwards;
+  --animate-slide-in:    slideIn 0.4s var(--ease-settle) forwards;
   --animate-pulse-blue:  pulseBlue 2.5s ease-in-out infinite;
   --animate-marquee:     marquee 35s linear infinite;
   --animate-marquee-rev: marquee 28s linear infinite reverse;
+}
+
+/* ── Easing ──
+   `settle` decelerates long and lands softly — the house curve for reveals
+   and hover lifts. `overshoot` adds a small amount of travel past the
+   resting point; reserved for elements that should feel physical. */
+:root {
+  --ease-settle:   cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-overshoot:cubic-bezier(0.34, 1.32, 0.64, 1);
+
+  /* The signature gradient, defined once. Every surface that carries it
+     references this so the angle and stops can never drift apart. */
+  --gradient-signature: linear-gradient(135deg, #FF5A5F 0%, #FFA85C 100%);
 }
 
 /* ── Keyframes ── */
@@ -97,7 +163,7 @@
   to   { transform: translateX(0); opacity: 1; }
 }
 @keyframes pulseBlue {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(255,90,95,0.4); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255,90,95,0.40); }
   50%       { box-shadow: 0 0 0 10px rgba(255,90,95,0); }
 }
 @keyframes marquee {
@@ -122,10 +188,10 @@
 
 /* ── Glass utilities ── */
 .glass-dark {
-  background: rgba(10, 22, 40, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(20, 22, 28, 0.58);
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+  border: 1px solid rgba(255,255,255,0.10);
 }
 .glass-light {
   background: rgba(255,255,255,0.12);
@@ -148,13 +214,33 @@
 /* ── Base ── */
 html {
   scroll-behavior: smooth;
-  background-color: #F5F7FA;
+  background-color: #FFFFFF;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 * { box-sizing: border-box; }
 
+/* ── Reduced motion ──
+   Kills the ambient CSS animations outright. framer-motion reads the same
+   media query through `useReducedMotion`, so reveals collapse to a plain
+   opacity change rather than disappearing. */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .marquee-track,
+  .marquee-track-reverse { animation: none !important; }
+}
+
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: #f1f5f9; }
+::-webkit-scrollbar-track { background: #F2F2F2; }
 ::-webkit-scrollbar-thumb { background: #FF5A5F; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #E0474C; }
 * { scrollbar-width: thin; scrollbar-color: #FF5A5F transparent; }
@@ -186,7 +272,7 @@ input[type="range"]::-webkit-slider-runnable-track {
   border-radius: 3px;
 }
 
-::selection { background-color: #6f95d1; color: white; }
+::selection { background-color: #FFC9CB; color: #1C1F26; }
 
 /* ── Headings use display font ── */
 h1, h2, h3, h4, h5, h6 {
@@ -195,85 +281,101 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ── Component classes ── */
 @layer components {
+  /* Primary action. The signature gradient — brand coral into sunset
+     orange, echoing the hero photo. Gradients can't tween, so hover is a
+     lift plus a shadow and a hair of brightness, never a colour flash. */
   .btn-primary {
-    @apply bg-compass-blue text-white font-semibold font-body
+    @apply text-white font-semibold font-body
            rounded-xl px-6 py-3 border-none cursor-pointer
-           transition-all duration-200 flex items-center
-           justify-center gap-2
-           hover:bg-compass-hover active:scale-95
+           flex items-center justify-center gap-2
+           active:scale-[0.98]
            disabled:opacity-40 disabled:cursor-not-allowed;
+    background-image: var(--gradient-signature);
+    transition: filter 220ms var(--ease-settle),
+                box-shadow 320ms var(--ease-settle),
+                transform 320ms var(--ease-settle);
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    filter: brightness(0.96);
+    box-shadow: 0 12px 30px rgba(255,90,95,0.32);
   }
   .btn-outline {
-    @apply bg-transparent text-compass-blue font-semibold
-           border-2 border-compass-blue rounded-xl px-6 py-3
-           cursor-pointer transition-all duration-200
-           hover:bg-compass-light active:scale-95;
+    @apply bg-transparent text-coral-ink font-semibold
+           border border-muted-coral/40 rounded-xl px-6 py-3
+           cursor-pointer active:scale-[0.98]
+           hover:bg-blush-wash hover:border-muted-coral;
+    transition: all 220ms var(--ease-settle);
   }
   .btn-outline-white {
     @apply bg-transparent text-white font-semibold
-           border-2 border-white/50 rounded-full px-8 py-3.5
-           cursor-pointer transition-all duration-200
+           border border-white/40 rounded-full px-8 py-3.5
+           cursor-pointer
            hover:border-white hover:bg-white/10;
+    transition: all 220ms var(--ease-settle);
   }
   .btn-ghost {
-    @apply bg-transparent text-compass-blue font-semibold
+    @apply bg-transparent text-coral-ink font-semibold
            rounded-xl px-4 py-2 cursor-pointer
-           transition-all duration-200 hover:bg-compass-light;
+           hover:bg-blush-wash;
+    transition: all 200ms var(--ease-settle);
   }
   .card-base {
-    @apply bg-map-card rounded-2xl border border-map-border
-           shadow-card transition-all duration-300;
+    @apply bg-map-card rounded-2xl border border-warm-line shadow-card;
+    transition: transform 380ms var(--ease-settle),
+                box-shadow 380ms var(--ease-settle),
+                border-color 380ms var(--ease-settle);
   }
-  .card-hover {
-    @apply hover:border-map-border-blue hover:shadow-card-hover
-           hover:-translate-y-1;
+  .card-hover:hover {
+    @apply border-blush-tint shadow-card-hover;
+    transform: translateY(-4px);
   }
   .card-dark {
-    @apply bg-white/5 border border-white/[0.08] rounded-2xl
-           transition-all duration-300
-           hover:bg-white/[0.08] hover:border-compass-blue/30;
+    @apply bg-white/[0.04] border border-white/[0.08] rounded-2xl
+           hover:bg-white/[0.07] hover:border-muted-coral/30;
+    transition: all 380ms var(--ease-settle);
   }
   .avatar-circle {
     @apply w-9 h-9 rounded-full flex items-center
            justify-center text-white font-bold text-sm
            font-display flex-shrink-0
-           bg-gradient-to-br from-compass-blue to-trail-orange;
+           bg-gradient-to-br from-muted-coral to-warm-sand;
   }
   .filter-pill {
     @apply text-xs px-3 py-1.5 rounded-full border
-           border-map-border text-map-muted cursor-pointer
-           transition-all duration-150
-           hover:border-compass-blue hover:text-compass-blue;
+           border-warm-line text-warm-taupe cursor-pointer
+           hover:border-muted-coral hover:text-coral-ink;
+    transition: all 180ms var(--ease-settle);
   }
   .filter-pill-active {
-    @apply bg-compass-blue text-white border-compass-blue;
+    @apply bg-muted-coral text-white border-muted-coral;
   }
   .input-field {
-    @apply w-full border border-map-border rounded-xl px-4 py-3
-           text-sm text-map-text outline-none font-body
+    @apply w-full border border-warm-line rounded-xl px-4 py-3
+           text-sm text-espresso outline-none font-body
            transition-all duration-200
-           focus:border-compass-blue
-           focus:ring-2 focus:ring-compass-blue/10
-           placeholder:text-map-muted;
+           focus:border-muted-coral
+           focus:ring-2 focus:ring-muted-coral/10
+           placeholder:text-warm-taupe;
   }
   .social-icon-btn {
     @apply w-8 h-8 rounded-full border border-white/15
            flex items-center justify-center cursor-pointer
            transition-all duration-200
-           hover:border-compass-blue hover:bg-compass-blue/15;
+           hover:border-muted-coral hover:bg-muted-coral/15;
   }
 }
 
 /* ── Utility classes ── */
 @layer utilities {
   .bg-hero-gradient {
-    background: linear-gradient(180deg, rgba(10,22,40,0.75) 0%, rgba(10,22,40,0.55) 40%, rgba(10,22,40,0.85) 100%);
+    background: linear-gradient(180deg, rgba(20,13,11,0.72) 0%, rgba(20,13,11,0.50) 40%, rgba(20,13,11,0.85) 100%);
   }
   .bg-blue-glow {
-    background: radial-gradient(ellipse 60% 50% at 50% 60%, rgba(255,90,95,0.12) 0%, transparent 70%);
+    background: radial-gradient(ellipse 60% 50% at 50% 60%, rgba(255,90,95,0.10) 0%, transparent 70%);
   }
   .bg-avatar-gradient {
-    background: linear-gradient(135deg, #FF5A5F, #F97316);
+    background: var(--gradient-signature);
   }
   .bg-cta-dots {
     background-image: radial-gradient(circle, rgba(255,255,255,0.05) 1px, transparent 1px);
@@ -290,8 +392,103 @@ h1, h2, h3, h4, h5, h6 {
     animation-play-state: paused;
   }
   .bg-dots {
-    background-image: radial-gradient(circle, rgba(255,90,95,0.07) 1px, transparent 1px);
+    background-image: radial-gradient(circle, rgba(255,90,95,0.06) 1px, transparent 1px);
     background-size: 28px 28px;
+  }
+  /* Section ground one step warmer than the page — used to separate
+     adjacent bands without drawing a line between them. */
+  .bg-section-warm {
+    background: linear-gradient(180deg, #FFFFFF 0%, #FBF7F5 55%, #FFFFFF 100%);
+  }
+
+  /* ── The signature gradient ──
+     Brand coral into sunset orange, echoing the sunset-over-mountains hero
+     photo. Carried by primary CTAs (`.bg-cta-gradient`), the route element's
+     active state in HowItWorks, and — as text — the accent phrase of each
+     section headline. It reads as one recurring mark rather than decoration
+     because it always lands on the *same grammatical slot*: the second,
+     turning half of a two-part headline, never the whole heading and never
+     body copy. That restraint is the whole reason it still registers. */
+  .bg-cta-gradient {
+    background-image: var(--gradient-signature);
+  }
+
+  /* Gradient text. One exposure everywhere — the exact hero stops, on dark
+     photos and on cream alike, so every accent phrase is visibly the same
+     mark as RIGHT OPERATOR rather than an approximation of it.
+
+     Note for anyone auditing contrast: the tail stop (#FFA85C) is ~1.9:1 on
+     white, so on the light sections this clears WCAG AA on the coral end and
+     not on the amber end. That is a deliberate brand call, taken knowingly.
+     It is survivable only because every use is large-scale display type
+     carrying an accent phrase whose meaning also exists in the solid-colour
+     first half of the same headline — never body copy, never the sole
+     carrier of information, never at small sizes. Keep it that way.
+
+     The solid coral is a real fallback, not decoration: `color: transparent`
+     is applied only inside the @supports guard, so a browser without
+     background-clip:text renders the headline in brand coral instead of
+     rendering nothing at all. */
+  .text-signature {
+    color: var(--color-brand-coral);
+    background-image: var(--gradient-signature);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+  @supports (background-clip: text) or (-webkit-background-clip: text) {
+    .text-signature {
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+    }
+  }
+  /* This now lands on inline spans inside headlines, which wrap. Deliberately
+     NOT `inline-block` — that would make a phrase like "We shortlist the
+     right ones." one unbreakable box and overflow narrow screens. Left
+     inline and breakable; `clone` gives each wrapped fragment its own full
+     coral-to-amber run instead of one gradient sliced across fragments,
+     which is what makes multi-line accents look intentional. */
+  .text-signature {
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+  }
+
+  /* ── Depth washes ──
+     Radial coral at 6–7% for section depth. Kept under 8% deliberately — a
+     wash is exactly the kind of thing that quietly reintroduces systemic
+     brightness if you let it climb. */
+  .wash-top-right {
+    background-image: radial-gradient(ellipse 70% 60% at 100% 0%, rgba(255,90,95,0.035) 0%, transparent 60%);
+  }
+  .wash-top-left {
+    background-image: radial-gradient(ellipse 70% 60% at 0% 0%, rgba(255,168,92,0.04) 0%, transparent 60%);
+  }
+  .wash-bottom {
+    background-image: radial-gradient(ellipse 80% 50% at 50% 100%, rgba(255,90,95,0.03) 0%, transparent 65%);
+  }
+  .wash-dark {
+    background-image: radial-gradient(ellipse 60% 50% at 15% 0%, rgba(255,90,95,0.16) 0%, transparent 60%),
+                      radial-gradient(ellipse 50% 40% at 90% 100%, rgba(255,168,92,0.10) 0%, transparent 60%);
+  }
+
+  /* ── Photo grade ──
+     Every destination and hero photo gets this over the top. The images come
+     from different sources with different white balance; an 8% coral-into-
+     orange wash pulls them onto one temperature so the page reads as a single
+     brand rather than assorted stock. */
+  .photo-grade {
+    background-image: linear-gradient(
+      135deg,
+      rgba(255, 90, 95, 0.08) 0%,
+      rgba(255, 168, 92, 0.08) 100%
+    );
+  }
+
+  /* Survey-chart lettering — coordinates, waypoint indices, table keys.
+     Tabular and tracked-out so it reads as instrumentation, not prose. */
+  .mono-chart {
+    font-family: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, monospace;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.06em;
   }
   /* Tabular figures — required anywhere prices stack in a column, so the
      rupee digits align vertically for comparison. */
@@ -313,6 +510,20 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
     letter-spacing: 0.07em;
     text-transform: uppercase;
-    color: var(--color-slate);
+    color: var(--color-warm-taupe);
+  }
+  /* Section eyebrow — the small uppercase line above every section heading.
+     One rule so the rhythm is identical down the page. */
+  .eyebrow {
+    font-family: var(--font-inter, "Inter", sans-serif);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--color-coral-ink);
+  }
+  /* Optical tightening for the large display sizes. */
+  .tracking-display {
+    letter-spacing: -0.022em;
   }
 }

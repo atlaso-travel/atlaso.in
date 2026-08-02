@@ -1,10 +1,23 @@
 "use client";
 
-import { Star, MapPin, ChevronLeft, ChevronRight, ShieldCheck } from "lucide-react";
-import { useRef, useState, useEffect } from "react";
-import { useInView } from "@/hooks/useIntersectionObserver";
-
-type CardStyle = "A" | "B" | "C";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ChevronLeft, ChevronRight, MapPin, ShieldCheck, Star } from "lucide-react";
+import {
+  AnimatePresence,
+  motion,
+  useInView,
+  useMotionValue,
+  type Variants,
+} from "framer-motion";
+import AnimatedNumber from "@/components/ui/AnimatedNumber";
+import {
+  EASE_OVERSHOOT,
+  EASE_SETTLE,
+  Reveal,
+  Stagger,
+  StaggerItem,
+  useMotionProfile,
+} from "@/components/motion/Reveal";
 
 interface Review {
   headline: string;
@@ -13,318 +26,506 @@ interface Review {
   init: string;
   dest: string;
   rating: number;
-  style: CardStyle;
 }
 
-const ALL_REVIEWS: Review[] = [
+/* Six reviews, one at a time, in a single full-width card.
+
+   Two earlier shapes were wrong for this. A six-card wall gave every quote the
+   same 13px grey prose and no reason to read any of them. Splitting it into a
+   bare quote on the left and a column of six cards on the right was worse: all
+   the visual weight sat in the right-hand list, and pinning the quote column to
+   the height of the longest review left a hand-sized hole under the short ones.
+
+   One card carries the quote across the full measure, so the text fills the
+   space it is given and the card is the same height whichever review is up. The
+   selector is a row of name pills underneath, which stays readable and needs no
+   scrolling on a phone. */
+const REVIEWS: Review[] = [
   {
     headline: "Finally, total clarity.",
-    text: "Compared 4 operators in one page. Booked with complete confidence. Never going back to WhatsApp research.",
-    name: "Rahul S", init: "RS", dest: "Spiti Valley", rating: 5, style: "A",
+    text: "I compared four operators on one page and booked with complete confidence. Cancellation terms, what was excluded, who the guide actually was — all of it before paying. I'm never going back to chasing quotes over WhatsApp.",
+    name: "Rahul Sharma", init: "RS", dest: "Spiti Valley", rating: 5,
   },
   {
     headline: "Saved me ₹8,000.",
-    text: "The comparison table showed me Summit Squad had everything Peak Pathways offered — at a way lower price. Unreal.",
-    name: "Priya M", init: "PM", dest: "Leh Ladakh", rating: 5, style: "B",
-  },
-  {
-    headline: "10 minutes. Done.",
-    text: "Used Atlaso for Meghalaya. Found Nomad Tribe, compared 3 operators, booked. The root bridges trek was beyond words.",
-    name: "Aditya N", init: "AN", dest: "Meghalaya", rating: 5, style: "A",
+    text: "The table showed Summit Squad had everything Peak Pathways offered, at a noticeably lower price. Same itinerary, same inclusions — the difference was sitting there in one column.",
+    name: "Priya Menon", init: "PM", dest: "Leh Ladakh", rating: 5,
   },
   {
     headline: "No surprises. At all.",
-    text: "Cancellation policy, hidden costs, what's excluded — I saw everything before paying. This is how travel should work.",
-    name: "Kavya R", init: "KR", dest: "Coorg", rating: 5, style: "C",
-  },
-  {
-    headline: "Google in 2 minutes.",
-    text: "Would've taken 2 days to find this on Google. Compared 3 Ladakh operators in under 5 minutes. Atlaso is a game changer.",
-    name: "Siddharth R", init: "SR", dest: "Rishikesh", rating: 5, style: "A",
+    text: "Cancellation policy, hidden costs, what's excluded — I saw all of it before paying a rupee. This is how booking travel should work, and it is the first time it has.",
+    name: "Kavya Rao", init: "KR", dest: "Coorg", rating: 5,
   },
   {
     headline: "Verified means verified.",
-    text: "The verified badge actually means something here. Our guide from Alpine Treks was professional, punctual, and incredible.",
-    name: "Ananya S", init: "AS", dest: "Spiti Valley", rating: 5, style: "B",
+    text: "The badge actually stands for something here. Our guide from Alpine Treks was professional, punctual and genuinely knew the valley we spent the week walking through.",
+    name: "Ananya Singh", init: "AS", dest: "Spiti Valley", rating: 5,
   },
   {
-    headline: "Group of 8. No stress.",
-    text: "Found an operator who could handle our group size with custom pricing. Saved us countless WhatsApp headaches.",
-    name: "Vikram P", init: "VP", dest: "Leh Ladakh", rating: 4, style: "A",
+    headline: "A group of eight, no stress.",
+    text: "Found an operator who could handle our group size with custom pricing. What would have been a week of back-and-forth coordination took a single evening.",
+    name: "Vikram Patel", init: "VP", dest: "Leh Ladakh", rating: 4,
   },
   {
-    headline: "Under ₹10k. Unbelievable.",
-    text: "Atlaso showed me a budget option I'd never have found otherwise. 6 days in Spiti for under ₹10,000. Absolutely incredible.",
-    name: "Sneha T", init: "ST", dest: "Spiti Valley", rating: 5, style: "C",
-  },
-  {
-    headline: "Cancelled. Full refund.",
-    text: "Medical emergency 5 days before. Because I checked cancellation policy on Atlaso before booking, I got a full refund.",
-    name: "Rohan D", init: "RD", dest: "Coorg", rating: 5, style: "A",
-  },
-  {
-    headline: "Premium at Pangong.",
-    text: "Peak Pathways luxury camp at Pangong Lake — found and compared here. Waking up to that view was worth every rupee.",
-    name: "Ishaan M", init: "IM", dest: "Leh Ladakh", rating: 5, style: "B",
-  },
-  {
-    headline: "Northeast, finally easy.",
-    text: "Northeast India is underrated and Atlaso's operator list proved it. Nomad Tribe was absolutely spectacular.",
-    name: "Divya P", init: "DP", dest: "Meghalaya", rating: 5, style: "A",
-  },
-  {
-    headline: "Found a hidden gem.",
-    text: "Himalayan Souls gave us a genuine local homestay experience. Found them only because Atlaso listed them. Pure magic.",
-    name: "Kartik B", init: "KB", dest: "Spiti Valley", rating: 4, style: "C",
-  },
-  {
-    headline: "One row. Everything.",
-    text: "Meals, transport, guide, hotel type — all in one comparison row per operator. Done in 10 minutes. Why doesn't everyone do this?",
-    name: "Nisha G", init: "NG", dest: "Rishikesh", rating: 5, style: "A",
-  },
-  {
-    headline: "Best decision of 2024.",
-    text: "Zenith Expeditions 10-day Ladakh. Found and compared on Atlaso. The naturalist guide transformed the entire experience.",
-    name: "Amit V", init: "AV", dest: "Leh Ladakh", rating: 5, style: "B",
-  },
-  {
-    headline: "My family felt safe.",
-    text: "Traveled with parents and kids. The detailed inclusions and operator profile gave us confidence. Zero anxiety. Perfect trip.",
-    name: "Meera J", init: "MJ", dest: "Coorg", rating: 5, style: "A",
-  },
-  {
-    headline: "Rafting. Best price.",
-    text: "Bungee + rafting combo in Rishikesh at the best price I found anywhere. Trailblazers India was exactly what we needed.",
-    name: "Arjun K", init: "AK", dest: "Rishikesh", rating: 5, style: "C",
+    headline: "The Northeast, finally easy.",
+    text: "Northeast India is badly under-served online. Atlaso's operator list proved otherwise — Nomad Tribe was spectacular from start to finish.",
+    name: "Divya Pillai", init: "DP", dest: "Meghalaya", rating: 5,
   },
 ];
 
+/** How long each review holds the spotlight, in ms. */
+const DWELL = 4000;
 
-function StarRow({ rating, dark = false }: { rating: number; dark?: boolean }) {
+/** Warm tonal avatar grounds, cycled — no rainbow. */
+const AVATAR_TONES = [
+  { bg: "#FFE9E7", fg: "#CC3A40" },
+  { bg: "#FFF0DF", fg: "#A05A16" },
+  { bg: "#EEF1F5", fg: "#55606F" },
+];
+
+function toneFor(index: number) {
+  return AVATAR_TONES[index % AVATAR_TONES.length];
+}
+
+/* ── Stars ──
+   `animated` pops each star in on a slight overshoot when the spotlight
+   changes. Everywhere else they render flat. */
+function StarRow({
+  rating,
+  size = 12,
+  animated = false,
+}: {
+  rating: number;
+  size?: number;
+  animated?: boolean;
+}) {
+  const { reduced } = useMotionProfile();
+  const pop = animated && !reduced;
+
   return (
-    <div className="flex items-center gap-0.5">
+    <div className="flex items-center gap-0.5" aria-label={`${rating} out of 5`}>
       {Array.from({ length: 5 }).map((_, i) => (
-        <Star
+        <motion.span
           key={i}
-          size={13}
-          className={
-            i < rating
-              ? "fill-trail-orange text-trail-orange"
-              : dark
-              ? "fill-white/20 text-white/20"
-              : "fill-map-border text-map-border"
-          }
-        />
+          className="inline-flex"
+          initial={pop ? { opacity: 0, scale: 0.4 } : false}
+          animate={pop ? { opacity: 1, scale: 1 } : undefined}
+          transition={{ duration: 0.42, delay: 0.18 + 0.06 * i, ease: EASE_OVERSHOOT }}
+        >
+          <Star
+            size={size}
+            className={i < rating ? "fill-star text-star" : "fill-warm-line text-warm-line"}
+          />
+        </motion.span>
       ))}
     </div>
   );
 }
 
-function ReviewCard({ review }: { review: Review }) {
-  const isB = review.style === "B";
-  const isC = review.style === "C";
-
-  const outerClass = isC
-    ? "bg-atlas-night border-white/10"
-    : isB
-    ? "bg-compass-light border-map-border-blue"
-    : "bg-white border-map-border";
-
-  const headlineClass = isC
-    ? "text-white"
-    : isB
-    ? "text-compass-blue"
-    : "text-map-text";
-
-  const bodyClass = isC
-    ? "text-white/60"
-    : isB
-    ? "text-compass-blue/70"
-    : "text-map-muted";
-
-  const dividerClass = isC ? "border-white/10" : "border-map-border";
-  const nameClass = isC ? "text-white" : "text-map-text";
-  const locationClass = isC ? "text-white/50" : "text-map-muted";
-  const pillClass = isC
-    ? "bg-white/10 text-white"
-    : "bg-compass-light text-compass-blue";
+function Avatar({ review, index, size = 36 }: { review: Review; index: number; size?: number }) {
+  const tone = toneFor(index);
 
   return (
-    <div
-      className={`flex-shrink-0 w-[280px] sm:w-[340px] mx-3 rounded-3xl p-7 border ${outerClass} shadow-sm hover:shadow-card-hover transition-all duration-300 hover:-translate-y-1 cursor-default flex flex-col justify-between min-h-[260px]`}
+    <span
+      aria-hidden
+      className="rounded-full flex-shrink-0 flex items-center justify-center font-display font-bold"
+      style={{
+        width: size,
+        height: size,
+        background: tone.bg,
+        color: tone.fg,
+        fontSize: size <= 28 ? 10 : size <= 40 ? 12 : 16,
+      }}
     >
-      {/* Top — headline + body */}
-      <div>
-        <h3
-          className={`font-display font-bold text-xl leading-tight mb-2 ${headlineClass}`}
-        >
-          {review.headline}
-        </h3>
-        <p
-          className={`text-sm font-body leading-relaxed line-clamp-3 ${bodyClass}`}
-        >
-          {review.text}
-        </p>
-      </div>
-
-      {/* Bottom — person info + tags */}
-      <div className={`border-t ${dividerClass} mt-5 pt-4`}>
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full flex-shrink-0 flex items-center justify-center text-white font-bold text-sm font-display bg-gradient-to-br from-compass-blue to-trail-orange">
-            {review.init}
-          </div>
-          <div className="flex-1 min-w-0">
-            <p
-              className={`font-semibold text-sm font-display truncate ${nameClass}`}
-            >
-              {review.name}
-            </p>
-            <div className="flex items-center gap-1.5 mt-0.5">
-              <MapPin size={11} className={locationClass} />
-              <span className={`text-xs font-body ${locationClass}`}>
-                Traveled to {review.dest}
-              </span>
-            </div>
-          </div>
-          <StarRow rating={review.rating} dark={isC} />
-        </div>
-
-        <div className="flex items-center justify-between mt-4">
-          <span
-            className={`rounded-full text-[11px] px-3 py-1 font-semibold ${pillClass}`}
-          >
-            {review.dest}
-          </span>
-          <div className="flex items-center gap-1 text-summit-green text-[11px] font-medium">
-            <ShieldCheck size={12} />
-            Verified Traveler
-          </div>
-        </div>
-      </div>
-    </div>
+      {review.init}
+    </span>
   );
 }
 
-export default function Testimonials() {
-  const [hoverPaused, setHoverPaused] = useState(false);
-  const [btnPaused, setBtnPaused] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const pauseTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const { ref: sectionRef, inView } = useInView(0.1);
+/* ────────────────────────────────────────────────────────────────────────────
+   The spotlight card
+   ──────────────────────────────────────────────────────────────────────────── */
 
-  const isPaused = hoverPaused || btnPaused;
-  const playState = isPaused ? "paused" : "running";
+/** Slides in from the side the reader is travelling towards. No blur tween — a
+    filter on a block this large is what drops frames on a mid-range phone. */
+const PANEL: Variants = {
+  enter: (dir: number) => ({ opacity: 0, x: dir * 40 }),
+  center: { opacity: 1, x: 0 },
+  exit: (dir: number) => ({ opacity: 0, x: dir * -40 }),
+};
 
-  useEffect(() => {
-    return () => {
-      if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
-    };
-  }, []);
+function Headline({ text, animate }: { text: string; animate: boolean }) {
+  const className =
+    "font-display font-black text-espresso text-[1.5rem] sm:text-[1.875rem] leading-[1.2] tracking-display mb-4";
 
-  const handleScroll = (dir: "left" | "right") => {
-    if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
-    setBtnPaused(true);
-    setCurrentIndex((prev) =>
-      dir === "right" ? Math.min(prev + 1, 4) : Math.max(prev - 1, 0)
-    );
-    pauseTimerRef.current = setTimeout(() => setBtnPaused(false), 3000);
-    if (scrollRef.current) {
-      scrollRef.current.scrollBy({
-        left: dir === "right" ? 364 : -364,
-        behavior: "smooth",
-      });
-    }
-  };
+  if (!animate) return <p className={className}>{text}</p>;
+
+  /* Word-level rise. The clip wrapper is what makes it read as type lifting
+     into place rather than words fading in. */
+  return (
+    <p className={className} aria-label={text}>
+      {text.split(" ").map((word, i) => (
+        <span key={i} className="inline-block overflow-hidden align-bottom mr-[0.26em]">
+          <motion.span
+            aria-hidden
+            className="inline-block"
+            initial={{ y: "108%" }}
+            animate={{ y: 0 }}
+            transition={{ duration: 0.6, delay: 0.06 + i * 0.05, ease: EASE_SETTLE }}
+          >
+            {word}
+          </motion.span>
+        </span>
+      ))}
+    </p>
+  );
+}
+
+/** The person, set on a tinted panel down the left edge. Fixed content, so it
+    is what holds the card to a constant height as the quotes change length. */
+function Profile({ review, index }: { review: Review; index: number }) {
+  const { reduced } = useMotionProfile();
 
   return (
-    <section className="bg-map-white py-20 overflow-visible">
-      {/* Header */}
-      <div
-        ref={sectionRef}
-        className={`max-w-7xl mx-auto px-4 sm:px-6 text-center mb-14 transition-all duration-700 ease-out ${
-          inView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+    <figcaption className="flex items-center gap-4 md:flex-col md:items-start md:justify-center md:gap-0 p-5 sm:p-6 md:p-8">
+      <motion.span
+        className="inline-flex"
+        initial={reduced ? false : { scale: 0.6, opacity: 0 }}
+        animate={reduced ? undefined : { scale: 1, opacity: 1 }}
+        transition={{ duration: 0.55, ease: EASE_OVERSHOOT }}
+      >
+        <Avatar review={review} index={index} size={52} />
+      </motion.span>
+
+      <div className="min-w-0 md:mt-5">
+        <p className="font-display font-bold text-[15px] text-espresso truncate">
+          {review.name}
+        </p>
+        <span className="mono-chart flex items-center gap-1 text-[10px] uppercase text-warm-taupe/85 mt-1">
+          <MapPin size={9} className="flex-shrink-0" />
+          {review.dest}
+        </span>
+      </div>
+
+      <div className="ml-auto md:ml-0 md:mt-6 flex flex-col items-end md:items-start gap-2">
+        <StarRow rating={review.rating} size={13} animated />
+        <span className="flex items-center gap-1.5 text-summit-green text-[10.5px] font-medium whitespace-nowrap">
+          <ShieldCheck size={12} className="flex-shrink-0" />
+          Verified traveller
+        </span>
+      </div>
+    </figcaption>
+  );
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   The selector
+   ──────────────────────────────────────────────────────────────────────────── */
+
+function Pill({
+  review,
+  index,
+  active,
+  onSelect,
+}: {
+  review: Review;
+  index: number;
+  active: boolean;
+  onSelect: () => void;
+}) {
+  const { reduced } = useMotionProfile();
+
+  return (
+    <motion.button
+      type="button"
+      data-index-row=""
+      aria-current={active ? "true" : undefined}
+      aria-label={`Read ${review.name}'s review — ${review.headline}`}
+      onClick={onSelect}
+      className={`relative flex items-center gap-2 rounded-full border pl-1 pr-3.5 py-1 cursor-pointer ${
+        active
+          ? "border-transparent"
+          : "border-warm-line bg-white/60 hover:bg-white hover:border-blush-tint"
+      }`}
+      whileHover={reduced || active ? undefined : { y: -2 }}
+      whileTap={{ scale: 0.97 }}
+      transition={{ duration: 0.26, ease: EASE_SETTLE }}
+    >
+      {/* One surface that slides between pills rather than six that flick on
+          and off — the movement is what ties the selector to the card. */}
+      {active && (
+        <motion.span
+          layoutId="testimonial-pill"
+          aria-hidden
+          className="absolute inset-0 rounded-full bg-white border border-blush-tint"
+          style={{ boxShadow: "0 6px 18px rgba(28,31,38,0.10)" }}
+          transition={{ duration: 0.44, ease: EASE_SETTLE }}
+        />
+      )}
+
+      <span className="relative">
+        <Avatar review={review} index={index} size={26} />
+      </span>
+      <span
+        className={`relative text-[12px] font-semibold font-display whitespace-nowrap ${
+          active ? "text-espresso" : "text-warm-taupe"
         }`}
       >
-        <span className="text-xs font-semibold tracking-widest uppercase text-trail-orange font-body block mb-3">
-          WHAT TRAVELERS SAY
-        </span>
-        <h2 className="font-display font-black text-[28px] sm:text-4xl lg:text-5xl text-map-text tracking-tight mb-4">
-          Loved by adventurers
-        </h2>
-        <div className="flex items-center justify-center gap-3 mb-4">
-          <span className="text-4xl sm:text-5xl font-black font-display text-compass-blue leading-none">
-            4.9
-          </span>
-          <span className="text-2xl text-map-muted font-body">/5.0</span>
-          <span className="text-trail-orange text-2xl">★★★★★</span>
-        </div>
-        <p className="text-map-muted text-sm font-body">
-          Based on 2,400+ verified reviews from real travelers
-        </p>
-      </div>
+        {review.name}
+      </span>
+    </motion.button>
+  );
+}
 
-      {/* Marquee rows */}
-      <div className="relative">
-        {/* Left edge fade */}
-        <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-map-white to-transparent z-10 pointer-events-none" />
-        {/* Right edge fade */}
-        <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-map-white to-transparent z-10 pointer-events-none" />
+/* ────────────────────────────────────────────────────────────────────────────
+   Section
+   ──────────────────────────────────────────────────────────────────────────── */
 
-        {/* Row 1 — scrolls left */}
-        <div
-          ref={scrollRef}
-          className="overflow-hidden w-full"
-          onMouseEnter={() => setHoverPaused(true)}
-          onMouseLeave={() => setHoverPaused(false)}
-        >
-          <div
-            className="marquee-track"
-            style={{ animationPlayState: playState }}
-          >
-            {[...ALL_REVIEWS, ...ALL_REVIEWS].map((review, i) => (
-              <ReviewCard key={i} review={review} />
-            ))}
+export default function Testimonials() {
+  const { reduced } = useMotionProfile();
+
+  const [active, setActive] = useState(0);
+  const [dir, setDir] = useState(1);
+  const [held, setHeld] = useState(false);
+
+  const stageRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(stageRef, { amount: 0.35 });
+
+  /* Mirrored into a ref because the rAF loop below reads it every frame: if
+     pausing were a dependency the timer would tear down and restart, handing
+     the reader a fresh dwell instead of the remaining one. */
+  const paused = held || !inView;
+  const pausedRef = useRef(paused);
+  useEffect(() => {
+    pausedRef.current = paused;
+  }, [paused]);
+
+  const progress = useMotionValue(0);
+
+  const go = useCallback((delta: number) => {
+    setDir(delta >= 0 ? 1 : -1);
+    setActive((current) => (current + delta + REVIEWS.length) % REVIEWS.length);
+  }, []);
+
+  const select = useCallback(
+    (next: number) => {
+      if (next === active) return;
+      setDir(next > active ? 1 : -1);
+      setActive(next);
+    },
+    [active]
+  );
+
+  useEffect(() => {
+    progress.set(0);
+    if (reduced) {
+      progress.set(1);
+      return;
+    }
+
+    let frame = 0;
+    let last = performance.now();
+
+    const tick = (now: number) => {
+      const elapsed = now - last;
+      last = now;
+
+      if (!pausedRef.current) {
+        const next = progress.get() + elapsed / DWELL;
+        if (next >= 1) {
+          progress.set(1);
+          go(1);
+          return;
+        }
+        progress.set(next);
+      }
+
+      frame = requestAnimationFrame(tick);
+    };
+
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [active, reduced, progress, go]);
+
+  const review = REVIEWS[active];
+
+  return (
+    <section className="relative py-12 sm:py-16 bg-section-warm overflow-hidden">
+      <div className="absolute inset-0 wash-top-left pointer-events-none" />
+
+      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        {/* ── Header ── */}
+        <Stagger className="mb-8 sm:mb-10" gap={0.07}>
+          <div className="flex flex-wrap items-end justify-between gap-6 border-b border-warm-line pb-7">
+            <div>
+              <StaggerItem as="p" className="eyebrow mb-3">
+                What Travellers Say
+              </StaggerItem>
+              <StaggerItem
+                as="h2"
+                className="font-display font-black text-4xl md:text-5xl text-espresso leading-[1.05] tracking-display"
+              >
+                Loved by <span className="text-signature">adventurers</span>
+              </StaggerItem>
+            </div>
+
+            <StaggerItem className="flex items-center gap-3 pb-1">
+              <StarRow rating={5} size={14} />
+              <span className="mono-chart text-[11px] uppercase text-warm-taupe">
+                4.9 / 5.0 ·{" "}
+                <AnimatedNumber target={2400} suffix="+" duration={1600} /> verified reviews
+              </span>
+            </StaggerItem>
           </div>
-        </div>
-      </div>
+        </Stagger>
 
-      {/* Controls */}
-      <div className="flex items-center justify-center gap-4 mt-10">
-        <button
-          onClick={() => handleScroll("left")}
-          aria-label="Scroll left"
-          className="w-12 h-12 rounded-2xl bg-white border border-map-border shadow-card flex items-center justify-center cursor-pointer transition-all duration-200 hover:bg-compass-blue hover:border-compass-blue hover:shadow-blue-sm group"
+        {/* ── Stage ── */}
+        <div
+          ref={stageRef}
+          role="group"
+          aria-roledescription="carousel"
+          aria-label="Traveller reviews"
+          onMouseEnter={() => setHeld(true)}
+          onMouseLeave={() => setHeld(false)}
+          onFocusCapture={() => setHeld(true)}
+          onBlurCapture={() => setHeld(false)}
         >
-          <ChevronLeft
-            size={20}
-            className="text-map-muted group-hover:text-white transition-colors"
-          />
-        </button>
+          <Reveal distance={28}>
+            {/* Dragging the card sideways advances it, which is how anyone on a
+                phone will actually move through these. */}
+            <motion.div
+              className="relative rounded-3xl bg-white border border-warm-line overflow-hidden"
+              style={{
+                boxShadow: "0 1px 2px rgba(28,31,38,0.04), 0 18px 50px rgba(28,31,38,0.07)",
+              }}
+              drag={reduced ? false : "x"}
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.1}
+              dragMomentum={false}
+              onDragEnd={(_, info) => {
+                if (info.offset.x < -64) go(1);
+                else if (info.offset.x > 64) go(-1);
+              }}
+            >
+              {/* The signature gradient as a hairline along the top edge — the
+                  card's one piece of brand colour. Needs the z-index: the
+                  panels below it are opaque and paint over the first 3px,
+                  which otherwise clips the line to the quote half of the card. */}
+              <span
+                aria-hidden
+                className="absolute inset-x-0 top-0 h-[3px] bg-cta-gradient z-10"
+              />
 
-        <div className="flex items-center gap-2 px-4">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div
-              key={i}
-              className={`rounded-full transition-all duration-300 ${
-                i === currentIndex
-                  ? "w-6 h-2 bg-compass-blue"
-                  : "w-2 h-2 bg-map-border"
-              }`}
-            />
-          ))}
+              <AnimatePresence mode="wait" custom={dir} initial={false}>
+                <motion.figure
+                  key={review.name}
+                  custom={dir}
+                  variants={reduced ? undefined : PANEL}
+                  initial={reduced ? { opacity: 0 } : "enter"}
+                  animate={reduced ? { opacity: 1 } : "center"}
+                  exit={reduced ? { opacity: 0 } : "exit"}
+                  transition={{ duration: reduced ? 0.22 : 0.48, ease: EASE_SETTLE }}
+                  /* Floored at the tallest of the six so the transport row and
+                     the pills below it hold still as the rotation moves on.
+                     Two values because the stacked layout below `md` lets the
+                     quote length drive the height (measured 279–330px), while
+                     the two-column one barely moves (238–260px). */
+                  className="grid grid-cols-1 md:grid-cols-[15rem_1fr] min-h-[21rem] md:min-h-[16.5rem]"
+                >
+                  <div className="relative bg-blush-wash border-b md:border-b-0 md:border-r border-warm-line">
+                    <Profile review={review} index={active} />
+                  </div>
+
+                  {/* Centred rather than top-aligned: the profile panel sets the
+                      card height, so a two-line quote would otherwise sit up
+                      against the top edge with a band of white beneath it. */}
+                  <blockquote className="relative flex flex-col justify-center p-5 sm:p-7 md:p-9">
+                    {/* Watermark, set in the corner rather than in the flow so
+                        it decorates the panel instead of pushing the quote
+                        down and stealing a line of vertical space. */}
+                    <span
+                      aria-hidden
+                      className="absolute top-3 right-6 font-display font-black text-[5rem] leading-none text-muted-coral/[0.09] select-none pointer-events-none"
+                    >
+                      &rdquo;
+                    </span>
+
+                    <div className="relative">
+                      <Headline text={review.headline} animate={!reduced} />
+                      <motion.p
+                        className="text-warm-taupe text-[14.5px] sm:text-[15.5px] font-body leading-[1.75] max-w-2xl"
+                        initial={reduced ? false : { opacity: 0, y: 12 }}
+                        animate={reduced ? undefined : { opacity: 1, y: 0 }}
+                        transition={{ duration: 0.55, delay: 0.16, ease: EASE_SETTLE }}
+                      >
+                        {review.text}
+                      </motion.p>
+                    </div>
+                  </blockquote>
+                </motion.figure>
+              </AnimatePresence>
+
+              {/* ── Transport ── */}
+              <div className="flex items-center gap-4 border-t border-warm-line px-5 sm:px-7 md:px-9 py-3.5">
+                <span className="mono-chart text-[10px] uppercase text-warm-taupe/80 tabular-nums">
+                  {String(active + 1).padStart(2, "0")} / {String(REVIEWS.length).padStart(2, "0")}
+                </span>
+
+                <span className="relative flex-1 h-[3px] rounded-full bg-warm-line overflow-hidden">
+                  <motion.span
+                    className="absolute inset-0 bg-cta-gradient"
+                    style={{ scaleX: progress, originX: 0 }}
+                  />
+                </span>
+
+                <div className="flex items-center gap-2">
+                  {([-1, 1] as const).map((delta) => (
+                    <motion.button
+                      key={delta}
+                      type="button"
+                      onClick={() => go(delta)}
+                      aria-label={delta < 0 ? "Previous review" : "Next review"}
+                      className="w-8 h-8 rounded-full border border-warm-line bg-white text-warm-taupe flex items-center justify-center cursor-pointer hover:text-coral-ink hover:border-blush-tint"
+                      whileHover={reduced ? undefined : { y: -2 }}
+                      whileTap={{ scale: 0.94 }}
+                      transition={{ duration: 0.24, ease: EASE_SETTLE }}
+                    >
+                      {delta < 0 ? <ChevronLeft size={14} /> : <ChevronRight size={14} />}
+                    </motion.button>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          </Reveal>
+
+          {/* Selector. Wraps on narrow viewports, so every reviewer stays
+              reachable without a scroller. */}
+          <Stagger
+            className="flex flex-wrap justify-center gap-2 mt-6"
+            delay={0.12}
+            gap={0.05}
+          >
+            {REVIEWS.map((item, i) => (
+              <StaggerItem key={item.name}>
+                <Pill
+                  review={item}
+                  index={i}
+                  active={i === active}
+                  onSelect={() => select(i)}
+                />
+              </StaggerItem>
+            ))}
+          </Stagger>
         </div>
 
-        <button
-          onClick={() => handleScroll("right")}
-          aria-label="Scroll right"
-          className="w-12 h-12 rounded-2xl bg-white border border-map-border shadow-card flex items-center justify-center cursor-pointer transition-all duration-200 hover:bg-compass-blue hover:border-compass-blue hover:shadow-blue-sm group"
-        >
-          <ChevronRight
-            size={20}
-            className="text-map-muted group-hover:text-white transition-colors"
-          />
-        </button>
+        {/* ── Footing ── */}
+        <Reveal className="mt-9 pt-6 border-t border-warm-line" delay={0.05}>
+          <p className="flex items-center gap-2 text-[11.5px] text-warm-taupe font-body">
+            <ShieldCheck size={13} className="text-summit-green flex-shrink-0" />
+            Every review comes from a completed, paid booking with a verified operator.
+          </p>
+        </Reveal>
       </div>
     </section>
   );

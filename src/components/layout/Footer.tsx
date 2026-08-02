@@ -62,8 +62,8 @@ function AtlasoIcon() {
         fill="white"
         fillOpacity="0.25"
       />
-      {/* Rose-pink dot at summit */}
-      <circle cx="17" cy="7" r="2.4" fill="#E91E63" />
+      {/* Accent dot at summit */}
+      <circle cx="17" cy="7" r="2.4" fill="#D9756C" />
     </svg>
   );
 }
@@ -98,7 +98,7 @@ const COMPANY = [
 export default function Footer() {
   return (
     <footer className="bg-atlas-night pt-14 pb-6">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6">
 
         {/* ── Main grid ── */}
         <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr_1fr] gap-10 mb-12">

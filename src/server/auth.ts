@@ -175,12 +175,3 @@ export async function getSession(): Promise<Session | null> {
   const token = store.get(COOKIE)?.value;
   return token ? decode(token) : null;
 }
-
-/** Demo credentials shown on the login screens so the portals can be tried. */
-export const DEMO_HINT = {
-  operatorPassword: OPERATOR_PASSWORD,
-  adminEmail: ADMIN_EMAIL,
-  adminPassword: ADMIN_PASSWORD,
-  usingDefaults:
-    !process.env.OPERATOR_DEMO_PASSWORD && !process.env.ADMIN_DEMO_PASSWORD,
-};

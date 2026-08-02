@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import { CalendarCheck, Users, Wallet } from "lucide-react";
 import { getSession } from "@/server/auth";
 import { getOperatorDashboard } from "@/server/portal";
 import { Panel, EmptyRow, StatusPill, StatTile } from "@/components/portal/PortalChrome";
@@ -21,9 +22,9 @@ export default async function OperatorBookingsPage() {
   return (
     <div className="flex flex-col gap-5">
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-        <StatTile label="Confirmed" value={String(totals.confirmedBookings)} />
-        <StatTile label="Travellers" value={String(totals.travellers)} />
-        <StatTile label="Awaiting payout" value={formatPrice(totals.awaitingPayout)} tone={totals.awaitingPayout > 0 ? "warn" : "default"} />
+        <StatTile label="Confirmed" value={String(totals.confirmedBookings)} icon={<CalendarCheck size={12} />} />
+        <StatTile label="Travellers" value={String(totals.travellers)} icon={<Users size={12} />} />
+        <StatTile label="Awaiting payout" value={formatPrice(totals.awaitingPayout)} tone={totals.awaitingPayout > 0 ? "warn" : "default"} icon={<Wallet size={12} />} />
         <StatTile label="Settled" value={formatPrice(totals.paidOut)} tone="good" />
       </div>
 
@@ -39,7 +40,7 @@ export default async function OperatorBookingsPage() {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[720px] text-[13px]">
               <thead>
-                <tr className="border-b border-map-border">
+                <tr className="border-b border-map-border bg-[#FBF8F6]">
                   <Th>Reference</Th>
                   <Th>Trip</Th>
                   <Th>Departure</Th>
@@ -52,7 +53,10 @@ export default async function OperatorBookingsPage() {
               </thead>
               <tbody>
                 {data.bookings.map((b) => (
-                  <tr key={b.id} className="border-b border-map-border last:border-0">
+                  <tr
+                    key={b.id}
+                    className="border-b border-map-border last:border-0 hover:bg-[#FBF8F6] transition-colors"
+                  >
                     <Td>
                       <span className="font-semibold text-map-text tnum">{b.reference}</span>
                     </Td>

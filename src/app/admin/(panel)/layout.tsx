@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { ShieldCheck } from "lucide-react";
 import { getSession } from "@/server/auth";
 import { adminLogoutAction } from "@/app/admin/actions";
 import { PortalShell } from "@/components/portal/PortalChrome";
@@ -11,6 +12,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <PortalShell
       title="Admin"
       subtitle="Platform overview"
+      icon={<ShieldCheck size={18} />}
       logoutAction={adminLogoutAction}
       nav={[
         { href: "/admin", label: "Overview", exact: true },

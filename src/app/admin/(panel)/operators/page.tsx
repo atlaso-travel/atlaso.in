@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import { getVerificationQueue } from "@/server/portal";
 import { setVerificationAction } from "@/app/admin/actions";
 import { Panel, StatusPill } from "@/components/portal/PortalChrome";
@@ -9,6 +10,19 @@ const DOC_LABEL: Record<string, string> = {
   PAN: "PAN",
   LICENSE: "Tourism licence",
   INSURANCE: "Liability insurance",
+};
+
+const DOC_BADGE_STYLES: Record<string, string> = {
+  APPROVED: "bg-summit-light text-summit-green",
+  PENDING: "bg-compass-light text-compass-blue",
+  REJECTED: "bg-rose-50 text-rose-600",
+};
+
+const AVATAR_STYLES: Record<string, string> = {
+  VERIFIED: "bg-summit-green",
+  PENDING: "bg-gradient-to-br from-muted-coral to-warm-sand",
+  SUSPENDED: "bg-map-muted",
+  REJECTED: "bg-map-muted",
 };
 
 export default async function AdminOperatorsPage() {
@@ -33,7 +47,20 @@ export default async function AdminOperatorsPage() {
           return (
             <Panel
               key={o.id}
-              title={o.name}
+              title={
+                <span className="flex items-center gap-2.5">
+                  <span
+                    className={cn(
+                      "w-9 h-9 rounded-full flex items-center justify-center text-white font-bold text-[11px] font-display flex-shrink-0",
+                      AVATAR_STYLES[o.verificationStatus] ?? "bg-map-muted"
+                    )}
+                    aria-hidden
+                  >
+                    {o.name.slice(0, 2).toUpperCase()}
+                  </span>
+                  {o.name}
+                </span>
+              }
               description={`${o.legalName} · ${o.city}, ${o.state} · since ${o.foundedYear}`}
               action={<StatusPill status={o.verificationStatus} />}
             >
@@ -70,16 +97,20 @@ export default async function AdminOperatorsPage() {
                   <span className="label-util">
                     Documents ({approved}/{o.documents.length} approved)
                   </span>
-                  <ul className="mt-1 flex flex-col gap-1">
+                  <div className="mt-1.5 flex flex-wrap gap-1.5">
                     {o.documents.map((d) => (
-                      <li key={d.id} className="flex items-center gap-2 text-[12.5px] font-body">
-                        <span className="text-map-text flex-1 min-w-0 truncate">
-                          {DOC_LABEL[d.type] ?? d.type}
-                        </span>
-                        <StatusPill status={d.status} />
-                      </li>
+                      <span
+                        key={d.id}
+                        className={cn(
+                          "inline-flex items-center gap-1.5 text-[11px] font-semibold px-2 py-1 rounded-lg font-body",
+                          DOC_BADGE_STYLES[d.status] ?? "bg-[#F1F5F9] text-map-muted"
+                        )}
+                      >
+                        <span className="h-1.5 w-1.5 rounded-full bg-current opacity-70" aria-hidden />
+                        {DOC_LABEL[d.type] ?? d.type}
+                      </span>
                     ))}
-                  </ul>
+                  </div>
                 </div>
               </div>
 

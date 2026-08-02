@@ -1,6 +1,6 @@
 import { getLiveMarginRules, getLivePackages, getLiveOperators } from "@/server/overrides";
 import { toggleMarginRuleAction, deleteMarginRuleAction } from "@/app/admin/actions";
-import { Panel, StatusPill } from "@/components/portal/PortalChrome";
+import { Panel, ScopeBadge } from "@/components/portal/PortalChrome";
 import MarginRuleForm from "@/components/portal/MarginRuleForm";
 import { destinations } from "@/data/destinations";
 import { formatPrice } from "@/lib/utils";
@@ -59,7 +59,7 @@ export default async function AdminMarginsPage() {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[840px] text-[13px]">
             <thead>
-              <tr className="border-b border-map-border">
+              <tr className="border-b border-map-border bg-[#FBF8F6]">
                 <th className="label-util text-left px-5 py-2.5">Rule</th>
                 <th className="label-util text-left px-3 py-2.5">Scope</th>
                 <th className="label-util text-left px-3 py-2.5">Margin</th>
@@ -71,7 +71,10 @@ export default async function AdminMarginsPage() {
             </thead>
             <tbody>
               {rules.map((rule) => (
-                <tr key={rule.id} className="border-b border-map-border last:border-0 align-top">
+                <tr
+                  key={rule.id}
+                  className="border-b border-map-border last:border-0 align-top hover:bg-[#FBF8F6] transition-colors"
+                >
                   <td className="px-5 py-3">
                     <span className="block font-semibold text-map-text">{rule.id}</span>
                     <span className="block text-[11.5px] text-map-muted font-body mt-0.5 max-w-[280px]">
@@ -79,7 +82,7 @@ export default async function AdminMarginsPage() {
                     </span>
                   </td>
                   <td className="px-3 py-3">
-                    <StatusPill status={rule.scope} />
+                    <ScopeBadge scope={rule.scope} />
                     {(rule.operatorId || rule.destinationId || rule.packageId) && (
                       <span className="block text-[11px] text-map-muted font-body mt-1">
                         {[rule.operatorId, rule.destinationId, rule.packageId]

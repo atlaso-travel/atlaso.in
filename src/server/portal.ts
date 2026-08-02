@@ -27,6 +27,7 @@ export interface OperatorPackageRow {
   destinationName: string;
   status: Package["status"];
   duration: string;
+  image: string;
   retailPrice: number;
   b2bCost: number;
   /** Percentage of retail the operator is discounting to Atlaso. */
@@ -35,6 +36,7 @@ export interface OperatorPackageRow {
   validationNote: string | null;
   departures: number;
   seatsLeft: number;
+  seatsTotal: number;
 }
 
 export interface OperatorDashboard {
@@ -61,6 +63,7 @@ function toRow(pkg: Package): OperatorPackageRow {
     (sum, d) => sum + Math.max(0, d.seatsTotal - d.seatsBooked),
     0
   );
+  const seatsTotal = pkg.departures.reduce((sum, d) => sum + d.seatsTotal, 0);
   return {
     id: pkg.id,
     slug: pkg.slug,
@@ -68,6 +71,7 @@ function toRow(pkg: Package): OperatorPackageRow {
     destinationName: destinationById[pkg.destinationId]?.name ?? pkg.destinationId,
     status: pkg.status,
     duration: pkg.duration,
+    image: pkg.images[0],
     retailPrice: pkg.pricing.retailPrice,
     b2bCost: pkg.pricing.b2bCost,
     discountPct: Math.round(
@@ -77,6 +81,7 @@ function toRow(pkg: Package): OperatorPackageRow {
     validationNote: pkg.pricing.validationNote,
     departures: pkg.departures.length,
     seatsLeft,
+    seatsTotal,
   };
 }
 

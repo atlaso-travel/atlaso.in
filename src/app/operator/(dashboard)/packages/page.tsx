@@ -6,6 +6,7 @@ import { getOperatorDashboard } from "@/server/portal";
 import { togglePackageStatusAction } from "@/app/operator/actions";
 import { Panel, EmptyRow, StatusPill } from "@/components/portal/PortalChrome";
 import PricingEditor from "@/components/portal/PricingEditor";
+import GradedImage from "@/components/ui/GradedImage";
 import { formatPrice } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
@@ -57,10 +58,28 @@ export default async function OperatorPackagesPage({
         </Panel>
       ) : (
         <div className="flex flex-col gap-4">
-          {data.packages.map((pkg) => (
+          {data.packages.map((pkg) => {
+            const seatsFilledPct =
+              pkg.seatsTotal > 0
+                ? Math.round(((pkg.seatsTotal - pkg.seatsLeft) / pkg.seatsTotal) * 100)
+                : 0;
+
+            return (
             <Panel
               key={pkg.id}
-              title={pkg.title}
+              title={
+                <div className="flex items-center gap-3 min-w-0">
+                  <GradedImage
+                    src={pkg.image}
+                    alt={pkg.title}
+                    sizes="56px"
+                    ratio="fill"
+                    focus="landscape"
+                    className="h-11 w-11 flex-shrink-0 rounded-lg"
+                  />
+                  <span className="min-w-0 truncate">{pkg.title}</span>
+                </div>
+              }
               description={`${pkg.destinationName} · ${pkg.duration} · ${pkg.departures} departure${pkg.departures === 1 ? "" : "s"} · ${pkg.seatsLeft} seats open`}
               action={
                 <div className="flex items-center gap-2">
@@ -80,6 +99,18 @@ export default async function OperatorPackagesPage({
                 </div>
               }
             >
+              <div className="px-5 pt-4 flex items-center gap-3">
+                <div className="h-1.5 flex-1 rounded-full bg-[#F1F5F9] overflow-hidden">
+                  <div
+                    className="h-full rounded-full"
+                    style={{ width: `${seatsFilledPct}%`, backgroundImage: "var(--gradient-signature)" }}
+                  />
+                </div>
+                <span className="mono-chart text-[10.5px] text-map-muted whitespace-nowrap">
+                  {seatsFilledPct}% seats filled
+                </span>
+              </div>
+
               <div className="p-5">
                 <PricingEditor
                   packageId={pkg.id}
@@ -106,7 +137,8 @@ export default async function OperatorPackagesPage({
                 </div>
               </div>
             </Panel>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>

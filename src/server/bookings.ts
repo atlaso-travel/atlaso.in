@@ -379,3 +379,186 @@ export function verifyWebhookSignature(
   const expected = createHmac("sha256", webhookSecret).update(rawBody).digest("hex");
   return safeEqual(expected, signature);
 }
+
+/* ── Demo seed ────────────────────────────────────────────────────────────
+   Bookings and leads are in-memory, so a fresh boot always starts empty —
+   honest for a real operator, useless for showing what the portal looks
+   like with a season behind it. Summit Squad is the account handed out as
+   the demo login (see .env.example), so it alone gets a seeded history: a
+   spread of confirmed bookings across the last ~9 weeks in varying payout
+   states, a couple still unpaid, and a few callback leads. Guarded by
+   `store.bookings.size` rather than a separate flag so it only ever runs
+   once per process and never overwrites real activity. */
+function daysAgoIso(n: number): string {
+  const d = new Date();
+  d.setUTCDate(d.getUTCDate() - n);
+  return d.toISOString();
+}
+
+function seedDemoBookings(): void {
+  if (store.bookings.size > 0) return;
+
+  const CONTACTS: readonly [string, string, string][] = [
+    ["Aarav Mehta", "aarav.mehta@example.com", "+91 98200 11234"],
+    ["Diya Kapoor", "diya.kapoor@example.com", "+91 98110 22345"],
+    ["Kabir Solanki", "kabir.solanki@example.com", "+91 99870 33456"],
+    ["Meera Nair", "meera.nair@example.com", "+91 98450 44567"],
+    ["Rohan Iyer", "rohan.iyer@example.com", "+91 99020 55678"],
+    ["Ananya Ghosh", "ananya.ghosh@example.com", "+91 98330 66789"],
+    ["Vivaan Rao", "vivaan.rao@example.com", "+91 99560 77890"],
+  ];
+
+  const DEMO_BOOKINGS: {
+    packageId: string;
+    createdDaysAgo: number;
+    tripDaysAgo: number;
+    travellerCount: number;
+    contact: readonly [string, string, string];
+    paymentStatus: PaymentStatus;
+    payoutStatus: PayoutStatus;
+  }[] = [
+    { packageId: "summit-spiti-6d", createdDaysAgo: 63, tripDaysAgo: 49, travellerCount: 2, contact: CONTACTS[0], paymentStatus: "PAID", payoutStatus: "PAID" },
+    { packageId: "summit-spiti-6d", createdDaysAgo: 56, tripDaysAgo: 42, travellerCount: 4, contact: CONTACTS[1], paymentStatus: "PAID", payoutStatus: "PAID" },
+    { packageId: "summit-squad-ladakh-6d", createdDaysAgo: 51, tripDaysAgo: 37, travellerCount: 2, contact: CONTACTS[2], paymentStatus: "PAID", payoutStatus: "PAID" },
+    { packageId: "summit-squad-rishikesh-3d", createdDaysAgo: 47, tripDaysAgo: 40, travellerCount: 6, contact: CONTACTS[3], paymentStatus: "PAID", payoutStatus: "PAID" },
+    { packageId: "summit-spiti-6d", createdDaysAgo: 42, tripDaysAgo: 28, travellerCount: 3, contact: CONTACTS[4], paymentStatus: "PAID", payoutStatus: "PAID" },
+    { packageId: "summit-squad-rishikesh-3d", createdDaysAgo: 38, tripDaysAgo: 31, travellerCount: 8, contact: CONTACTS[5], paymentStatus: "PAID", payoutStatus: "PAID" },
+    { packageId: "summit-squad-ladakh-6d", createdDaysAgo: 33, tripDaysAgo: 19, travellerCount: 2, contact: CONTACTS[6], paymentStatus: "PAID", payoutStatus: "SCHEDULED" },
+    { packageId: "summit-spiti-6d", createdDaysAgo: 28, tripDaysAgo: 14, travellerCount: 2, contact: CONTACTS[0], paymentStatus: "PAID", payoutStatus: "SCHEDULED" },
+    { packageId: "summit-squad-rishikesh-3d", createdDaysAgo: 24, tripDaysAgo: 17, travellerCount: 4, contact: CONTACTS[1], paymentStatus: "PAID", payoutStatus: "SCHEDULED" },
+    { packageId: "summit-squad-ladakh-6d", createdDaysAgo: 19, tripDaysAgo: 5, travellerCount: 3, contact: CONTACTS[2], paymentStatus: "PAID", payoutStatus: "SCHEDULED" },
+    { packageId: "summit-spiti-6d", createdDaysAgo: 14, tripDaysAgo: 0, travellerCount: 2, contact: CONTACTS[3], paymentStatus: "PAID", payoutStatus: "SCHEDULED" },
+    { packageId: "summit-squad-rishikesh-3d", createdDaysAgo: 9, tripDaysAgo: 2, travellerCount: 10, contact: CONTACTS[4], paymentStatus: "PAID", payoutStatus: "SCHEDULED" },
+    { packageId: "summit-squad-ladakh-6d", createdDaysAgo: 5, tripDaysAgo: 8, travellerCount: 2, contact: CONTACTS[5], paymentStatus: "PAID", payoutStatus: "SCHEDULED" },
+    { packageId: "summit-spiti-6d", createdDaysAgo: 3, tripDaysAgo: 11, travellerCount: 2, contact: CONTACTS[6], paymentStatus: "UNPAID", payoutStatus: "PENDING" },
+    { packageId: "summit-squad-rishikesh-3d", createdDaysAgo: 1, tripDaysAgo: 20, travellerCount: 4, contact: CONTACTS[0], paymentStatus: "FAILED", payoutStatus: "PENDING" },
+  ];
+
+  for (const spec of DEMO_BOOKINGS) {
+    const pkg = packageById[spec.packageId];
+    if (!pkg) continue;
+    const operator = operatorById[pkg.operatorId];
+    const p = pkg.pricing;
+    const count = spec.travellerCount;
+    const [contactName, contactEmail, contactPhone] = spec.contact;
+    const confirmed = spec.paymentStatus === "PAID";
+
+    const booking: Booking = {
+      id: randomUUID(),
+      reference: makeReference("ATL"),
+
+      packageId: pkg.id,
+      packageTitle: pkg.title,
+      operatorId: pkg.operatorId,
+      operatorName: operator?.name ?? pkg.operatorName,
+      destinationId: pkg.destinationId,
+      departureId: null,
+      startDate: daysAgoIso(spec.tripDaysAgo).slice(0, 10),
+
+      travellerCount: count,
+      travellers: Array.from({ length: count }, (_, i) => ({
+        fullName: i === 0 ? contactName : `Guest ${i + 1}`,
+        age: 28,
+      })),
+      contactName,
+      contactEmail,
+      contactPhone,
+      notes: "",
+
+      snapshotRetailPrice: p.retailPrice,
+      snapshotB2bCost: p.b2bCost,
+      snapshotPlatformPrice: p.platformPrice,
+      snapshotMarginPerTraveller: p.marginAmount,
+      snapshotMarginRuleId: p.appliedMarginRuleId,
+      totalAmount: p.platformPrice * count,
+      operatorPayable: p.b2bCost * count,
+      platformMargin: p.marginAmount * count,
+      customerSavings: p.savings * count,
+      currency: "INR",
+
+      status: confirmed ? "CONFIRMED" : "PENDING",
+      paymentStatus: spec.paymentStatus,
+      payoutStatus: spec.payoutStatus,
+
+      razorpayOrderId: null,
+      razorpayPaymentId: confirmed ? randomUUID() : null,
+
+      createdAt: daysAgoIso(spec.createdDaysAgo),
+      confirmedAt: confirmed ? daysAgoIso(spec.createdDaysAgo) : null,
+    };
+
+    store.bookings.set(booking.id, booking);
+    store.byReference.set(booking.reference, booking.id);
+  }
+
+  const DEMO_LEADS: {
+    name: string;
+    phone: string;
+    email: string;
+    packageId: string | null;
+    message: string;
+    status: LeadStatus;
+    daysAgo: number;
+  }[] = [
+    {
+      name: "Rohan Iyer",
+      phone: "+91 99020 55678",
+      email: "rohan.iyer@example.com",
+      packageId: "summit-squad-rishikesh-3d",
+      message: "Can we get a group rate for 15 people from the same college?",
+      status: "NEW",
+      daysAgo: 6,
+    },
+    {
+      name: "Meera Nair",
+      phone: "+91 98450 44567",
+      email: "meera.nair@example.com",
+      packageId: "summit-squad-ladakh-6d",
+      message: "Does the hostel dorm have mixed rooms or can we book a female-only one?",
+      status: "CONTACTED",
+      daysAgo: 10,
+    },
+    {
+      name: "Kabir Solanki",
+      phone: "+91 99870 33456",
+      email: "kabir.solanki@example.com",
+      packageId: "summit-spiti-6d",
+      message: "Looking to book for 6 friends in the September batch — can you hold seats?",
+      status: "NEW",
+      daysAgo: 2,
+    },
+    {
+      name: "Ayesha Khan",
+      phone: "+91 98220 88901",
+      email: "ayesha.khan@example.com",
+      packageId: null,
+      message: "Do you run any all-women batches on your budget trips?",
+      status: "QUOTED",
+      daysAgo: 15,
+    },
+  ];
+
+  for (const spec of DEMO_LEADS) {
+    const pkg = spec.packageId ? packageById[spec.packageId] : null;
+    const lead: Lead = {
+      id: randomUUID(),
+      reference: makeReference("LEAD"),
+      packageId: pkg?.id ?? null,
+      packageTitle: pkg?.title ?? null,
+      destinationId: pkg?.destinationId ?? null,
+      name: spec.name,
+      phone: spec.phone,
+      email: spec.email,
+      travelDate: null,
+      travellerCount: null,
+      budgetRange: null,
+      message: spec.message,
+      status: spec.status,
+      source: "portal-demo-seed",
+      createdAt: daysAgoIso(spec.daysAgo),
+    };
+    store.leads.set(lead.id, lead);
+  }
+}
+
+seedDemoBookings();

@@ -5,7 +5,9 @@ import HeroSection from "@/components/home/HeroSection";
 import TrendingDestinations from "@/components/home/TrendingDestinations";
 import HowItWorks from "@/components/home/HowItWorks";
 import WhyAtlaso from "@/components/home/WhyAtlaso";
-import ComparisonPreview from "@/components/home/ComparisonPreview";
+// import ComparisonPreview from "@/components/home/ComparisonPreview";
+import TopOperators from "@/components/home/TopOperators";
+import Testimonials from "@/components/home/Testimonials";
 import FAQ from "@/components/home/FAQ";
 import CtaBanner from "@/components/home/CtaBanner";
 // import HomeFacts from "@/components/home/HomeFacts";
@@ -47,8 +49,11 @@ export default async function Home() {
       <WebSiteSchema />
       <FaqSchema items={siteFaqs} />
 
-      <Navbar />
-      <main>
+      {/* Floats over the hero photograph and goes solid once past it. The home
+          page is the only route that opens on a full-bleed image, so it is the
+          only one that asks for the transparent bar. */}
+      <Navbar overlay />
+      <main className="relative">
         <HeroSection />
         {/* Server-rendered factual summary — the first crawlable prose on the
             site, and the paragraph most likely to be quoted by an answer engine
@@ -57,7 +62,9 @@ export default async function Home() {
         <TrendingDestinations />
         <HowItWorks />
         <WhyAtlaso />
-        <ComparisonPreview />
+        {/* <ComparisonPreview /> */}
+        <TopOperators />
+        <Testimonials />
         <FAQ />
         <CtaBanner />
       </main>

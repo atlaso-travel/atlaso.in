@@ -90,7 +90,7 @@ export default function CompareView({
 
   return (
     <main className="min-h-screen bg-map-white pb-32">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-5 sm:py-7">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-5 sm:py-7">
         {/* Header */}
         <div className="flex items-center justify-between gap-3 mb-4">
           <Link
@@ -454,7 +454,7 @@ export default function CompareView({
 
       {/* Sticky action bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-atlas-night z-50 shadow-2xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
           <div className="min-w-0 hidden sm:block">
             <p className="text-white text-[12.5px] font-bold">
               {n} operator{n === 1 ? "" : "s"} selected

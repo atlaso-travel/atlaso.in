@@ -1,7 +1,7 @@
 export default function CompareLoading() {
   return (
     <div className="min-h-screen bg-map-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-7">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-7">
         <div className="h-8 w-64 rounded-lg bg-map-card border border-map-border animate-pulse mb-6" />
         <div className="grid gap-3" style={{ gridTemplateColumns: "132px repeat(3, minmax(184px, 1fr))" }}>
           <div />

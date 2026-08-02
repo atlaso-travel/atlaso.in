@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useCallback } from "react";
 import { Users } from "lucide-react";
+import FieldPopover from "./FieldPopover";
 
 interface Counts {
   adults: number;
@@ -37,25 +38,11 @@ export default function TravelersInput({ value, onChange }: TravelersInputProps)
   const [editVal, setEditVal] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setIsOpen(false);
-        setEditing(null);
-      }
-    };
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        setIsOpen(false);
-        setEditing(null);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    document.addEventListener("keydown", handleKey);
-    return () => {
-      document.removeEventListener("mousedown", handler);
-      document.removeEventListener("keydown", handleKey);
-    };
+  /* FieldPopover owns dismissal — outside clicks, the scrim and Escape all
+     route back through here. */
+  const close = useCallback(() => {
+    setIsOpen(false);
+    setEditing(null);
   }, []);
 
   const update = (key: keyof Counts, delta: number, min: number) => {
@@ -104,83 +91,88 @@ export default function TravelersInput({ value, onChange }: TravelersInputProps)
       </div>
 
       {/* Popup */}
-      {isOpen && (
-        <div className="absolute top-[calc(100%+12px)] left-0 right-0 z-[9999] w-full md:w-[272px] md:left-auto md:right-0 bg-atlas-night rounded-2xl shadow-[0_25px_80px_rgba(0,0,0,0.55)] border border-white/15 overflow-hidden">
-          {/* Header */}
-          <div
-            className="px-4 py-3 border-b border-white/10"
-            style={{ background: "linear-gradient(135deg, rgba(255,90,95,0.16) 0%, rgba(249,115,22,0.05) 100%)" }}
-          >
-            <div className="flex items-center gap-2">
-              <Users size={13} className="text-trail-orange/70" />
-              <p className="text-white font-bold text-sm font-display">Travelers</p>
-            </div>
-          </div>
-
-          {/* Rows */}
-          {ROWS.map(({ key, label, sub, min }) => (
-            <div
-              key={key}
-              className="flex items-center justify-between px-4 py-3 border-b border-white/[0.05] last:border-0 hover:bg-white/[0.03] transition-colors"
-            >
-              <div className="flex-1">
-                <p className="text-white font-semibold text-sm font-body">{label}</p>
-                <p className="text-white/35 text-xs font-body">{sub}</p>
-              </div>
-
-              <div className="flex items-center gap-2.5">
-                <button
-                  onClick={() => update(key, -1, min)}
-                  disabled={counts[key] <= min}
-                  className="w-8 h-8 rounded-full flex items-center justify-center border border-white/15 text-white/50 text-base hover:border-compass-blue hover:text-compass-blue hover:bg-compass-blue/10 transition-all disabled:opacity-25 disabled:cursor-not-allowed"
-                >
-                  –
-                </button>
-
-                {editing === key ? (
-                  <input
-                    type="number"
-                    value={editVal}
-                    onChange={(e) => setEditVal(e.target.value)}
-                    onBlur={() => commitEdit(key, min)}
-                    onKeyDown={(e) => e.key === "Enter" && commitEdit(key, min)}
-                    autoFocus
-                    min={min}
-                    max={20}
-                    className="w-8 bg-transparent text-white font-bold text-sm text-center outline-none border-b border-compass-blue [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                  />
-                ) : (
-                  <span
-                    onClick={() => startEdit(key)}
-                    className="text-white font-bold text-sm w-8 text-center cursor-pointer select-none font-display"
-                  >
-                    {counts[key]}
-                  </span>
-                )}
-
-                <button
-                  onClick={() => update(key, 1, min)}
-                  disabled={counts[key] >= 20}
-                  className="w-8 h-8 rounded-full flex items-center justify-center border border-white/15 text-white/50 text-base hover:border-compass-blue hover:text-compass-blue hover:bg-compass-blue/10 transition-all disabled:opacity-25 disabled:cursor-not-allowed"
-                >
-                  +
-                </button>
-              </div>
-            </div>
-          ))}
-
-          {/* Footer */}
-          <div className="flex items-center justify-between gap-3 px-4 py-3 bg-white/[0.03] border-t border-white/[0.06]">
-            <p className="text-white/35 text-xs font-body truncate">{buildSummary(counts)}</p>
-            <button
-              onClick={handleDone}
-              className="bg-compass-blue text-white rounded-xl px-4 py-1.5 font-semibold text-xs hover:bg-compass-hover transition-colors font-body flex-shrink-0"
-            >
-              Done
-            </button>
+      <FieldPopover
+        open={isOpen}
+        onClose={close}
+        anchorRef={containerRef}
+        width="272px"
+        mobileWidth="anchor"
+        align="end"
+      >
+        {/* Header */}
+        <div
+          className="px-4 py-3 border-b border-white/10"
+          style={{ background: "linear-gradient(135deg, rgba(255,90,95,0.16) 0%, rgba(249,115,22,0.05) 100%)" }}
+        >
+          <div className="flex items-center gap-2">
+            <Users size={13} className="text-trail-orange/70" />
+            <p className="text-white font-bold text-sm font-display">Travelers</p>
           </div>
         </div>
-      )}
+
+        {/* Rows */}
+        {ROWS.map(({ key, label, sub, min }) => (
+          <div
+            key={key}
+            className="flex items-center justify-between px-4 py-3 border-b border-white/[0.05] last:border-0 hover:bg-white/[0.03] transition-colors"
+          >
+            <div className="flex-1">
+              <p className="text-white font-semibold text-sm font-body">{label}</p>
+              <p className="text-white/35 text-xs font-body">{sub}</p>
+            </div>
+
+            <div className="flex items-center gap-2.5">
+              <button
+                onClick={() => update(key, -1, min)}
+                disabled={counts[key] <= min}
+                className="w-8 h-8 rounded-full flex items-center justify-center border border-white/15 text-white/50 text-base hover:border-compass-blue hover:text-compass-blue hover:bg-compass-blue/10 transition-all disabled:opacity-25 disabled:cursor-not-allowed"
+              >
+                –
+              </button>
+
+              {editing === key ? (
+                <input
+                  type="number"
+                  value={editVal}
+                  onChange={(e) => setEditVal(e.target.value)}
+                  onBlur={() => commitEdit(key, min)}
+                  onKeyDown={(e) => e.key === "Enter" && commitEdit(key, min)}
+                  autoFocus
+                  min={min}
+                  max={20}
+                  className="w-8 bg-transparent text-white font-bold text-sm text-center outline-none border-b border-compass-blue [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                />
+              ) : (
+                <span
+                  onClick={() => startEdit(key)}
+                  className="text-white font-bold text-sm w-8 text-center cursor-pointer select-none font-display"
+                >
+                  {counts[key]}
+                </span>
+              )}
+
+              <button
+                onClick={() => update(key, 1, min)}
+                disabled={counts[key] >= 20}
+                className="w-8 h-8 rounded-full flex items-center justify-center border border-white/15 text-white/50 text-base hover:border-compass-blue hover:text-compass-blue hover:bg-compass-blue/10 transition-all disabled:opacity-25 disabled:cursor-not-allowed"
+              >
+                +
+              </button>
+            </div>
+          </div>
+        ))}
+
+        {/* Footer */}
+        <div className="flex items-center justify-between gap-3 px-4 py-3 bg-white/[0.03] border-t border-white/[0.06]">
+          <p className="text-white/35 text-xs font-body truncate">{buildSummary(counts)}</p>
+          <button
+            onClick={handleDone}
+            className="bg-compass-blue text-white rounded-xl px-4 py-1.5 font-semibold text-xs hover:bg-compass-hover transition-colors font-body flex-shrink-0"
+          >
+            Done
+          </button>
+        </div>
+      </FieldPopover>
     </div>
   );
 }

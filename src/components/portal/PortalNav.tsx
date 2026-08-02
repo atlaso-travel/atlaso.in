@@ -16,27 +16,28 @@ export default function PortalNav({
   const pathname = usePathname();
 
   return (
-    <nav className="max-w-6xl mx-auto px-4 sm:px-6 flex gap-1 overflow-x-auto scrollbar-hide">
-      {items.map((item) => {
-        const active = item.exact
-          ? pathname === item.href
-          : pathname === item.href || pathname.startsWith(`${item.href}/`);
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            aria-current={active ? "page" : undefined}
-            className={cn(
-              "px-3.5 py-2.5 text-[13.5px] font-semibold font-body whitespace-nowrap border-b-2 transition-colors",
-              active
-                ? "border-compass-blue text-white"
-                : "border-transparent text-white/55 hover:text-white/85"
-            )}
-          >
-            {item.label}
-          </Link>
-        );
-      })}
+    <nav className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex overflow-x-auto scrollbar-hide">
+      <div className="inline-flex gap-1 rounded-xl border border-white/10 bg-white/[0.05] p-1">
+        {items.map((item) => {
+          const active = item.exact
+            ? pathname === item.href
+            : pathname === item.href || pathname.startsWith(`${item.href}/`);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              aria-current={active ? "page" : undefined}
+              className={cn(
+                "px-3.5 py-1.5 rounded-lg text-[13px] font-semibold font-body whitespace-nowrap transition-all duration-200",
+                active ? "text-white shadow-sm" : "text-white/55 hover:text-white/85 hover:bg-white/5"
+              )}
+              style={active ? { backgroundImage: "var(--gradient-signature)" } : undefined}
+            >
+              {item.label}
+            </Link>
+          );
+        })}
+      </div>
     </nav>
   );
 }

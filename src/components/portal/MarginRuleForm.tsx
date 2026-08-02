@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import { Save } from "lucide-react";
 import { saveMarginRuleAction, type ActionState } from "@/app/admin/actions";
+import { Panel } from "@/components/portal/PortalChrome";
 
 type Scope = "GLOBAL" | "DESTINATION" | "OPERATOR" | "OPERATOR_DESTINATION" | "PACKAGE";
 type Strategy = "PERCENT" | "FLAT" | "MIN_OF_PERCENT_AND_FLAT" | "SPLIT_DISCOUNT" | "MANUAL_OVERRIDE";
@@ -44,16 +45,7 @@ export default function MarginRuleForm({
     strategy === "SPLIT_DISCOUNT" || strategy === "MANUAL_OVERRIDE";
 
   return (
-    <section className="rounded-2xl border border-map-border bg-map-card overflow-hidden">
-      <div className="px-5 py-3.5 border-b border-map-border">
-        <h2 className="font-display font-bold text-[15px] text-map-text">
-          Add or replace a rule
-        </h2>
-        <p className="text-[12.5px] text-map-muted font-body mt-0.5">
-          Reusing an existing id overwrites that rule.
-        </p>
-      </div>
-
+    <Panel title="Add or replace a rule" description="Reusing an existing id overwrites that rule.">
       <form action={formAction} className="p-5 flex flex-col gap-4">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <label className="flex flex-col gap-1.5">
@@ -203,6 +195,6 @@ export default function MarginRuleForm({
           {pending ? "Saving…" : "Save rule"}
         </button>
       </form>
-    </section>
+    </Panel>
   );
 }
