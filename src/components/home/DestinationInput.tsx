@@ -120,7 +120,7 @@ export default function DestinationInput({ value, onChange }: DestinationInputPr
         {/* Header */}
         <div
           className="px-4 pt-3 pb-2.5 border-b border-white/[0.07]"
-          style={{ background: "linear-gradient(135deg, rgba(255,90,95,0.14) 0%, rgba(249,115,22,0.05) 100%)" }}
+          style={{ background: "linear-gradient(135deg, rgba(255,90,95,0.14) 0%, rgba(201,160,232,0.09) 100%)" }}
         >
           <div className="flex items-center gap-2">
             <Search size={11} className="text-trail-orange/60" />

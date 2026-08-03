@@ -362,7 +362,7 @@ export default function Navbar({ overlay = false }: NavbarProps) {
             transition={{ duration: reduced ? 0.15 : 0.32, ease: EASE_SETTLE }}
           >
             <div className="absolute inset-0 bg-atlas-night" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,rgba(255,90,95,0.20),transparent_45%),radial-gradient(circle_at_80%_85%,rgba(255,168,92,0.14),transparent_50%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,rgba(255,90,95,0.20),transparent_45%),radial-gradient(circle_at_80%_85%,rgba(201,160,232,0.14),transparent_50%)]" />
             <div className="absolute inset-0 bg-gradient-to-b from-[#0B162A]/40 via-[#0A1628] to-[#07101E]" />
             <ContourField
               className="absolute inset-0 h-full w-full opacity-40"

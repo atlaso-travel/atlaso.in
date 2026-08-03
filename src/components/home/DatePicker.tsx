@@ -202,7 +202,7 @@ export default function DatePicker({ value, onChange }: DatePickerProps) {
         {/* Top bar */}
         <div
           className="flex items-center justify-between px-4 py-3 border-b border-white/10"
-          style={{ background: "linear-gradient(135deg, rgba(255,90,95,0.14) 0%, rgba(249,115,22,0.04) 100%)" }}
+          style={{ background: "linear-gradient(135deg, rgba(255,90,95,0.14) 0%, rgba(201,160,232,0.08) 100%)" }}
         >
           <div className="flex items-center gap-2.5">
             <span className="h-2 w-2 rounded-full bg-trail-orange shadow-sm shadow-trail-orange/50" />

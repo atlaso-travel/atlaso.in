@@ -174,7 +174,7 @@ export default function FieldPopover({
           marquee from animating away behind a panel that sits over them. */}
       {showScrim && (
         <div
-          className="fixed inset-0 z-[9998] bg-[#050A14]/80 backdrop-blur-[3px]"
+          className="fixed inset-0 z-[9998] bg-[#050A14]/80"
           onClick={onClose}
         />
       )}

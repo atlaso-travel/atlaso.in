@@ -15,6 +15,7 @@ import { destinations, type Destination } from "@/data/destinations";
 import { formatPrice } from "@/lib/utils";
 import ContourField from "@/components/ui/ContourField";
 import GradedImage from "@/components/ui/GradedImage";
+import PopularDestinations from "@/components/home/PopularDestinations";
 import { generateDestinationAlt } from "@/lib/seo/altText";
 import {
   boxOf,
@@ -355,6 +356,8 @@ export default function TrendingDestinations() {
           </div>
         </div>
       </section>
+
+      <PopularDestinations />
 
       {/* ── Destination survey ── */}
       <section className="relative overflow-hidden bg-section-warm ">

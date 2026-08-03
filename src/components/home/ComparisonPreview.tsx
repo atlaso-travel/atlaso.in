@@ -132,7 +132,7 @@ export default function ComparisonPreview() {
     >
       <ContourField
         seed={6.2}
-        stroke="255,168,92"
+        stroke="201,160,232"
         opacity={0.2}
         scale={120}
         className="absolute inset-0 h-full w-full"

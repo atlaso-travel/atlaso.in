@@ -2,10 +2,13 @@
 
 @theme {
   /* ══════════════════════════════════════════════════════════════
-     ATLASO PALETTE — brand coral at full strength, into sunset orange.
+     ATLASO PALETTE — brand coral at full strength, into dusk purple.
 
-     The brand coral is unchanged from the original (#FF5A5F). What carries
-     the premium read is not desaturating it, it is spending it sparingly:
+     The brand coral is unchanged from the original (#FF5A5F). The second
+     gradient stop was orange; the client asked for it gone, so it now
+     resolves to a soft orchid purple instead — coral into rose into
+     lavender, matching the reference gradient. What carries the premium
+     read is not desaturating the coral, it is spending it sparingly:
      the signature gradient goes on primary CTAs, the hero accent line, and
      the route element's active state. Nowhere else. Everything else is warm
      peach ground, dark ink, and slate body copy.
@@ -14,7 +17,7 @@
   /* ── Core palette ── */
   --color-brand-coral:      #FF5A5F;  /* primary accent — CTAs, key highlights */
   --color-brand-coral-deep: #E0474C;  /* hover / pressed */
-  --color-sunset-orange:    #FFA85C;  /* second gradient stop, secondary highlights */
+  --color-sunset-orange:    #C9A0E8;  /* second gradient stop, secondary highlights */
   --color-light-coral-tint: #FFC9CB;  /* card borders, dividers, subtle grounds */
   --color-warm-peach:       #FFF7F3;  /* warm tint for small surfaces — icon chips, wells */
   --color-text-dark:        #1C1F26;  /* headings, primary text */
@@ -31,8 +34,8 @@
   --color-muted-coral:      #FF5A5F;
   --color-muted-coral-deep: #E0474C;
   --color-muted-coral-soft: #FFC9CB;
-  --color-warm-sand:        #FFA85C;
-  --color-warm-sand-tint:   #FFF1E6;
+  --color-warm-sand:        #C9A0E8;
+  --color-warm-sand-tint:   #F5EAFB;
   --color-warm-ivory:       #FFFFFF;
   --color-blush-tint:       #FFC9CB;
   --color-blush-wash:       #FFF8F4;
@@ -57,8 +60,8 @@
   --color-compass-blue:   #FF5A5F;
   --color-compass-hover:  #E0474C;
   --color-compass-light:  #FFE8E9;
-  --color-trail-orange:   #FFA85C;
-  --color-trail-light:    #FFF1E6;
+  --color-trail-orange:   #C9A0E8;
+  --color-trail-light:    #F5EAFB;
   --color-map-white:      #FFFFFF;
   --color-map-card:       #FFFFFF;
   --color-map-text:       #1C1F26;
@@ -87,7 +90,7 @@
   --color-marigold:       #FF5A5F;
   --color-marigold-hover: #E0474C;
   --color-marigold-tint:  #FFE8E9;
-  --color-marigold-bright:#FFA85C;
+  --color-marigold-bright:#C9A0E8;
 
   /* Warnings — pricing-rule violations, destructive actions */
   --color-rust:           #E0474C;
@@ -142,7 +145,7 @@
 
   /* The signature gradient, defined once. Every surface that carries it
      references this so the angle and stops can never drift apart. */
-  --gradient-signature: linear-gradient(135deg, #FF5A5F 0%, #FFA85C 100%);
+  --gradient-signature: linear-gradient(135deg, #FF5A5F 0%, #C9A0E8 100%);
 }
 
 /* ── Keyframes ── */
@@ -417,9 +420,9 @@ h1, h2, h3, h4, h5, h6 {
      photos and on cream alike, so every accent phrase is visibly the same
      mark as RIGHT OPERATOR rather than an approximation of it.
 
-     Note for anyone auditing contrast: the tail stop (#FFA85C) is ~1.9:1 on
+     Note for anyone auditing contrast: the tail stop (#C9A0E8) is ~2.2:1 on
      white, so on the light sections this clears WCAG AA on the coral end and
-     not on the amber end. That is a deliberate brand call, taken knowingly.
+     not on the purple end. That is a deliberate brand call, taken knowingly.
      It is survivable only because every use is large-scale display type
      carrying an accent phrase whose meaning also exists in the solid-colour
      first half of the same headline — never body copy, never the sole
@@ -460,14 +463,50 @@ h1, h2, h3, h4, h5, h6 {
     background-image: radial-gradient(ellipse 70% 60% at 100% 0%, rgba(255,90,95,0.035) 0%, transparent 60%);
   }
   .wash-top-left {
-    background-image: radial-gradient(ellipse 70% 60% at 0% 0%, rgba(255,168,92,0.04) 0%, transparent 60%);
+    background-image: radial-gradient(ellipse 70% 60% at 0% 0%, rgba(201,160,232,0.04) 0%, transparent 60%);
   }
   .wash-bottom {
     background-image: radial-gradient(ellipse 80% 50% at 50% 100%, rgba(255,90,95,0.03) 0%, transparent 65%);
   }
   .wash-dark {
     background-image: radial-gradient(ellipse 60% 50% at 15% 0%, rgba(255,90,95,0.16) 0%, transparent 60%),
-                      radial-gradient(ellipse 50% 40% at 90% 100%, rgba(255,168,92,0.10) 0%, transparent 60%);
+                      radial-gradient(ellipse 50% 40% at 90% 100%, rgba(201,160,232,0.10) 0%, transparent 60%);
+  }
+
+  /* ── FAQ panel ──
+     A soft diagonal wash behind the FAQ section — white at the top-left
+     corner running into blush pink and a touch of the signature lavender
+     at the opposite corner. Used as a full-bleed section ground, not a
+     cornered accent, so the whole panel reads as one warm surface. */
+  .bg-faq-glow {
+    background-image: linear-gradient(135deg, #FFFFFF 0%, #FFF6F2 30%, #FDEAF0 62%, #F5EAFB 100%);
+  }
+
+  /* ── Dusk card ──
+     The dark half of the HowItWorks step grid. Deep plum bleeding into a
+     warm maroon-coral corner, echoing the signature coral/lavender pairing
+     but pulled almost to black so it reads as a card ground, not a headline. */
+  .bg-step-dusk {
+    background-image: radial-gradient(ellipse 75% 65% at 100% 100%, rgba(255,90,95,0.30) 0%, transparent 60%),
+                      linear-gradient(150deg, #1A1220 0%, #2C1626 45%, #4A1F34 75%, #6B2740 100%);
+  }
+
+  /* ── Section glow ──
+     The washes above are deliberately near-invisible ambient depth. This is
+     the opposite call: a section that should read as its own warm, branded
+     band rather than a neutral one — coral bloom behind the right-hand
+     content, a touch of the signature lavender further down the same edge,
+     fading to white by the time it reaches body text on the left. Same
+     coral/lavender pairing as `--gradient-signature`, just diffused as light
+     instead of a hard gradient fill.
+
+     First used behind Popular Destinations; reuse this exact class (same
+     `absolute inset-0` wash-div pattern as `.wash-*` above) on any other
+     section that should carry the same treatment, so the "warm band" reads
+     as one recurring device across the page rather than a one-off. */
+  .bg-section-glow {
+    background-image: radial-gradient(ellipse 70% 65% at 88% 12%, rgba(255,90,95,0.22) 0%, transparent 62%),
+                      radial-gradient(ellipse 60% 55% at 100% 58%, rgba(201,160,232,0.16) 0%, transparent 65%);
   }
 
   /* ── Photo grade ──
@@ -479,7 +518,7 @@ h1, h2, h3, h4, h5, h6 {
     background-image: linear-gradient(
       135deg,
       rgba(255, 90, 95, 0.08) 0%,
-      rgba(255, 168, 92, 0.08) 100%
+      rgba(201, 160, 232, 0.08) 100%
     );
   }
 

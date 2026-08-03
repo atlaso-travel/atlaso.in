@@ -102,7 +102,7 @@ export default function TravelersInput({ value, onChange }: TravelersInputProps)
         {/* Header */}
         <div
           className="px-4 py-3 border-b border-white/10"
-          style={{ background: "linear-gradient(135deg, rgba(255,90,95,0.16) 0%, rgba(249,115,22,0.05) 100%)" }}
+          style={{ background: "linear-gradient(135deg, rgba(255,90,95,0.16) 0%, rgba(201,160,232,0.09) 100%)" }}
         >
           <div className="flex items-center gap-2">
             <Users size={13} className="text-trail-orange/70" />

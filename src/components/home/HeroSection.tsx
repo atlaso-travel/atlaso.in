@@ -22,32 +22,21 @@ const AVATARS = [
   { initial: "S", bg: "#8A3D42" },
 ];
 
-/* ── Hero frames ──
-   All three are sunset or first-light mountain frames whose sky sits in the
-   same coral-into-amber range as the signature gradient, so the photograph and
-   the brand agree instead of competing. Each also has a quieter left third,
-   which is where the copy lands.
+/* ── Hero frame ──
+   The client's own sunset-over-mountains photograph, sitting in the same
+   coral-into-amber range as the signature gradient, so the photograph and
+   the brand agree instead of competing. It has a quieter left third, which
+   is where the copy lands.
 
-   Index 0 is the frame the server renders and the browser preloads — it is the
-   LCP element, so it is never chosen at random. The others are swapped in on
-   the client so a returning visitor doesn't meet the identical poster every
-   time. Two-thirds of loads therefore fetch one extra image; delete the tail
-   of this array to turn that off. */
+   This is the frame the server renders and the browser preloads — it is
+   the LCP element. The rotation logic below is kept as a no-op (a
+   single-entry array always resolves to index 0) so a second frame can be
+   dropped back in later without re-plumbing anything. */
 const HERO_FRAMES = [
   {
-    src: "https://images.unsplash.com/photo-1520962880247-cfaf541c8724?w=2000&q=80",
-    alt: "Layered mountain ridges receding into a coral and amber sunset, a lone trekker standing on the near ridgeline",
-    position: "center 58%",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1490682143684-14369e18dce8?w=2000&q=80",
-    alt: "Sunrise breaking over a misty forested valley, the ridges lit amber and gold",
-    position: "center 45%",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=2000&q=80",
-    alt: "Snow peaks above a sea of cloud, the sky behind them turning coral at first light",
-    position: "center 55%",
+    src: "/images/hero-bg.jpg",
+    alt: "Sunset over snow-capped Himalayan peaks, a river valley and terraced village lit gold in the last light",
+    position: "center 42%",
   },
 ];
 
@@ -318,7 +307,7 @@ export default function HeroSection() {
                   }
                   whileTap={reduced ? undefined : { scale: 0.985 }}
                   transition={{ duration: 0.32, ease: EASE_SETTLE }}
-                  className="bg-cta-gradient w-full md:w-auto md:h-full px-5 py-3.5 md:py-0 text-white font-semibold text-sm rounded-2xl md:rounded-xl flex items-center justify-center gap-2 whitespace-nowrap"
+                  className="bg-brand-coral w-full md:w-auto md:h-full px-5 py-3.5 md:py-0 text-white font-semibold text-sm rounded-2xl md:rounded-xl flex items-center justify-center gap-2 whitespace-nowrap"
                 >
                   <Search size={16} />
                   Compare Operators
