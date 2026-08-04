@@ -102,7 +102,7 @@ export default function DestinationInput({ value, onChange }: DestinationInputPr
             onFocus={handleFocus}
             placeholder={placeholder}
             autoComplete="off"
-            className="w-full bg-transparent text-white text-left placeholder-white/35 text-base outline-none font-body"
+            className="w-full bg-transparent text-white text-left placeholder-white/35 text-sm outline-none font-body"
           />
         </div>
       </div>

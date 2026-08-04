@@ -202,7 +202,7 @@ export default function HowItWorks() {
             </StaggerItem>
           ))}
         </Stagger>
-
+{/* 
         <Reveal className="mt-10" delay={0.1}>
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3 px-1">
             <Link
@@ -222,7 +222,7 @@ export default function HowItWorks() {
                 : ""}
             </p>
           </div>
-        </Reveal>
+        </Reveal> */}
       </div>
     </section>
   );

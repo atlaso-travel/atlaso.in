@@ -84,7 +84,7 @@ export default function TravelersInput({ value, onChange }: TravelersInputProps)
           <label className="text-trail-orange text-xs font-semibold text-left tracking-widest uppercase block mb-0.5 pointer-events-none font-body">
             TRAVELERS
           </label>
-          <span className="text-white text-base font-medium text-left truncate block font-body">
+          <span className="text-white text-sm font-medium text-left truncate block font-body">
             {displayValue}
           </span>
         </div>

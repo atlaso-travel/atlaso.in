@@ -181,7 +181,7 @@ export default function DatePicker({ value, onChange }: DatePickerProps) {
             WHEN?
           </label>
           {value ? (
-            <span className="text-white font-medium text-base text-left font-body block w-full">{value}</span>
+            <span className="text-white font-medium text-sm text-left font-body block w-full">{value}</span>
           ) : (
             <span className="text-white/35 text-base text-left font-body block w-full">Add dates</span>
           )}
