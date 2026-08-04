@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useSyncExternalStore } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Building2, Compass, Heart, Menu, Scale, X } from "lucide-react";
@@ -9,54 +10,26 @@ import ContourField from "@/components/ui/ContourField";
 
 const EASE_SETTLE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
-/* The compass mark. The needle and ring are separate groups so the needle can
-   turn on hover — the brand is an atlas, and a compass that responds to the
-   cursor is the smallest possible way to say so. */
-function AtlasoIcon({ size = 36, spin = false }: { size?: number; spin?: boolean }) {
-  const reduced = useReducedMotion();
+const LOGO_ASPECT = 194 / 40;
 
+function AtlasoLogo({
+  height = 28,
+  onDark = true,
+  className,
+}: {
+  height?: number;
+  onDark?: boolean;
+  className?: string;
+}) {
   return (
-    <svg width={size} height={size} viewBox="0 0 36 36" fill="none">
-      <rect width="36" height="36" rx="9" fill="#FF5A5F" />
-      <circle
-        cx="18"
-        cy="18"
-        r="8"
-        stroke="white"
-        strokeWidth="1.2"
-        fill="none"
-        opacity="0.7"
-      />
-
-      {/* Needle — rotates about the centre of the mark */}
-      <motion.g
-        style={{ originX: "18px", originY: "18px" }}
-        animate={{ rotate: spin && !reduced ? 45 : 0 }}
-        transition={{ duration: 0.9, ease: EASE_SETTLE }}
-      >
-        <path d="M18 10 Q22 15 18 26 Q14 15 18 10Z" fill="white" opacity="0.55" />
-        <path d="M10 18 Q15 14 26 18 Q15 22 10 18Z" fill="white" opacity="0.55" />
-      </motion.g>
-
-      <line x1="18" y1="10" x2="18" y2="26" stroke="white" strokeWidth="0.5" opacity="0.3" />
-      <line x1="10" y1="18" x2="26" y2="18" stroke="white" strokeWidth="0.5" opacity="0.3" />
-      <circle cx="18" cy="18" r="2" fill="white" />
-    </svg>
-  );
-}
-
-function AtlasoWordmark({ size = 20, onDark = true }: { size?: number; onDark?: boolean }) {
-  const ink = onDark ? "text-white" : "text-espresso";
-
-  return (
-    <span
-      className="font-display font-bold tracking-[-0.5px] leading-none"
-      style={{ fontSize: size }}
-    >
-      <span className={ink}>Atl</span>
-      <span style={{ color: "#FF5A5F" }}>a</span>
-      <span className={ink}>so</span>
-    </span>
+    <Image
+      src={onDark ? "/brand/logo.svg" : "/brand/logo-black.svg"}
+      alt="Atlaso"
+      width={Math.round(height * LOGO_ASPECT)}
+      height={height}
+      priority
+      className={className}
+    />
   );
 }
 
@@ -154,7 +127,6 @@ const atRest = () => false;
 
 export default function Navbar({ overlay = false }: NavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [logoHover, setLogoHover] = useState(false);
   const reduced = useReducedMotion();
   const pathname = usePathname();
 
@@ -266,40 +238,32 @@ export default function Navbar({ overlay = false }: NavbarProps) {
         }}
       >
         {/* Logo */}
-        <Link
-          href="/"
-          className="flex items-center gap-2.5 flex-shrink-0"
-          onMouseEnter={() => setLogoHover(true)}
-          onMouseLeave={() => setLogoHover(false)}
-        >
+        <Link href="/" className="flex items-center gap-2.5 flex-shrink-0">
           <motion.span
-            animate={{ scale: condensed && !reduced ? 0.9 : 1 }}
+            animate={{ scale: condensed && !reduced ? 0.92 : 1 }}
             transition={{ duration: 0.45, ease: EASE_SETTLE }}
             className="flex-shrink-0"
           >
-            <AtlasoIcon size={36} spin={logoHover} />
+            <AtlasoLogo height={condensed ? 20 : 24} onDark={floating} />
           </motion.span>
 
-          <div className="flex flex-col">
-            <AtlasoWordmark size={20} onDark={floating} />
-            {/* The strapline is the first thing to go when the bar condenses. */}
-            <AnimatePresence initial={false}>
-              {!condensed && (
-                <motion.span
-                  key="tagline"
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.3, ease: EASE_SETTLE }}
-                  className={`hidden sm:block overflow-hidden text-[10px] ${
-                    floating ? "text-white/60" : "text-warm-taupe"
-                  } tracking-[0.02em] font-body`}
-                >
-                  Your map to the right operator.
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </div>
+          {/* The strapline is the first thing to go when the bar condenses. */}
+          <AnimatePresence initial={false}>
+            {!condensed && (
+              <motion.span
+                key="tagline"
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3, ease: EASE_SETTLE }}
+                className={`hidden sm:block overflow-hidden text-[10px] ${
+                  floating ? "text-white/60" : "text-warm-taupe"
+                } tracking-[0.02em] font-body`}
+              >
+                {/* Your map to the right operator. */}
+              </motion.span>
+            )}
+          </AnimatePresence>
         </Link>
 
         {/* Center nav links */}
@@ -399,9 +363,8 @@ export default function Navbar({ overlay = false }: NavbarProps) {
                     shown: { opacity: 1, y: 0, transition: { duration: 0.5, ease: EASE_SETTLE } },
                   }}
                 >
-                  <AtlasoIcon size={32} />
                   <div>
-                    <AtlasoWordmark size={22} />
+                    <AtlasoLogo height={26} onDark />
                     <p className="text-white/45 text-xs mt-1 font-body">
                       Find the right operator, faster.
                     </p>

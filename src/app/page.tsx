@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import HeroSection from "@/components/home/HeroSection";
+import PartnerStrip from "@/components/home/PartnerStrip";
+import PopularDestinations from "@/components/home/PopularDestinations";
 import TrendingDestinations from "@/components/home/TrendingDestinations";
 import HowItWorks from "@/components/home/HowItWorks";
 import WhyAtlaso from "@/components/home/WhyAtlaso";
@@ -55,16 +57,14 @@ export default async function Home() {
       <Navbar overlay />
       <main className="relative">
         <HeroSection />
-        {/* Server-rendered factual summary — the first crawlable prose on the
-            site, and the paragraph most likely to be quoted by an answer engine
-            asked "what is Atlaso" or "how much do Indian tour packages cost". */}
-        {/* <HomeFacts insight={insight} /> */}
-        <TrendingDestinations />
+        <PartnerStrip />
+        <PopularDestinations />
         <HowItWorks />
         <WhyAtlaso />
         {/* <ComparisonPreview /> */}
         <TopOperators />
         <Testimonials />
+        <TrendingDestinations />
         <FAQ />
         <CtaBanner />
       </main>

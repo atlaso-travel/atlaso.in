@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 // Brand-icon SVGs (lucide-react doesn't ship these)
@@ -42,32 +43,6 @@ function XIcon() {
   );
 }
 
-function AtlasoIcon() {
-  return (
-    <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
-      {/* Outer rounded bg */}
-      <rect width="34" height="34" rx="9" fill="white" fillOpacity="0.08" />
-      {/* Mountain / A shape */}
-      <path
-        d="M17 7L28 25H6L17 7Z"
-        stroke="white"
-        strokeWidth="1.6"
-        strokeLinejoin="round"
-        fill="white"
-        fillOpacity="0.12"
-      />
-      {/* Inner highlight peak */}
-      <path
-        d="M17 7L22 18H12L17 7Z"
-        fill="white"
-        fillOpacity="0.25"
-      />
-      {/* Accent dot at summit */}
-      <circle cx="17" cy="7" r="2.4" fill="#D9756C" />
-    </svg>
-  );
-}
-
 const SOCIALS = [
   { Icon: LinkedinIcon,  href: "#", label: "LinkedIn"  },
   { Icon: FacebookIcon,  href: "#", label: "Facebook"  },
@@ -105,11 +80,8 @@ export default function Footer() {
 
           {/* Brand */}
           <div>
-            <Link href="/" className="flex items-center gap-2.5 mb-4">
-              <AtlasoIcon />
-              <span className="font-display font-bold text-xl text-white tracking-tight">
-                Atlaso.in
-              </span>
+            <Link href="/" className="flex items-center mb-4">
+              <Image src="/brand/logo.svg" alt="Atlaso" width={145} height={30} />
             </Link>
             <p className="text-white/45 text-sm font-body leading-relaxed mb-6 max-w-[240px]">
               Your trusted map to the right travel operator. Discover verified itineraries and book
