@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
-  ArrowLeft, Bookmark, BookmarkCheck, Check, ChevronDown, Minus, Plus,
+  ArrowLeft, ArrowDown, Bookmark, BookmarkCheck, Check, ChevronDown, Minus, Plus,
   Star, TriangleAlert, X,
 } from "lucide-react";
 import { formatPrice, cn } from "@/lib/utils";
@@ -57,7 +57,20 @@ export default function CompareView({
   const ids = useMemo(() => columns.map((c) => c.pkg.id), [columns]);
   const n = columns.length;
 
-  const grid = { gridTemplateColumns: `132px repeat(${n}, minmax(184px, 1fr))` };
+  /* One grid drives every row, so a section header can never fall out of step
+     with the cells underneath it. The label column is fixed; the operator
+     columns share what remains, down to a floor that turns on the scroller. */
+  const grid = {
+    gridTemplateColumns: `152px repeat(${n}, minmax(200px, 1fr))`,
+    /* An explicit floor rather than `min-w-max`: long itinerary copy would
+       otherwise widen the columns to max-content and blow out the scroller. */
+    minWidth: 152 + n * 200,
+  } satisfies React.CSSProperties;
+
+  const cheapest = useMemo(() => {
+    const prices = columns.map((c) => c.pkg.price.platformPrice);
+    return prices.length > 1 ? Math.min(...prices) : null;
+  }, [columns]);
 
   const toggle = (id: string) =>
     setOpen((prev) => {
@@ -89,8 +102,8 @@ export default function CompareView({
   }
 
   return (
-    <main className="min-h-screen bg-map-white pb-32">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-5 sm:py-7">
+    <main className="min-h-screen bg-peach-wash pb-32">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-5 sm:py-8">
         {/* Header */}
         <div className="flex items-center justify-between gap-3 mb-4">
           <Link
@@ -130,7 +143,7 @@ export default function CompareView({
 
         {/* One-package prompt */}
         {n === 1 && (
-          <div className="mt-5 rounded-2xl border border-map-border bg-map-card overflow-hidden">
+          <div className="mt-5 rounded-2xl border border-warm-line bg-map-card overflow-hidden">
             <div className="flex flex-col sm:flex-row sm:items-center gap-4 p-5">
               <div className="flex-1">
                 <h2 className="font-display font-bold text-map-text text-[16px]">
@@ -151,22 +164,33 @@ export default function CompareView({
           </div>
         )}
 
-        {/* ── Comparison grid ── */}
-        <div className="mt-6 overflow-x-auto -mx-4 sm:mx-0 px-4 sm:px-0 pb-2">
-          <div className="min-w-fit">
-            {/* Column headers */}
-            <div className="grid gap-px sticky top-0 z-20 bg-map-border" style={grid}>
-              <div className="bg-map-white" />
-              {columns.map((col) => (
-                <div key={col.pkg.id} className="bg-map-card p-3 relative">
+        {/* ── Comparison table ── */}
+        <div className="mt-6 rounded-2xl border border-warm-line bg-map-card shadow-card overflow-hidden">
+          <div className="overflow-x-auto">
+            <div className="grid" style={grid}>
+              {/* Column headers */}
+              <div className="sticky left-0 z-20 bg-peach-wash border-b border-r border-warm-line px-4 py-4 flex items-end">
+                <span className="text-[11px] font-bold uppercase tracking-[0.08em] text-map-muted font-body">
+                  Operators
+                </span>
+              </div>
+              {columns.map((col, i) => (
+                <div
+                  key={col.pkg.id}
+                  className={cn(
+                    "relative bg-map-card border-b border-warm-line px-3.5 pt-3.5 pb-4",
+                    i > 0 && "border-l border-warm-line"
+                  )}
+                >
                   <Link
                     href={hrefWithout(col.pkg.id)}
                     aria-label={`Remove ${col.pkg.operatorName}`}
-                    className="absolute top-2 right-2 z-10 w-6 h-6 rounded-full bg-map-white border border-map-border flex items-center justify-center text-map-muted hover:text-rust hover:border-rust transition-colors"
+                    className="absolute top-2 right-2 z-10 w-6 h-6 rounded-full bg-map-white/90 backdrop-blur border border-warm-line flex items-center justify-center text-map-muted hover:text-rust hover:border-rust transition-colors"
                   >
                     <X size={12} />
                   </Link>
-                  <div className="h-20 rounded-lg overflow-hidden mb-2.5 bg-map-white">
+
+                  <div className="h-[84px] rounded-xl overflow-hidden bg-peach-wash">
                     <Image
                       src={col.pkg.image}
                       alt={col.pkg.title}
@@ -175,7 +199,10 @@ export default function CompareView({
                       className="w-full h-full object-cover"
                     />
                   </div>
-                  <div className="flex items-center gap-1.5 flex-wrap mb-1.5">
+
+                  {/* Reserved height, so titles line up across columns whether or
+                      not an operator earned a verdict badge. */}
+                  <div className="flex items-center gap-1.5 flex-wrap min-h-[20px] mt-2.5">
                     {col.verdicts.map((v) => (
                       <span
                         key={v.key}
@@ -188,216 +215,255 @@ export default function CompareView({
                       </span>
                     ))}
                   </div>
-                  <p className="font-display font-bold text-[13.5px] text-map-text leading-tight truncate">
+
+                  <p className="font-display font-bold text-[14px] text-map-text leading-tight truncate mt-1">
                     {col.pkg.operatorName}
                   </p>
-                  <p className="text-[11.5px] text-map-muted font-body leading-snug line-clamp-2 mt-0.5 mb-2">
+                  <p className="text-[11.5px] text-map-muted font-body leading-snug line-clamp-2 mt-0.5 min-h-[30px]">
                     {col.pkg.title}
                   </p>
-                  {col.pkg.operatorVerified ? (
-                    <VerifiedBadge compact />
-                  ) : (
-                    <VerifiedBadge compact variant="pending" label="Unverified" />
-                  )}
-                </div>
-              ))}
-            </div>
-
-            <Section
-              id="price" label="Price" open={open} toggle={toggle} grid={grid} n={n}
-            >
-              <Row label="Operator's direct price" muted>
-                {columns.map((c) => (
-                  <Cell key={c.pkg.id}>
-                    <span className="tnum text-[13px] text-strike line-through decoration-[1.5px]">
-                      {formatPrice(c.pkg.price.retailPrice)}
-                    </span>
-                  </Cell>
-                ))}
-              </Row>
-              <Row label="Atlaso price" emphasis>
-                {columns.map((c) => (
-                  <Cell key={c.pkg.id}>
-                    <PriceBlock price={c.pkg.price} size="card" showPerPerson={false} />
-                  </Cell>
-                ))}
-              </Row>
-              <Row label="Per day">
-                {columns.map((c) => (
-                  <Cell key={c.pkg.id}>
-                    <span className="tnum text-[13px] text-map-muted">
-                      {formatPrice(c.pricePerDay)}
-                    </span>
-                  </Cell>
-                ))}
-              </Row>
-              {columns.some((c) => c.pkg.needsPricingReview) && (
-                <Row label="">
-                  <div className="col-span-full bg-rust-tint px-4 py-2 flex items-center gap-2">
-                    <TriangleAlert size={14} className="text-rust flex-shrink-0" />
-                    <span className="text-[12px] text-rust font-body">
-                      One of these is priced below our minimum margin and is flagged for
-                      internal review. The price shown is still what you would pay.
-                    </span>
-                  </div>
-                </Row>
-              )}
-            </Section>
-
-            <Section id="glance" label="At a glance" open={open} toggle={toggle} grid={grid} n={n}>
-              <DataRow label="Duration" values={columns.map((c) => c.pkg.duration)} onlyDiff={onlyDifferences} />
-              <DataRow label="Group size" values={columns.map((c) => c.pkg.groupSize)} onlyDiff={onlyDifferences} />
-              <DataRow label="Difficulty" values={columns.map((c) => c.pkg.difficulty)} onlyDiff={onlyDifferences} />
-              <DataRow label="Stay" values={columns.map((c) => c.pkg.hotelType)} onlyDiff={onlyDifferences} />
-              <DataRow label="Minimum age" values={columns.map((c) => `${c.pkg.minAge} years`)} onlyDiff={onlyDifferences} />
-              <DataRow label="Starts at" values={columns.map((c) => c.pkg.pickupPoint)} onlyDiff={onlyDifferences} />
-              <DataRow label="Ends at" values={columns.map((c) => c.pkg.dropPoint)} onlyDiff={onlyDifferences} />
-              <DataRow
-                label="Next departure" onlyDiff={onlyDifferences}
-                values={columns.map((c) =>
-                  c.pkg.nextDepartureDate
-                    ? `${formatDate(c.pkg.nextDepartureDate)}${c.pkg.seatsLeftOnNext != null && c.pkg.seatsLeftOnNext <= 3 ? ` · ${c.pkg.seatsLeftOnNext} left` : ""}`
-                    : "No dates open"
-                )}
-              />
-            </Section>
-
-            <Section id="trust" label="Trust & policy" open={open} toggle={toggle} grid={grid} n={n}>
-              <Row label="Rating">
-                {columns.map((c) => (
-                  <Cell key={c.pkg.id}>
-                    <span className="flex items-center gap-1 font-display font-bold text-[14px] text-map-text tnum">
-                      <Star size={12} className="fill-star text-star" />
-                      {c.pkg.trust.rating}
-                      <span className="font-body font-medium text-map-muted text-[12px]">
-                        · {c.pkg.trust.reviewCount}
-                      </span>
-                    </span>
-                  </Cell>
-                ))}
-              </Row>
-              <DataRow label="Booked (30 days)" values={columns.map((c) => `${c.pkg.trust.bookingsLast30d} people`)} onlyDiff={onlyDifferences} />
-              <DataRow label="Replies in" values={columns.map((c) => `${c.pkg.trust.responseMinutes} min`)} onlyDiff={onlyDifferences} />
-              <Row label="Verification">
-                {columns.map((c) => (
-                  <Cell key={c.pkg.id}>
-                    {c.pkg.operatorVerified ? (
+                  <div className="mt-2">
+                    {col.pkg.operatorVerified ? (
                       <VerifiedBadge compact />
                     ) : (
                       <VerifiedBadge compact variant="pending" label="Unverified" />
                     )}
-                  </Cell>
-                ))}
-              </Row>
-              <Row label="Cancellation">
-                {columns.map((c) => (
-                  <Cell key={c.pkg.id}>
-                    <span
-                      className={cn(
-                        "text-[11px] font-bold px-2 py-0.5 rounded-full font-body inline-block mb-1",
-                        c.pkg.cancellationFlexibility === "HIGH"
-                          ? "bg-fern-tint text-fern-quiet"
-                          : c.pkg.cancellationFlexibility === "MEDIUM"
-                          ? "bg-marigold-tint text-marigold"
-                          : "bg-rust-tint text-rust"
-                      )}
-                    >
-                      {c.pkg.cancellationFlexibility === "HIGH" ? "Flexible" : c.pkg.cancellationFlexibility === "MEDIUM" ? "Partial refund" : "Strict"}
-                    </span>
-                    <span className="block text-[11.5px] text-map-muted font-body leading-snug">
-                      {c.pkg.cancellationPolicy}
-                    </span>
-                  </Cell>
-                ))}
-              </Row>
-              <DataRow label="Operating since" values={columns.map((c) => String(c.pkg.operatorFoundedYear))} onlyDiff={onlyDifferences} />
-            </Section>
+                  </div>
+                </div>
+              ))}
 
-            <Section id="included" label="What's included" open={open} toggle={toggle} grid={grid} n={n}>
-              {features
-                .filter((f) => !onlyDifferences || f.differs)
-                .map((f) => (
-                  <Row key={f.label} label={f.label} flag={f.differs}>
-                    {f.values.map((v, i) => (
-                      <Cell key={i} center>
-                        {v ? (
-                          <Check size={17} className="text-fern-quiet" strokeWidth={3} />
+              {/* ── Price ── */}
+              <SectionHeader
+                id="price" label="Price" open={open} toggle={toggle}
+                hint={spread && spread.gap > 0 ? `${formatPrice(spread.gap)} apart` : undefined}
+              />
+              {open.has("price") && (
+                <>
+                  <Row label="Operator's direct price" muted>
+                    {columns.map((c, i) => (
+                      <Cell key={c.pkg.id} i={i}>
+                        <span className="tnum text-[13.5px] text-strike line-through decoration-[1.5px]">
+                          {formatPrice(c.pkg.price.retailPrice)}
+                        </span>
+                      </Cell>
+                    ))}
+                  </Row>
+                  <Row label="Atlaso price" emphasis>
+                    {columns.map((c, i) => {
+                      const isCheapest = cheapest === c.pkg.price.platformPrice;
+                      return (
+                        <Cell key={c.pkg.id} i={i} className={isCheapest ? "bg-fern-tint/60" : undefined}>
+                          <span className="price-hero text-[25px] text-map-text block leading-none">
+                            {formatPrice(c.pkg.price.platformPrice)}
+                          </span>
+                          {c.pkg.price.savings > 0 && (
+                            <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-fern-tint pl-1.5 pr-2.5 py-1 text-fern">
+                              <ArrowDown size={12} strokeWidth={3} className="flex-shrink-0" />
+                              <span className="tnum text-[12px] font-bold">
+                                {formatPrice(c.pkg.price.savings)} off
+                              </span>
+                              <span className="text-[11.5px] font-semibold opacity-70 tnum">
+                                ({c.pkg.price.savingsPct}%)
+                              </span>
+                            </span>
+                          )}
+                        </Cell>
+                      );
+                    })}
+                  </Row>
+                  <Row label="Per day">
+                    {columns.map((c, i) => (
+                      <Cell key={c.pkg.id} i={i}>
+                        <span className="tnum text-[13px] text-map-muted">
+                          {formatPrice(c.pricePerDay)}
+                        </span>
+                      </Cell>
+                    ))}
+                  </Row>
+                  {columns.some((c) => c.pkg.needsPricingReview) && (
+                    <div className="col-span-full bg-rust-tint border-b border-warm-line px-4 py-2.5 flex items-center gap-2">
+                      <TriangleAlert size={14} className="text-rust flex-shrink-0" />
+                      <span className="text-[12px] text-rust font-body">
+                        One of these is priced below our minimum margin and is flagged for
+                        internal review. The price shown is still what you would pay.
+                      </span>
+                    </div>
+                  )}
+                </>
+              )}
+
+              {/* ── At a glance ── */}
+              <SectionHeader id="glance" label="At a glance" open={open} toggle={toggle} />
+              {open.has("glance") && (
+                <>
+                  <DataRow label="Duration" values={columns.map((c) => c.pkg.duration)} onlyDiff={onlyDifferences} />
+                  <DataRow label="Group size" values={columns.map((c) => c.pkg.groupSize)} onlyDiff={onlyDifferences} />
+                  <DataRow label="Difficulty" values={columns.map((c) => c.pkg.difficulty)} onlyDiff={onlyDifferences} />
+                  <DataRow label="Stay" values={columns.map((c) => c.pkg.hotelType)} onlyDiff={onlyDifferences} />
+                  <DataRow label="Minimum age" values={columns.map((c) => `${c.pkg.minAge} years`)} onlyDiff={onlyDifferences} />
+                  <DataRow label="Starts at" values={columns.map((c) => c.pkg.pickupPoint)} onlyDiff={onlyDifferences} />
+                  <DataRow label="Ends at" values={columns.map((c) => c.pkg.dropPoint)} onlyDiff={onlyDifferences} />
+                  <DataRow
+                    label="Next departure" onlyDiff={onlyDifferences}
+                    values={columns.map((c) =>
+                      c.pkg.nextDepartureDate
+                        ? `${formatDate(c.pkg.nextDepartureDate)}${c.pkg.seatsLeftOnNext != null && c.pkg.seatsLeftOnNext <= 3 ? ` · ${c.pkg.seatsLeftOnNext} left` : ""}`
+                        : "No dates open"
+                    )}
+                  />
+                </>
+              )}
+
+              {/* ── Trust & policy ── */}
+              <SectionHeader id="trust" label="Trust & policy" open={open} toggle={toggle} />
+              {open.has("trust") && (
+                <>
+                  <Row label="Rating">
+                    {columns.map((c, i) => (
+                      <Cell key={c.pkg.id} i={i}>
+                        <span className="flex items-center gap-1 font-display font-bold text-[14px] text-map-text tnum">
+                          <Star size={12} className="fill-star text-star" />
+                          {c.pkg.trust.rating}
+                          <span className="font-body font-medium text-map-muted text-[12px]">
+                            · {c.pkg.trust.reviewCount}
+                          </span>
+                        </span>
+                      </Cell>
+                    ))}
+                  </Row>
+                  <DataRow label="Booked (30 days)" values={columns.map((c) => `${c.pkg.trust.bookingsLast30d} people`)} onlyDiff={onlyDifferences} />
+                  <DataRow label="Replies in" values={columns.map((c) => `${c.pkg.trust.responseMinutes} min`)} onlyDiff={onlyDifferences} />
+                  <Row label="Verification">
+                    {columns.map((c, i) => (
+                      <Cell key={c.pkg.id} i={i}>
+                        {c.pkg.operatorVerified ? (
+                          <VerifiedBadge compact />
                         ) : (
-                          <Minus size={15} className="text-map-border" strokeWidth={3} />
+                          <VerifiedBadge compact variant="pending" label="Unverified" />
                         )}
                       </Cell>
                     ))}
                   </Row>
-                ))}
-              {columns.some((c) => c.uniqueInclusions.length > 0) && (
-                <Row label="Only with this operator" flag>
-                  {columns.map((c) => (
-                    <Cell key={c.pkg.id}>
-                      {c.uniqueInclusions.length === 0 ? (
-                        <span className="text-map-border text-[13px]">—</span>
-                      ) : (
+                  <Row label="Cancellation">
+                    {columns.map((c, i) => (
+                      <Cell key={c.pkg.id} i={i}>
+                        <span
+                          className={cn(
+                            "text-[11px] font-bold px-2 py-0.5 rounded-full font-body inline-block mb-1.5",
+                            c.pkg.cancellationFlexibility === "HIGH"
+                              ? "bg-fern-tint text-fern-quiet"
+                              : c.pkg.cancellationFlexibility === "MEDIUM"
+                              ? "bg-marigold-tint text-marigold"
+                              : "bg-rust-tint text-rust"
+                          )}
+                        >
+                          {c.pkg.cancellationFlexibility === "HIGH" ? "Flexible" : c.pkg.cancellationFlexibility === "MEDIUM" ? "Partial refund" : "Strict"}
+                        </span>
+                        <span className="block text-[11.5px] text-map-muted font-body leading-snug">
+                          {c.pkg.cancellationPolicy}
+                        </span>
+                      </Cell>
+                    ))}
+                  </Row>
+                  <DataRow label="Operating since" values={columns.map((c) => String(c.pkg.operatorFoundedYear))} onlyDiff={onlyDifferences} />
+                </>
+              )}
+
+              {/* ── What's included ── */}
+              <SectionHeader id="included" label="What's included" open={open} toggle={toggle} />
+              {open.has("included") && (
+                <>
+                  {features
+                    .filter((f) => !onlyDifferences || f.differs)
+                    .map((f) => (
+                      <Row key={f.label} label={f.label} flag={f.differs}>
+                        {f.values.map((v, i) => (
+                          <Cell key={i} i={i} center>
+                            {v ? (
+                              <Check size={17} className="text-fern-quiet" strokeWidth={3} />
+                            ) : (
+                              <Minus size={15} className="text-warm-line" strokeWidth={3} />
+                            )}
+                          </Cell>
+                        ))}
+                      </Row>
+                    ))}
+                  {columns.some((c) => c.uniqueInclusions.length > 0) && (
+                    <Row label="Only with this operator" flag>
+                      {columns.map((c, i) => (
+                        <Cell key={c.pkg.id} i={i}>
+                          {c.uniqueInclusions.length === 0 ? (
+                            <span className="text-map-muted/50 text-[13px]">—</span>
+                          ) : (
+                            <ul className="space-y-1">
+                              {c.uniqueInclusions.slice(0, 4).map((inc) => (
+                                <li key={inc} className="text-[11.5px] text-map-text font-body leading-snug flex gap-1.5">
+                                  <Check size={11} className="text-fern-quiet flex-shrink-0 mt-0.5" strokeWidth={3} />
+                                  {inc}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </Cell>
+                      ))}
+                    </Row>
+                  )}
+                  <Row label="Not included" muted>
+                    {columns.map((c, i) => (
+                      <Cell key={c.pkg.id} i={i}>
                         <ul className="space-y-1">
-                          {c.uniqueInclusions.slice(0, 4).map((inc) => (
-                            <li key={inc} className="text-[11.5px] text-map-text font-body leading-snug flex gap-1.5">
-                              <Check size={11} className="text-fern-quiet flex-shrink-0 mt-0.5" strokeWidth={3} />
-                              {inc}
+                          {c.pkg.exclusions.slice(0, 4).map((ex) => (
+                            <li key={ex} className="text-[11.5px] text-map-muted font-body leading-snug flex gap-1.5">
+                              <Minus size={11} className="flex-shrink-0 mt-0.5" strokeWidth={3} />
+                              {ex}
                             </li>
                           ))}
                         </ul>
-                      )}
-                    </Cell>
-                  ))}
-                </Row>
-              )}
-              <Row label="Not included" muted>
-                {columns.map((c) => (
-                  <Cell key={c.pkg.id}>
-                    <ul className="space-y-1">
-                      {c.pkg.exclusions.slice(0, 4).map((ex) => (
-                        <li key={ex} className="text-[11.5px] text-map-muted font-body leading-snug flex gap-1.5">
-                          <Minus size={11} className="flex-shrink-0 mt-0.5" strokeWidth={3} />
-                          {ex}
-                        </li>
-                      ))}
-                    </ul>
-                  </Cell>
-                ))}
-              </Row>
-            </Section>
-
-            <Section id="itinerary" label="Day by day" open={open} toggle={toggle} grid={grid} n={n}>
-              {Array.from({ length: maxDays }, (_, i) => i + 1).map((day) => (
-                <Row key={day} label={`Day ${day}`}>
-                  {columns.map((c) => {
-                    const d = c.pkg.itinerary[day - 1];
-                    return (
-                      <Cell key={c.pkg.id}>
-                        {d ? (
-                          <>
-                            <span className="block font-display font-bold text-[12.5px] text-map-text leading-snug">
-                              {d.title}
-                            </span>
-                            <span className="block text-[11.5px] text-map-muted font-body leading-snug mt-0.5">
-                              {d.description}
-                            </span>
-                          </>
-                        ) : (
-                          <span className="text-[11.5px] text-map-border font-body">
-                            Trip has ended
-                          </span>
-                        )}
                       </Cell>
-                    );
-                  })}
-                </Row>
-              ))}
-            </Section>
+                    ))}
+                  </Row>
+                </>
+              )}
 
-            {/* Book row */}
-            <div className="grid gap-px bg-map-border" style={grid}>
-              <div className="bg-map-white" />
-              {columns.map((c) => (
-                <div key={c.pkg.id} className="bg-map-card p-3">
+              {/* ── Day by day ── */}
+              <SectionHeader
+                id="itinerary" label="Day by day" open={open} toggle={toggle}
+                hint={`${maxDays} days`}
+              />
+              {open.has("itinerary") &&
+                Array.from({ length: maxDays }, (_, i) => i + 1).map((day) => (
+                  <Row key={day} label={`Day ${day}`}>
+                    {columns.map((c, i) => {
+                      const d = c.pkg.itinerary[day - 1];
+                      return (
+                        <Cell key={c.pkg.id} i={i}>
+                          {d ? (
+                            <>
+                              <span className="block font-display font-bold text-[12.5px] text-map-text leading-snug">
+                                {d.title}
+                              </span>
+                              <span className="block text-[11.5px] text-map-muted font-body leading-snug mt-0.5">
+                                {d.description}
+                              </span>
+                            </>
+                          ) : (
+                            <span className="text-[11.5px] text-map-muted/60 font-body italic">
+                              Trip has ended
+                            </span>
+                          )}
+                        </Cell>
+                      );
+                    })}
+                  </Row>
+                ))}
+
+              {/* Book row */}
+              <div className="sticky left-0 z-20 bg-peach-wash border-r border-warm-line" />
+              {columns.map((c, i) => (
+                <div
+                  key={c.pkg.id}
+                  className={cn("bg-map-card px-3.5 py-3.5", i > 0 && "border-l border-warm-line")}
+                >
                   <Link
                     href={`/packages/${c.pkg.slug}`}
                     className="btn-primary w-full text-[13.5px] py-2.5"
@@ -409,6 +475,12 @@ export default function CompareView({
             </div>
           </div>
         </div>
+
+        {/* Legend */}
+        <p className="mt-3 flex items-center gap-1.5 text-[12px] text-map-muted font-body">
+          <span className="w-1.5 h-1.5 rounded-full bg-marigold-bright flex-shrink-0" />
+          Marks a row where the operators differ.
+        </p>
 
         {/* Add another operator */}
         {n >= 1 && n < 4 && candidates.length > 0 && (
@@ -426,7 +498,7 @@ export default function CompareView({
                   <Link
                     key={cand.id}
                     href={hrefWith(cand.id)}
-                    className="flex gap-3 p-3 rounded-xl border border-map-border bg-map-card hover:border-compass-blue transition-colors"
+                    className="flex gap-3 p-3 rounded-xl border border-warm-line bg-map-card hover:border-compass-blue transition-colors"
                   >
                     <Image
                       src={cand.image}
@@ -454,7 +526,7 @@ export default function CompareView({
 
       {/* Sticky action bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-atlas-night z-50 shadow-2xl">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
           <div className="min-w-0 hidden sm:block">
             <p className="text-white text-[12.5px] font-bold">
               {n} operator{n === 1 ? "" : "s"} selected
@@ -499,38 +571,40 @@ export default function CompareView({
 
 /* ── Layout primitives ───────────────────────────────────────────────────── */
 
-function Section({
-  id, label, open, toggle, grid, n, children,
+/**
+ * A section header is a single full-width row *inside* the table grid rather
+ * than a separately sized element above it, which is what keeps it flush with
+ * the columns at every viewport and column count.
+ */
+function SectionHeader({
+  id, label, open, toggle, hint,
 }: {
   id: string;
   label: string;
   open: Set<string>;
   toggle: (id: string) => void;
-  grid: React.CSSProperties;
-  n: number;
-  children: React.ReactNode;
+  hint?: string;
 }) {
   const isOpen = open.has(id);
   return (
-    <div className="mt-4">
-      <button
-        onClick={() => toggle(id)}
-        className="w-full flex items-center gap-2 px-4 py-2.5 bg-map-card border border-map-border rounded-t-xl hover:bg-map-white transition-colors sticky left-0"
-        style={{ width: `calc(132px + ${n} * 184px)`, maxWidth: "100%" }}
-        aria-expanded={isOpen}
-      >
+    <button
+      onClick={() => toggle(id)}
+      aria-expanded={isOpen}
+      className="col-span-full bg-peach-wash border-b border-warm-line px-4 py-3 text-left hover:bg-light-coral-tint/25 transition-colors"
+    >
+      {/* Sticky inside the horizontal scroller, so the section label stays put
+          while the operator columns pan under it. */}
+      <span className="sticky left-4 flex w-fit items-center gap-2">
         <ChevronDown
           size={15}
-          className={cn("text-map-muted transition-transform", !isOpen && "-rotate-90")}
+          className={cn("text-map-muted transition-transform flex-shrink-0", !isOpen && "-rotate-90")}
         />
         <span className="font-display font-bold text-[13.5px] text-map-text">{label}</span>
-      </button>
-      {isOpen && (
-        <div className="grid gap-px bg-map-border border-x border-b border-map-border rounded-b-xl overflow-hidden" style={grid}>
-          {children}
-        </div>
-      )}
-    </div>
+        {hint && (
+          <span className="text-[11.5px] text-map-muted font-body tnum">· {hint}</span>
+        )}
+      </span>
+    </button>
   );
 }
 
@@ -551,28 +625,47 @@ function Row({
     <div className="contents">
       <div
         className={cn(
-          "px-3 py-3 flex items-start gap-1.5 sticky left-0 z-10",
-          emphasis ? "bg-fern-tint" : "bg-map-white"
+          "px-4 py-3 flex items-start gap-1.5 sticky left-0 z-10 border-b border-r border-warm-line",
+          emphasis ? "bg-fern-tint" : "bg-peach-wash"
         )}
       >
         <span
           className={cn(
-            "text-[11.5px] font-body leading-snug",
+            "text-[12px] font-body leading-snug",
             emphasis ? "text-fern font-bold" : muted ? "text-map-muted" : "text-map-text font-semibold"
           )}
         >
           {label}
         </span>
-        {flag && <span className="w-1.5 h-1.5 rounded-full bg-marigold-bright flex-shrink-0 mt-1" title="Differs" />}
+        {flag && <span className="w-1.5 h-1.5 rounded-full bg-marigold-bright flex-shrink-0 mt-1.5" title="Differs" />}
       </div>
       {children}
     </div>
   );
 }
 
-function Cell({ children, center }: { children: React.ReactNode; center?: boolean }) {
+/**
+ * `i` is the column index: only columns after the first carry a left hairline,
+ * so no double rule against the label column and no stray rule on the right
+ * edge of the table.
+ */
+function Cell({
+  children, center, i, className,
+}: {
+  children: React.ReactNode;
+  center?: boolean;
+  i: number;
+  className?: string;
+}) {
   return (
-    <div className={cn("bg-map-card px-3 py-3 min-w-0", center && "flex items-center justify-center")}>
+    <div
+      className={cn(
+        "bg-map-card px-3.5 py-3 min-w-0 border-b border-warm-line",
+        i > 0 && "border-l border-warm-line",
+        center && "flex items-center justify-center",
+        className
+      )}
+    >
       {children}
     </div>
   );
@@ -590,7 +683,7 @@ function DataRow({
   return (
     <Row label={label} flag={differs}>
       {values.map((v, i) => (
-        <Cell key={i}>
+        <Cell key={i} i={i}>
           <span className="text-[12.5px] text-map-text font-body leading-snug">{v}</span>
         </Cell>
       ))}

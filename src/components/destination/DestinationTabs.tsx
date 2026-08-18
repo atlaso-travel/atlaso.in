@@ -262,12 +262,20 @@ export default function DestinationTabs({
 
         {/* FAQs */}
         {activeTab === "faqs" && (
-          <div className="divide-y divide-map-border">
+          <div className="space-y-3">
             {dest.faqs.map((faq, i) => (
-              <div key={i} className="py-4">
+              <div
+                key={i}
+                className={cn(
+                  "rounded-2xl px-5 py-4 transition-colors",
+                  openFaq === i
+                    ? "bg-rose-light border border-rose-pink/20"
+                    : "bg-white border border-map-border"
+                )}
+              >
                 <button
                   onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                  className="w-full flex items-center justify-between gap-4 text-left"
+                  className="w-full flex items-center justify-between gap-4 text-left cursor-pointer"
                 >
                   <span
                     className={cn(

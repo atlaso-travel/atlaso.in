@@ -3,6 +3,7 @@ import {
   createPendingBooking,
   attachRazorpayOrder,
   BookingError,
+  type EmergencyContact,
   type Traveller,
 } from "@/server/bookings";
 import {
@@ -31,6 +32,7 @@ interface Body {
   contactName?: unknown;
   contactEmail?: unknown;
   contactPhone?: unknown;
+  emergencyContact?: unknown;
   notes?: unknown;
 }
 
@@ -46,10 +48,25 @@ function parseTravellers(value: unknown, expected: number): Traveller[] | null {
     const t = raw as Record<string, unknown>;
     const fullName = str(t.fullName);
     const age = Number(t.age);
+    const gender = str(t.gender).slice(0, 32);
     if (fullName.length < 2 || !Number.isFinite(age) || age < 1 || age > 110) return null;
-    out.push({ fullName, age: Math.floor(age) });
+    out.push({ fullName, age: Math.floor(age), ...(gender ? { gender } : {}) });
   }
   return out;
+}
+
+/**
+ * Optional on the wire: the checkout collects it, but a partial or absent object
+ * must not fail a booking that is otherwise valid — the operator can chase it.
+ */
+function parseEmergencyContact(value: unknown): EmergencyContact | null {
+  if (typeof value !== "object" || value === null) return null;
+  const c = value as Record<string, unknown>;
+  const fullName = str(c.fullName);
+  const relationship = str(c.relationship);
+  const phone = str(c.phone);
+  if (fullName.length < 2 || !PHONE.test(phone.replace(/\s/g, ""))) return null;
+  return { fullName, relationship, phone };
 }
 
 export async function POST(request: Request) {
@@ -114,6 +131,7 @@ export async function POST(request: Request) {
       contactName,
       contactEmail,
       contactPhone,
+      emergencyContact: parseEmergencyContact(body.emergencyContact),
       notes: str(body.notes),
     });
 

@@ -140,7 +140,7 @@ export default async function DestinationPage({
       {/* Answer-shaped summary + the links into comparison and operator pages.
           Sits above the tabbed content because the tabs are a client component
           and only the active tab's text is in the initial HTML. */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-6 flex flex-col gap-4">
+      {/* <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-6 flex flex-col gap-4">
         {insight && (
           <FactBlock
             heading={`${dest.name} packages and prices`}
@@ -166,7 +166,7 @@ export default async function DestinationPage({
             </Link>
           </p>
         )}
-      </div>
+      </div> */}
 
       {/* ── Tabs + Content ── */}
       <DestinationTabs

@@ -25,6 +25,15 @@ export type LeadStatus = "NEW" | "CONTACTED" | "QUOTED" | "CONVERTED" | "LOST";
 export interface Traveller {
   fullName: string;
   age: number;
+  /** Free text as entered; operators ask for it, we do not act on it. */
+  gender?: string;
+}
+
+/** Who the operator calls if something happens on the trip. */
+export interface EmergencyContact {
+  fullName: string;
+  relationship: string;
+  phone: string;
 }
 
 export interface Booking {
@@ -44,6 +53,7 @@ export interface Booking {
   contactName: string;
   contactEmail: string;
   contactPhone: string;
+  emergencyContact: EmergencyContact | null;
   notes: string;
 
   /* ── Frozen at creation. Never recomputed. ── */
@@ -131,6 +141,7 @@ export interface CreateBookingInput {
   contactName: string;
   contactEmail: string;
   contactPhone: string;
+  emergencyContact?: EmergencyContact | null;
   notes?: string;
 }
 
@@ -204,6 +215,7 @@ export async function createPendingBooking(input: CreateBookingInput): Promise<B
     contactName: input.contactName,
     contactEmail: input.contactEmail,
     contactPhone: input.contactPhone,
+    emergencyContact: input.emergencyContact ?? null,
     notes: input.notes ?? "",
 
     snapshotRetailPrice: p.retailPrice,
@@ -463,6 +475,7 @@ function seedDemoBookings(): void {
       contactName,
       contactEmail,
       contactPhone,
+      emergencyContact: null,
       notes: "",
 
       snapshotRetailPrice: p.retailPrice,

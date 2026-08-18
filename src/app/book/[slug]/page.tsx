@@ -23,14 +23,8 @@ export default async function BookPage({
   return (
     <>
       <Navbar />
-      <main className="min-h-screen bg-map-white">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-9">
-          <h1 className="font-display text-[22px] sm:text-[28px] font-extrabold text-map-text tracking-tight mb-1">
-            Complete your booking
-          </h1>
-          <p className="text-[13.5px] text-map-muted font-body mb-6">
-            You will not be charged until you confirm on the payment screen.
-          </p>
+      <main className="min-h-screen bg-peach-wash">
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
           <BookingFlow pkg={pkg} paymentsEnabled={isPaymentsConfigured()} />
         </div>
       </main>
