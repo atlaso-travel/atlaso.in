@@ -19,7 +19,7 @@ const COMPANY_LOGOS = [
 
 export default function PartnerStrip() {
   return (
-    <section className="relative w-full max-w-5xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
+    <section className="relative w-full max-w-7xl mx-auto py-4 sm:py-6 px-4 sm:px-6 lg:px-8">
       <div className="flex items-center gap-6">
         <p className="text-[11px] text-warm-taupe font-body flex-shrink-0 max-w-[190px] leading-snug hidden sm:block">
           Partnering with trusted travel operators across India

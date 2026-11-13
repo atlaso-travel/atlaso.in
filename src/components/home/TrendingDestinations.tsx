@@ -54,7 +54,7 @@ const LABEL_ROOM_PX = 86;
     a map of anywhere. */
 const MAX_ZOOM = 14;
 
-/** One value, because the container is capped at max-w-5xl — a viewport-based
+/** One value, because the container is capped at max-w-7xl — a viewport-based
     `xl:` width would widen the card past the gutter the chart reserved for it. */
 const CARD_W_LG = 344;
 
@@ -310,7 +310,7 @@ export default function TrendingDestinations() {
       <section className="relative overflow-hidden bg-section-warm ">
         <div className="absolute inset-0 wash-top-right pointer-events-none" />
 
-        <div className="relative max-w-5xl mx-auto py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
+        <div className="relative max-w-7xl mx-auto py-12 sm:py-16 px-4 sm:px-6 lg:px-8">
           <Stagger className="mb-10 max-w-2xl" gap={0.07}>
             <StaggerItem as="p" className="eyebrow mb-3">
               The Catalogue

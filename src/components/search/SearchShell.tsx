@@ -83,7 +83,7 @@ export default function SearchShell({
 
   return (
     <>
-      <main className="min-h-screen bg-map-white max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-9 flex gap-5">
+      <main className="min-h-screen bg-map-white max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-9 flex gap-5">
         <aside className="hidden md:block flex-shrink-0 sticky top-20 h-fit w-[248px]">
           <SearchFilters state={filterState} bounds={bounds} resultCount={total} />
         </aside>
@@ -204,7 +204,7 @@ export default function SearchShell({
       {/* Compare tray */}
       {selected.length > 0 && (
         <div className="fixed bottom-0 left-0 right-0 z-[9999] bg-atlas-night shadow-2xl">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-3">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-3">
             <div className="flex -space-x-2 flex-shrink-0">
               {selected.map((p) => (
                 <span key={p.id} className="relative w-9 h-9 rounded-full border-2 border-atlas-night overflow-hidden">

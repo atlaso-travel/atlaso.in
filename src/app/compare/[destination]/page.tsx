@@ -92,7 +92,7 @@ export default async function DestinationComparisonPage({
       />
 
       <main className="min-h-screen bg-map-white">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-7 sm:py-10 flex flex-col gap-7">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-7 sm:py-10 flex flex-col gap-7">
           <div>
             <nav className="text-[12.5px] text-map-muted font-body mb-3">
               <Link href="/" className="hover:text-compass-blue">Home</Link>

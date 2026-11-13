@@ -83,7 +83,7 @@ export default async function OperatorsPage() {
 
       {/* ── Directory: the crawlable hub for operator profiles ── */}
       <section className="bg-map-white border-t border-map-border">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-14">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-14">
           <h2 className="font-display font-black text-[26px] sm:text-[32px] text-map-text tracking-tight">
             Operators listed on Atlaso
           </h2>

@@ -115,7 +115,7 @@ export default async function DestinationPage({
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
 
-        <div className="relative z-10 max-w-6xl w-full mx-auto px-4 sm:px-6 pb-8">
+        <div className="relative z-10 max-w-7xl w-full mx-auto px-4 sm:px-6 pb-8">
           <div className="flex items-center gap-1.5 text-white/70 text-sm mb-2">
             <MapPin size={13} />
             <span>{dest.region}</span>
@@ -140,7 +140,7 @@ export default async function DestinationPage({
       {/* Answer-shaped summary + the links into comparison and operator pages.
           Sits above the tabbed content because the tabs are a client component
           and only the active tab's text is in the initial HTML. */}
-      {/* <div className="max-w-6xl mx-auto px-4 sm:px-6 pt-6 flex flex-col gap-4">
+      {/* <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6 flex flex-col gap-4">
         {insight && (
           <FactBlock
             heading={`${dest.name} packages and prices`}

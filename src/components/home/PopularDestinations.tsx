@@ -237,7 +237,7 @@ export default function PopularDestinations() {
     <section className="relative py-12 sm:py-16 overflow-hidden bg-warm-ivory">
       <div className="absolute inset-0 bg-section-glow pointer-events-none" />
 
-      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-6 items-center">
           <Reveal className="lg:col-span-6" distance={28}>
             <p className="eyebrow mb-3">Explore</p>

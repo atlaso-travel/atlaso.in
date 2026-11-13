@@ -353,7 +353,7 @@ export default function Testimonials() {
     <section className="relative py-12 sm:py-16 bg-section-warm overflow-hidden">
       <div className="absolute inset-0 wash-top-left pointer-events-none" />
 
-      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* ── Header ── */}
         <Stagger className="mb-8 sm:mb-10" gap={0.07}>

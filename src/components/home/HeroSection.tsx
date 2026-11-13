@@ -220,7 +220,7 @@ export default function HeroSection() {
 
       {/* ── Content ── */}
       <motion.div
-        className="relative max-w-5xl mx-auto px-5 sm:px-6 lg:px-8"
+        className="relative max-w-7xl mx-auto px-5 sm:px-6 lg:px-8"
         style={{ opacity: reduced ? 1 : contentFade }}
       >
         <h1 className="sr-only">Compare Travel Operators in India — Atlaso</h1>

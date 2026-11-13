@@ -18,7 +18,7 @@ export default function FAQ() {
 
   return (
     <section className="relative py-20 sm:py-24 overflow-hidden bg-faq-glow">
-      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
 
           {/* ── The rail ──

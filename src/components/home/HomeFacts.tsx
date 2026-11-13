@@ -14,7 +14,7 @@ import type { PlatformInsight } from "@/server/insights";
 export default function HomeFacts({ insight }: { insight: PlatformInsight }) {
   return (
     <section className="bg-map-card border-b border-map-border">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-11 sm:py-14">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-11 sm:py-14">
         <h2 className="font-display font-black text-[24px] sm:text-[30px] text-map-text tracking-tight leading-tight max-w-3xl">
           Compare {insight.operators} Indian tour operators before you book
         </h2>

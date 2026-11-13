@@ -28,7 +28,7 @@ export function PortalShell({
       <header className="relative overflow-hidden bg-atlas-night">
         <div className="wash-dark absolute inset-0 pointer-events-none" aria-hidden />
 
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pt-4 pb-3 flex items-center justify-between gap-4">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 pt-4 pb-3 flex items-center justify-between gap-4">
           <div className="min-w-0 flex items-center gap-1.5">
             <Link
               href="/"
@@ -51,7 +51,7 @@ export function PortalShell({
           </form>
         </div>
 
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 pb-5">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 pb-5">
           <div className="flex items-center gap-3 flex-wrap">
             {icon && (
               <span
@@ -76,7 +76,7 @@ export function PortalShell({
         </div>
       </header>
 
-      <main className="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {children}
       </main>
     </div>

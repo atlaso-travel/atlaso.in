@@ -51,7 +51,7 @@ export default function MyComparisons() {
         className="min-h-screen bg-[#F5F7FA]"
         onClick={() => setOpenMenu(null)}
       >
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
           {/* Header */}
           <Link
             href="/search"

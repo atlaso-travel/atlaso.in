@@ -83,7 +83,7 @@ export default function LoginCard({
         />
       </div>
 
-      <div className="relative z-10 w-full max-w-6xl flex flex-col lg:flex-row items-center gap-10 lg:gap-20">
+      <div className="relative z-10 w-full max-w-7xl flex flex-col lg:flex-row items-center gap-10 lg:gap-20">
         {/* ── Brand copy — sits directly on the photo, no boxed chrome, so
             the headline is the one thing said once per breakpoint. ── */}
         <motion.div {...step(0)} className="w-full lg:w-1/2 flex flex-col items-center lg:items-start text-center lg:text-left">

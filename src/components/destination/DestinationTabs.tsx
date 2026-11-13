@@ -92,7 +92,7 @@ export default function DestinationTabs({
     <>
       {/* ── Tab Bar ── */}
       <div className="sticky top-16 z-20 bg-white border-b border-map-border shadow-sm">
-        <div className="max-w-5xl mx-auto flex overflow-x-auto">
+        <div className="max-w-7xl mx-auto flex overflow-x-auto">
           {TABS.map((tab) => (
             <button
               key={tab.id}
@@ -123,7 +123,7 @@ export default function DestinationTabs({
 
 
       {/* ── Tab Content ── */}
-      <div className="max-w-5xl w-full mx-auto py-6 sm:py-10">
+      <div className="max-w-7xl w-full mx-auto py-6 sm:py-10">
 
         {/* Overview */}
         {activeTab === "overview" && (

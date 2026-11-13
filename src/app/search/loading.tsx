@@ -9,7 +9,7 @@ export default function SearchLoading() {
           <ContourField seed={7.3} className="h-[320px]" opacity={0.9} scale={110} />
         </div>
       </div>
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-9 flex gap-5">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-9 flex gap-5">
         <div className="hidden md:block w-[248px] flex-shrink-0">
           <div className="rounded-2xl border border-map-border bg-map-card h-[420px] animate-pulse" />
         </div>

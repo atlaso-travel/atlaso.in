@@ -29,7 +29,7 @@ export default function PackageHero({ pkg }: { pkg: PackageDetail }) {
       />
       <div className="absolute inset-0 bg-gradient-to-t from-[#0A1628]/90 via-[#0A1628]/45 to-[#0A1628]/25" />
 
-      <div className="relative z-10 max-w-6xl w-full mx-auto px-4 sm:px-6 pt-24 pb-7">
+      <div className="relative z-10 max-w-7xl w-full mx-auto px-4 sm:px-6 pt-24 pb-7">
         <div className="flex items-center gap-1.5 text-white/70 text-[13px] font-body mb-2">
           <MapPin size={13} className="flex-shrink-0" />
           <span>

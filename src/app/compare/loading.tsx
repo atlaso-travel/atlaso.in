@@ -3,7 +3,7 @@ export default function CompareLoading() {
      content does not shift the columns. */
   return (
     <div className="min-h-screen bg-peach-wash">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         <div className="h-8 w-64 rounded-lg bg-map-card border border-warm-line animate-pulse mb-6" />
         <div className="rounded-2xl border border-warm-line bg-map-card shadow-card overflow-hidden">
           <div className="grid" style={{ gridTemplateColumns: "152px repeat(4, minmax(200px, 1fr))" }}>

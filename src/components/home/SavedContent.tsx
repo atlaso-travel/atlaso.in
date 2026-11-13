@@ -44,7 +44,7 @@ export default function SavedContent({ allPackages }: { allPackages: PackageSumm
       <Navbar />
 
       <div className="bg-atlas-night">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-9">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-9">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
               <Heart size={18} className="fill-white text-white" />
@@ -66,7 +66,7 @@ export default function SavedContent({ allPackages }: { allPackages: PackageSumm
       </div>
 
       <main className="min-h-screen bg-map-white">
-        <div className={cn("max-w-5xl mx-auto px-4 sm:px-6 py-8", selected.length ? "pb-32" : "pb-16")}>
+        <div className={cn("max-w-7xl mx-auto px-4 sm:px-6 py-8", selected.length ? "pb-32" : "pb-16")}>
           {saved.length === 0 ? (
             <div className="rounded-2xl border border-map-border bg-map-card px-6 py-14 text-center">
               <div className="max-w-sm mx-auto">
@@ -120,7 +120,7 @@ export default function SavedContent({ allPackages }: { allPackages: PackageSumm
 
       {selected.length > 0 && (
         <div className="fixed bottom-0 left-0 right-0 z-[9999] bg-atlas-night shadow-2xl">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-3">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center gap-3">
             <div className="flex -space-x-2 flex-shrink-0">
               {selected.map((p) => (
                 <span

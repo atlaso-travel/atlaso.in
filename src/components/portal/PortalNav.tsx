@@ -16,7 +16,7 @@ export default function PortalNav({
   const pathname = usePathname();
 
   return (
-    <nav className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex overflow-x-auto scrollbar-hide">
+    <nav className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex overflow-x-auto scrollbar-hide">
       <div className="inline-flex gap-1 rounded-xl border border-white/10 bg-white/[0.05] p-1">
         {items.map((item) => {
           const active = item.exact

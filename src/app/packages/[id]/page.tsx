@@ -154,7 +154,7 @@ export default async function PackagePage({
             top of the viewport behind the overlay navbar, so there is no room
             for a strip of grey links up there. */}
         <div className="bg-white border-b border-warm-line">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 py-2.5 flex items-center gap-2 text-[13px] text-map-muted font-body overflow-x-auto scrollbar-hide whitespace-nowrap">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2.5 flex items-center gap-2 text-[13px] text-map-muted font-body overflow-x-auto scrollbar-hide whitespace-nowrap">
             <Link href="/" className="hover:text-compass-blue transition-colors">Home</Link>
             <span>›</span>
             <Link href="/destinations" className="hover:text-compass-blue transition-colors">
@@ -190,7 +190,7 @@ export default async function PackagePage({
             and they should not sit behind a tab a crawler has to click. The FAQs
             themselves are no longer rendered here; they still ship to search via
             the FaqSchema JSON-LD above. */}
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 pb-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 pb-10">
           <RelatedPackages
             current={pkg}
             siblings={siblings}

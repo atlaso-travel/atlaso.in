@@ -25,7 +25,7 @@ export default function CtaBanner() {
     <section
       className="relative py-12 sm:py-16 bg-warm-ivory"
     >
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="relative rounded-[28px] overflow-hidden py-16 sm:py-22 text-center">
           {/* Background — the same slow drift as the hero at roughly two-thirds
               the amplitude, so the two bookends rhyme without reading as the

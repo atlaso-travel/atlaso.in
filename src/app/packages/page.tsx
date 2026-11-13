@@ -78,7 +78,7 @@ export default async function PackagesIndexPage() {
 
       <main className="min-h-screen bg-map-white">
         <div className="bg-atlas-night">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
             <h1 className="font-display font-black text-[28px] sm:text-[36px] text-white tracking-tight leading-tight">
               Every package on Atlaso
             </h1>
@@ -90,7 +90,7 @@ export default async function PackagesIndexPage() {
           </div>
         </div>
 
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 flex flex-col gap-9">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex flex-col gap-9">
           <FactBlock
             heading="Packages and pricing on Atlaso"
             fact={insight.fact}

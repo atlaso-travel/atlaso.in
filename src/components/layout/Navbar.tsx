@@ -227,7 +227,7 @@ export default function Navbar({ overlay = false }: NavbarProps) {
            means the bar reserves its height before hydration instead of
            collapsing to the logo and shunting the page down when motion
            mounts. */
-        className="relative h-16 max-w-5xl mx-auto px-4 sm:px-6 flex items-center justify-between"
+        className="relative h-16 max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between"
         animate={{ height: condensed && !reduced ? 56 : 64 }}
         transition={settle}
         /* Belt and braces with the scrim: a soft shadow on the glyphs

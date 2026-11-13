@@ -139,7 +139,7 @@ export default function ComparisonPreview() {
       />
       <div className="absolute inset-0 wash-dark pointer-events-none" />
 
-      <div className="relative max-w-5xl mx-auto">
+      <div className="relative max-w-7xl mx-auto">
 
         <Stagger className="text-center max-w-2xl mx-auto mb-12 sm:mb-14" gap={0.07}>
           <StaggerItem as="p" className="mono-chart text-[11px] uppercase text-warm-sand mb-4">

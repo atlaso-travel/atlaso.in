@@ -69,7 +69,7 @@ export default function PackageTabs({
         <div
           role="tablist"
           aria-label="Package details"
-          className="max-w-6xl mx-auto px-2 sm:px-4 flex overflow-x-auto scrollbar-hide"
+          className="max-w-7xl mx-auto px-2 sm:px-4 flex overflow-x-auto scrollbar-hide"
         >
           {TABS.map((t) => (
             <button
@@ -94,7 +94,7 @@ export default function PackageTabs({
       </div>
 
       {/* ── Panels + enquiry column ── */}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-9 flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-9 flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
         <aside
           id="enquiry"
           className="w-full lg:w-[336px] flex-shrink-0 order-1 lg:order-2 lg:sticky lg:top-[104px]"

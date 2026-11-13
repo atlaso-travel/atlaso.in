@@ -180,7 +180,7 @@ export default async function OperatorProfilePage({
 
       <main className="min-h-screen bg-map-white">
         <div className="bg-atlas-night">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
             <nav className="text-[12.5px] text-white/50 font-body mb-3">
               <Link href="/" className="hover:text-white">Home</Link>
               <span className="mx-1.5">›</span>
@@ -226,7 +226,7 @@ export default async function OperatorProfilePage({
           </div>
         </div>
 
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8 flex flex-col gap-7">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 flex flex-col gap-7">
           <FactBlock
             heading={`About ${operator.name}`}
             fact={fact}

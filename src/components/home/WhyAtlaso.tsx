@@ -139,7 +139,7 @@ export default function WhyAtlaso() {
     <section className="relative py-16 sm:py-20 overflow-hidden bg-section-warm">
       <div className="absolute inset-0 wash-bottom pointer-events-none" />
 
-      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
 
           {/* ── Left: the claim, the numbers, the CTA ── */}

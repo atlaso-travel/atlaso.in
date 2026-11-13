@@ -105,7 +105,7 @@ export default async function SearchPage({
           />
         </div>
 
-        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 py-8 sm:py-11">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-11">
           {dest && (
             <div className="flex items-center gap-1.5 mb-1.5">
               <MapPin size={12} className="text-marigold-bright" />
@@ -150,7 +150,7 @@ export default async function SearchPage({
             )}
           </div>
 
-          <div className="max-w-5xl">
+          <div className="max-w-7xl">
             <SearchHero
               destination={destination || "All Destinations"}
               dates={one(sp.dates) ?? ""}

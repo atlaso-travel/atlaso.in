@@ -247,7 +247,7 @@ export default function TopOperators() {
     >
       <div className="absolute inset-0 wash-top-right pointer-events-none" />
 
-      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Header */}
         <Stagger className="mb-10 sm:mb-12" gap={0.07}>

@@ -170,7 +170,7 @@ export default function HowItWorks() {
     >
       <div className="absolute inset-0 wash-top-left pointer-events-none" />
 
-      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <Reveal className="mb-12 sm:mb-14">
           <div className="flex items-end justify-between gap-8 border-b border-warm-line pb-7">
             <div>
